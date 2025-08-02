@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "products": "Ürünler",
+    "blog": "Blog",
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "login": "Giriş Yap",
+    "register": "Üye Ol",
+    "cart": "Sepet"
+  },
+  "hero": {
+    "title": "Uyku ve Solunum Cihazları Uzmanı",
+    "subtitle": "20 yıllık tecrübemizle CPAP, BiPAP ve solunum cihazları satışı ve teknik desteği",
+    "cta": "Ürünleri İncele"
+  },
+  "products": {
+    "title": "Ürünlerimiz",
+    "cpap": "CPAP Cihazları",
+    "bipap": "BiPAP Cihazları",
+    "masks": "Maskeler",
+    "accessories": "Aksesuarlar",
+    "viewDetails": "Detayları Gör",
+    "addToCart": "Sepete Ekle",
+    "priceVisible": "Fiyatları görmek için üye olun"
+  },
+  "about": {
+    "title": "Hakkımızda",
+    "experience": "20 Yıllık Tecrübe",
+    "brands": "Yetkili Markalar",
+    "service": "Ücretsiz Kurulum"
+  },
+  "contact": {
+    "title": "İletişim",
+    "phone": "Telefon",
+    "hours": "Çalışma Saatleri",
+    "weekdays": "Pazartesi-Cuma: 09:00-18:00",
+    "saturday": "Cumartesi: 10:00-14:00"
+  },
+  "footer": {
+    "company": "Dönüşüm Medikal",
+    "description": "Uyku apnesi ve KOAH hastaları için profesyonel çözümler",
+    "quickLinks": "Hızlı Bağlantılar",
+    "brands": "Markalarımız"
+  }
+}

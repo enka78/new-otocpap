@@ -1,7 +1,18 @@
-import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
 
-const nextConfig: NextConfig = {
-  /* config options here */
+const withNextIntl = createNextIntlPlugin();
+
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https' as const,
+        hostname: 'cfqzjghngplhzybrbvej.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

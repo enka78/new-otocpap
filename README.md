@@ -1,36 +1,195 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OtoCPAP - E-Ticaret Web Sitesi
 
-## Getting Started
+Modern ve kullanıcı dostu CPAP, BiPAP ve solunum cihazları e-ticaret platformu.
 
-First, run the development server:
+## 🚀 Özellikler
 
+### 🛒 E-Ticaret Sistemi
+- **Akıllı Sepet Sistemi**: Cihazlardan sadece 1 adet, maske/aksesuarlardan istediği kadar
+- **WhatsApp Sipariş**: Otomatik WhatsApp entegrasyonu ile sipariş verme
+- **Kategori Bazlı Filtreleme**: Ürünleri kategoriye göre filtreleme
+- **Fiyat Görünürlüğü**: Üye kullanıcılar için özel fiyat görüntüleme
+
+### 👤 Kullanıcı Yönetimi
+- **Supabase Auth**: Güvenli kullanıcı kimlik doğrulama
+- **Popup Modal**: Modern giriş/kayıt arayüzü
+- **Profil Yönetimi**: Kullanıcı bilgileri ve sipariş geçmişi
+
+### 📱 Modern Arayüz
+- **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
+- **Toast Bildirimleri**: Kullanıcı dostu bildirim sistemi
+- **Dinamik Banner**: Yönetilebilir ana sayfa banner'ları
+- **Çok Dilli Destek**: Türkçe/İngilizce dil desteği
+
+### 📝 İçerik Yönetimi
+- **Blog Sistemi**: Makale yayınlama ve yorum sistemi
+- **Ürün Galerisi**: Çoklu resim desteği ve placeholder sistemi
+- **Marka Logoları**: Dinamik marka logo yönetimi
+
+## 🛠️ Teknoloji Stack
+
+- **Framework**: Next.js 15.4.5 (App Router)
+- **Dil**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Veritabanı**: Supabase (PostgreSQL)
+- **Kimlik Doğrulama**: Supabase Auth
+- **Dosya Depolama**: Supabase Storage
+- **İkonlar**: Lucide React
+- **Çok Dilli**: next-intl
+
+## 📦 Kurulum
+
+### Gereksinimler
+- Node.js 18+ 
+- npm veya yarn
+- Supabase hesabı
+
+### Adımlar
+
+1. **Projeyi klonlayın**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/enka78/new-otocpap.git
+cd new-otocpap/otocpap-website
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Bağımlılıkları yükleyin**
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Ortam değişkenlerini ayarlayın**
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`.env.local` dosyasını düzenleyin:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-## Learn More
+4. **Geliştirme sunucusunu başlatın**
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. **Tarayıcıda açın**
+```
+http://localhost:3000
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🗄️ Veritabanı Yapısı
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Ana Tablolar
+- `products` - Ürün bilgileri
+- `categories` - Ürün kategorileri
+- `brands` - Marka bilgileri
+- `blogs` - Blog yazıları
+- `comments` - Blog yorumları
+- `banners` - Ana sayfa banner'ları
+- `orders` - Sipariş bilgileri
 
-## Deploy on Vercel
+### Supabase Storage
+- `products-images` - Ürün resimleri
+- `blogs-images` - Blog resimleri
+- `brands` - Marka logoları
+- `banner-images` - Banner resimleri
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎯 Önemli Özellikler
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Sepet Sistemi
+- **Cihaz Kısıtlaması**: Kategori ID'leri [1,3,5,7,8,9,10,11,13,14] cihaz olarak tanımlanır
+- **Tek Cihaz Kuralı**: Sepette sadece 1 cihaz bulunabilir
+- **Sınırsız Aksesuar**: Maske ve aksesuarlardan istediği kadar eklenebilir
+
+### WhatsApp Entegrasyonu
+- **Otomatik Mesaj**: Sipariş detayları otomatik WhatsApp mesajı olarak hazırlanır
+- **Adres Bilgileri**: Teslimat bilgileri dahil edilir
+- **Kategori Gruplandırma**: Ürünler kategoriye göre gruplandırılır
+
+### Çok Dilli Sistem
+- **next-intl**: Profesyonel çeviri sistemi
+- **Dinamik Dil**: URL tabanlı dil değiştirme
+- **Çeviri Dosyaları**: `messages/tr.json` ve `messages/en.json`
+
+## 🚀 Deployment
+
+### Vercel (Önerilen)
+```bash
+npm run build
+vercel --prod
+```
+
+### Diğer Platformlar
+```bash
+npm run build
+npm start
+```
+
+## 📱 Responsive Breakpoints
+
+- **Mobile**: < 768px
+- **Tablet**: 768px - 1024px  
+- **Desktop**: > 1024px
+
+## 🎨 Tasarım Sistemi
+
+### Renkler
+- **Primary**: Blue-600 (#2563eb)
+- **Success**: Green-600 (#16a34a)
+- **Warning**: Orange-600 (#ea580c)
+- **Error**: Red-600 (#dc2626)
+
+### Tipografi
+- **Font**: Inter (Google Fonts)
+- **Başlıklar**: font-bold
+- **Metin**: font-normal
+
+## 🔧 Geliştirme
+
+### Komutlar
+```bash
+npm run dev          # Geliştirme sunucusu
+npm run build        # Production build
+npm run start        # Production sunucu
+npm run lint         # ESLint kontrolü
+```
+
+### Klasör Yapısı
+```
+src/
+├── app/[locale]/    # Sayfa rotaları
+├── components/      # React bileşenleri
+├── contexts/        # React context'leri
+├── lib/            # Yardımcı fonksiyonlar
+└── i18n/           # Çeviri konfigürasyonu
+```
+
+## 🤝 Katkıda Bulunma
+
+1. Fork yapın
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Commit yapın (`git commit -m 'Add amazing feature'`)
+4. Push yapın (`git push origin feature/amazing-feature`)
+5. Pull Request açın
+
+## 📄 Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır.
+
+## 📞 İletişim
+
+- **Website**: [otocpap.com](https://otocpap.com)
+- **WhatsApp**: +90 553 280 82 73
+- **Email**: info@donusummedikal.com
+
+## 🙏 Teşekkürler
+
+- [Next.js](https://nextjs.org/) - React framework
+- [Supabase](https://supabase.com/) - Backend as a Service
+- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+- [Lucide](https://lucide.dev/) - İkon kütüphanesi
+
+---
+
+**OtoCPAP** - Uyku ve solunum cihazları konusunda 20 yıllık tecrübe 💤

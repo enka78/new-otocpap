@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "blog": "Blog",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "cart": "Cart"
+  },
+  "hero": {
+    "title": "Sleep & Respiratory Equipment Specialist",
+    "subtitle": "CPAP, BiPAP and respiratory equipment sales and technical support with 20 years of experience",
+    "cta": "View Products"
+  },
+  "products": {
+    "title": "Our Products",
+    "cpap": "CPAP Devices",
+    "bipap": "BiPAP Devices",
+    "masks": "Masks",
+    "accessories": "Accessories",
+    "viewDetails": "View Details",
+    "addToCart": "Add to Cart",
+    "priceVisible": "Register to see prices"
+  },
+  "about": {
+    "title": "About Us",
+    "experience": "20 Years Experience",
+    "brands": "Authorized Brands",
+    "service": "Free Installation"
+  },
+  "contact": {
+    "title": "Contact",
+    "phone": "Phone",
+    "hours": "Working Hours",
+    "weekdays": "Monday-Friday: 09:00-18:00",
+    "saturday": "Saturday: 10:00-14:00"
+  },
+  "footer": {
+    "company": "Dönüşüm Medikal",
+    "description": "Professional solutions for sleep apnea and COPD patients",
+    "quickLinks": "Quick Links",
+    "brands": "Our Brands"
+  }
+}
