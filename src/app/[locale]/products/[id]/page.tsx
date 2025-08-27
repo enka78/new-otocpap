@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useTranslations, useLocale } from 'next-intl';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { supabase, Product, getProductImageUrl } from '@/lib/supabase';
-import { ArrowLeft, ShoppingCart, Heart, Share2 } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { useTranslations, useLocale } from "next-intl";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { supabase, Product, getProductImageUrl } from "@/lib/supabase";
+import { ArrowLeft, ShoppingCart, Heart, Share2 } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
-  
+
   const params = useParams();
   const t = useTranslations();
   const locale = useLocale();
@@ -31,11 +31,15 @@ export default function ProductDetailPage() {
   }, [productId]);
 
   const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     setUser(user);
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
     });
 
@@ -43,21 +47,25 @@ export default function ProductDetailPage() {
   };
 
   const fetchProduct = async () => {
+    if (!productId) return;
+    
     try {
       const { data, error } = await supabase
-        .from('products')
-        .select(`
+        .from("products")
+        .select(
+          `
           *,
           categories(name),
           brands(name)
-        `)
-        .eq('id', productId)
+        `
+        )
+        .eq("id", productId)
         .single();
 
       if (error) throw error;
-      setProduct(data);
+      setProduct(data as unknown as Product);
     } catch (error) {
-      console.error('Error fetching product:', error);
+      console.error("Error fetching product:", error);
     } finally {
       setLoading(false);
     }
@@ -91,7 +99,9 @@ export default function ProductDetailPage() {
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Ürün Bulunamadı</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Ürün Bulunamadı
+            </h1>
             <p className="text-gray-600 mb-8">Aradığınız ürün mevcut değil.</p>
             <Link
               href={`/${locale}/products`}
@@ -107,19 +117,25 @@ export default function ProductDetailPage() {
     );
   }
 
-  const images = [product.image1, product.image2, product.image3].filter(Boolean);
+  const images = [product.image1, product.image2, product.image3].filter(
+    Boolean
+  );
 
   return (
     <div className="min-h-screen">
       <Header />
-      
+
       <main className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-            <Link href={`/${locale}`} className="hover:text-blue-600">Ana Sayfa</Link>
+            <Link href={`/${locale}`} className="hover:text-blue-600">
+              Ana Sayfa
+            </Link>
             <span>/</span>
-            <Link href={`/${locale}/products`} className="hover:text-blue-600">Ürünler</Link>
+            <Link href={`/${locale}/products`} className="hover:text-blue-600">
+              Ürünler
+            </Link>
             <span>/</span>
             <span className="text-gray-900">{product.name}</span>
           </nav>
@@ -147,18 +163,21 @@ export default function ProductDetailPage() {
                       onError={(e) => {
                         e.preventDefault();
                         const target = e.target as HTMLImageElement;
-                        target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk9UT0NQQVA8L3RleHQ+PC9zdmc+';
+                        target.src =
+                          "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk9UT0NQQVA8L3RleHQ+PC9zdmc+";
                       }}
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-gray-700">OTOCPAP</div>
+                        <div className="text-3xl font-bold text-gray-700">
+                          OTOCPAP
+                        </div>
                       </div>
                     </div>
                   )}
                 </div>
-                
+
                 {images.length > 1 && (
                   <div className="flex space-x-2">
                     {images.map((image, index) => (
@@ -166,7 +185,9 @@ export default function ProductDetailPage() {
                         key={index}
                         onClick={() => setSelectedImage(index)}
                         className={`w-20 h-20 rounded-lg border-2 relative bg-white ${
-                          selectedImage === index ? 'border-blue-600' : 'border-gray-200'
+                          selectedImage === index
+                            ? "border-blue-600"
+                            : "border-gray-200"
                         }`}
                       >
                         {image ? (
@@ -179,12 +200,15 @@ export default function ProductDetailPage() {
                             onError={(e) => {
                               e.preventDefault();
                               const target = e.target as HTMLImageElement;
-                              target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk9UT0NQQVA8L3RleHQ+PC9zdmc+';
+                              target.src =
+                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk9UT0NQQVA8L3RleHQ+PC9zdmc+";
                             }}
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-xs font-bold text-gray-700">OTOCPAP</div>
+                            <div className="text-xs font-bold text-gray-700">
+                              OTOCPAP
+                            </div>
                           </div>
                         )}
                       </button>
@@ -199,16 +223,17 @@ export default function ProductDetailPage() {
                   <div>
                     <div className="text-sm text-gray-600 mb-2">Fiyat</div>
                     <div className="text-3xl font-bold text-blue-600">
-                      ₺{product.price.toLocaleString('tr-TR')}
+                      ₺{product.price.toLocaleString("tr-TR")}
                     </div>
                   </div>
                 ) : (
                   <div>
                     <div className="text-sm text-gray-600 mb-2">
-                      {t('products.priceVisible')}
+                      {t("products.priceVisible")}
                     </div>
                     <div className="text-sm text-gray-500">
-                      Fiyat bilgisi için lütfen giriş yapın veya bizimle iletişime geçin.
+                      Fiyat bilgisi için lütfen giriş yapın veya bizimle
+                      iletişime geçin.
                     </div>
                   </div>
                 )}
@@ -216,7 +241,7 @@ export default function ProductDetailPage() {
 
               {/* Action Buttons */}
               <div className="flex space-x-4">
-                <button 
+                <button
                   onClick={() => product && addToCart(product)}
                   className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
                 >
@@ -239,16 +264,30 @@ export default function ProductDetailPage() {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Kategori:</span>
-                    <span className="font-medium">{(product as Product & { categories: { name: string } }).categories?.name}</span>
+                    <span className="font-medium">
+                      {
+                        (product as Product & { categories: { name: string } })
+                          .categories?.name
+                      }
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Marka:</span>
-                    <span className="font-medium">{(product as Product & { brands: { name: string } }).brands?.name}</span>
+                    <span className="font-medium">
+                      {
+                        (product as Product & { brands: { name: string } })
+                          .brands?.name
+                      }
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Stok Durumu:</span>
-                    <span className={`font-medium ${product.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {product.quantity > 0 ? 'Stokta Var' : 'Stokta Yok'}
+                    <span
+                      className={`font-medium ${
+                        product.quantity > 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {product.quantity > 0 ? "Stokta Var" : "Stokta Yok"}
                     </span>
                   </div>
                 </div>
@@ -262,9 +301,11 @@ export default function ProductDetailPage() {
                   Ürün Açıklaması
                 </h2>
                 <div className="prose max-w-none">
-                  <div 
+                  <div
                     className="text-gray-700 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: product.description || '' }}
+                    dangerouslySetInnerHTML={{
+                      __html: product.description || "",
+                    }}
                   />
                 </div>
               </div>
@@ -274,9 +315,11 @@ export default function ProductDetailPage() {
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     Kullanım Talimatları
                   </h3>
-                  <div 
+                  <div
                     className="prose max-w-none text-gray-700"
-                    dangerouslySetInnerHTML={{ __html: product.usage_instructions || '' }}
+                    dangerouslySetInnerHTML={{
+                      __html: product.usage_instructions || "",
+                    }}
                   />
                 </div>
               )}

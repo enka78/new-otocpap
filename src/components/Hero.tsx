@@ -40,7 +40,7 @@ export default function Hero() {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        setCurrentBanner(data[0]);
+        setCurrentBanner(data[0] as unknown as Banner);
       } else {
         // Aktif banner yoksa, en son eklenen banner'ı al (default)
         const { data: defaultData, error: defaultError } = await supabase
@@ -52,7 +52,7 @@ export default function Hero() {
         if (defaultError) throw defaultError;
 
         if (defaultData && defaultData.length > 0) {
-          setCurrentBanner(defaultData[0]);
+          setCurrentBanner(defaultData[0] as unknown as Banner);
         }
       }
     } catch (error) {
@@ -139,13 +139,13 @@ export default function Hero() {
           </div>
         </div>
         <div className="absolute  -top-8 left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg">
-          <div className="text-sm font-semibold">Ücretsiz</div>
-          <div className="text-xs">Kurulum</div>
+          <div className="text-sm font-semibold">{t("hero.freeInstallation")}</div>
+          <div className="text-xs">{t("hero.installation")}</div>
         </div>
 
         <div className="absolute  -top-10 left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg">
-          <div className="text-sm font-semibold">7/24</div>
-          <div className="text-xs">Destek</div>
+          <div className="text-sm font-semibold">{t("hero.support247")}</div>
+          <div className="text-xs">{t("hero.support")}</div>
         </div>
       </div>
     </section>

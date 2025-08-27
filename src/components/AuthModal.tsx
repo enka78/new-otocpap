@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { X, Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -27,6 +27,26 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   });
 
   const t = useTranslations();
+
+  const resetForm = () => {
+    setFormData({
+      email: '',
+      password: '',
+      confirmPassword: '',
+      fullName: '',
+      phone: ''
+    });
+    setError('');
+    setSuccess('');
+  };
+
+  // Update mode when initialMode changes
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
+      resetForm();
+    }
+  }, [isOpen, initialMode]);
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
@@ -127,18 +147,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     } finally {
       setLoading(false);
     }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      email: '',
-      password: '',
-      confirmPassword: '',
-      fullName: '',
-      phone: ''
-    });
-    setError('');
-    setSuccess('');
   };
 
   const switchMode = (newMode: 'login' | 'register') => {

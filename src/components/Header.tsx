@@ -7,6 +7,7 @@ import { Menu, X, ShoppingCart, User, Globe, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import AuthModal from "./AuthModal";
 import CartSidebar from "./CartSidebar";
+import AdminPanelLink from "./AdminPanelLink";
 import { useCart } from "@/contexts/CartContext";
 
 export default function Header() {
@@ -15,6 +16,7 @@ export default function Header() {
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [loading, setLoading] = useState(true);
+  const [hasOrders, setHasOrders] = useState(false);
 
   const t = useTranslations();
   const locale = useLocale();
@@ -24,19 +26,46 @@ export default function Header() {
     // Get initial user
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
+      if (user) {
+        checkUserOrders(user.id);
+      }
       setLoading(false);
     });
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        checkUserOrders(session.user.id);
+      } else {
+        setHasOrders(false);
+      }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const checkUserOrders = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('user', userId)
+        .limit(1);
+
+      if (!error && data && data.length > 0) {
+        setHasOrders(true);
+      } else {
+        setHasOrders(false);
+      }
+    } catch (error) {
+      console.error('Error checking user orders:', error);
+      setHasOrders(false);
+    }
+  };
 
   const toggleLanguage = () => {
     const newLocale = locale === "tr" ? "en" : "tr";
@@ -96,6 +125,14 @@ export default function Header() {
             >
               {t("nav.contact")}
             </Link>
+            {user && hasOrders && (
+              <Link
+                href={`/${locale}/orders`}
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                Siparişlerim
+              </Link>
+            )}
           </nav>
 
           {/* Right side buttons */}
@@ -132,6 +169,8 @@ export default function Header() {
                 <span className="text-sm text-gray-700 hidden sm:block">
                   {user.user_metadata?.full_name || user.email}
                 </span>
+                {/* Admin Panel Link */}
+                <AdminPanelLink user={user} />
                 <button
                   onClick={handleLogout}
                   className="text-gray-700 hover:text-red-600 transition-colors"
@@ -141,9 +180,29 @@ export default function Header() {
                 </button>
               </div>
             ) : (
+              <div className="hidden md:flex items-center space-x-3">
+                <button
+                  onClick={() => handleAuthClick("login")}
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  title="Giriş Yap"
+                >
+                  <User size={20} />
+                </button>
+                <button
+                  onClick={() => handleAuthClick("register")}
+                  className="bg-blue-600 cursor-pointer text-sm text-white  p-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  title="Üye Ol"
+                >
+                  Üye Ol
+                </button>
+              </div>
+            )}
+
+            {/* Mobile User Icon - only show when not logged in */}
+            {!loading && !user && (
               <button
                 onClick={() => handleAuthClick("login")}
-                className="text-gray-700 hover:text-blue-600 transition-colors"
+                className="md:hidden text-gray-700 hover:text-blue-600 transition-colors"
                 title="Giriş Yap"
               >
                 <User size={20} />
@@ -194,6 +253,14 @@ export default function Header() {
               >
                 {t("nav.contact")}
               </Link>
+              {user && hasOrders && (
+                <Link
+                  href={`/${locale}/orders`}
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Siparişlerim
+                </Link>
+              )}
 
               {/* Mobile Auth Buttons */}
               {!loading && !user && (
@@ -219,6 +286,8 @@ export default function Header() {
                   <div className="text-gray-700">
                     {user.user_metadata?.full_name || user.email}
                   </div>
+                  {/* Mobile Admin Panel Link */}
+                  <AdminPanelLink user={user} isMobile={true} />
                   <button
                     onClick={handleLogout}
                     className="w-full text-left text-red-600 hover:text-red-700 transition-colors"

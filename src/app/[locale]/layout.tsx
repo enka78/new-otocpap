@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { Inter } from 'next/font/google';
 import '../globals.css';
 import { CartProvider } from '@/contexts/CartContext';
+import { CategoriesAndBrandsProvider } from '@/contexts/CategoriesAndBrandsContext';
 import GlobalToast from '@/components/GlobalToast';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -21,10 +22,12 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body className={inter.className}>
         <NextIntlClientProvider messages={messages}>
-          <CartProvider>
-            {children}
-            <GlobalToast />
-          </CartProvider>
+          <CategoriesAndBrandsProvider>
+            <CartProvider>
+              {children}
+              <GlobalToast />
+            </CartProvider>
+          </CategoriesAndBrandsProvider>
         </NextIntlClientProvider>
       </body>
     </html>
