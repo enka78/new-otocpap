@@ -27,7 +27,7 @@ export default function BlogPage() {
         .order('order', { ascending: true });
 
       if (error) throw error;
-      setPosts(data || []);
+      setPosts((data || []) as unknown as Blog[]);
     } catch (error) {
       console.error('Error fetching blog posts:', error);
     } finally {
@@ -41,8 +41,12 @@ export default function BlogPage() {
     post.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'Tarih belirtilmemiş';
+    
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Geçersiz tarih';
+    
     return date.toLocaleDateString('tr-TR', {
       year: 'numeric',
       month: 'long',
@@ -130,14 +134,12 @@ export default function BlogPage() {
                     {/* Post Meta */}
                     <div className="flex items-center justify-between text-sm text-gray-500 mb-4 mt-auto">
                       <div className="flex items-center space-x-4">
-                        <div className="flex items-center">
-                          <User size={16} className="mr-1" />
-                          {post.author}
-                        </div>
-                        <div className="flex items-center">
-                          <Calendar size={16} className="mr-1" />
-                          {formatDate(post.created_at)}
-                        </div>
+                          {post.created_add && (
+                            <div className="flex items-center">
+                              <Calendar size={16} className="mr-1" />
+                              {formatDate(post.created_add)}
+                            </div>
+                          )}
                       </div>
                     </div>
 

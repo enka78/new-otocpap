@@ -7,6 +7,8 @@ import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { supabase, getProductImageUrl } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
 import CheckoutModal from "./CheckoutModal";
+import { DailyOrderCheck } from '@/lib/orderValidation';
+
 
 // interface CartItem {
 //   id: number;
@@ -23,6 +25,7 @@ interface CartSidebarProps {
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [orderCheck, setOrderCheck] = useState<DailyOrderCheck | null>(null);
 
   const {
     cartItems,
@@ -31,6 +34,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     clearCart,
     getTotalItems,
     getTotalPrice,
+    setToast,
   } = useCart();
 
   useEffect(() => {
@@ -225,10 +229,10 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             )}
 
             {/* Actions */}
-            <div className="space-y-2">
+            <div className="flex gap-4 flex-col md:flex-row">
               <button
                 onClick={clearCart}
-                className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors"
+                className="w-full  bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 Sepeti Temizle
               </button>
@@ -236,7 +240,18 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
                 onClick={() => {
                   if (!user) {
-                    alert("Sipariş vermek için giriş yapmalısınız.");
+                    setToast({
+                      message: "Sipariş vermek için giriş yapmalısınız.",
+                      type: "warning",
+                    });
+                    return;
+                  }
+                  console.log("orderCheck", orderCheck);
+                  if(orderCheck!== null) {
+                    setToast({
+                      message: "Bu gün için bir siparişiniz var, yeni spariş için eski sparişinizi iptal etmelisiniz.",
+                      type: "warning",
+                    });
                     return;
                   }
                   setIsCheckoutOpen(true);

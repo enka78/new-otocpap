@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { X, MapPin, Truck, Globe, MessageCircle } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
-import { supabase } from '@/lib/supabase';
+import { useState, useEffect } from "react";
+import { X, MapPin, Truck, Globe, MessageCircle } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { supabase } from "@/lib/supabase";
+import { createOrder } from "@/lib/orders";
+import { User } from "@/types/user";
+import { CartItem } from "@/types/cart";
+import DailyOrderCheckComponent from "./order/DailyOrderCheck";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -19,52 +23,81 @@ interface AddressData {
   city: string;
   postalCode: string;
   country: string;
-  deliveryType: 'istanbul-installation' | 'domestic-cargo' | 'international-cargo';
+  deliveryType:
+    | "istanbul-installation"
+    | "domestic-cargo"
+    | "international-cargo";
   onlineSupport: boolean;
   notes: string;
 }
 
 export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
-  const { cartItems, getTotalPrice, clearCart } = useCart();
+  const { cartItems, getTotalPrice, clearCart, setToast } = useCart();
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<'address' | 'summary'>('address');
-  
+  const [step, setStep] = useState<"address" | "summary">("address");
+  const [user, setUser] = useState<User | null>(null);
+  const [canOrder, setCanOrder] = useState(true);
+
+  useEffect(() => {
+    // Get current user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      if (user) {
+        // Pre-fill form with user data
+        setAddressData((prev) => ({
+          ...prev,
+          fullName: user.user_metadata?.full_name || "",
+          email: user.email || "",
+        }));
+      }
+    });
+  }, []);
+
   const [addressData, setAddressData] = useState<AddressData>({
-    fullName: '',
-    phone: '',
-    email: '',
-    address: '',
-    district: '',
-    city: '',
-    postalCode: '',
-    country: 'Türkiye',
-    deliveryType: 'istanbul-installation',
+    fullName: "",
+    phone: "",
+    email: "",
+    address: "",
+    district: "",
+    city: "",
+    postalCode: "",
+    country: "Türkiye",
+    deliveryType: "istanbul-installation",
     onlineSupport: false,
-    notes: ''
+    notes: "",
   });
 
   if (!isOpen) return null;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value, type } = e.target;
-    setAddressData(prev => ({
+    setAddressData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
   const handleAddressSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStep('summary');
+    setStep("summary");
   };
 
   const generateWhatsAppMessage = () => {
     const deviceCategoryIds = [1, 3, 5, 7, 8, 9, 10, 11, 13, 14];
-    const deviceItems = cartItems.filter(item => deviceCategoryIds.includes(item.categoryId));
-    const maskAndAccessoryItems = cartItems.filter(item => !deviceCategoryIds.includes(item.categoryId));
+    const deviceItems = cartItems.filter((item) =>
+      deviceCategoryIds.includes(item.categoryId)
+    );
+    const maskAndAccessoryItems = cartItems.filter(
+      (item) => !deviceCategoryIds.includes(item.categoryId)
+    );
 
     let message = `🏥 *OtoCPAP Sipariş Detayları*\n\n`;
-    
+
     // Müşteri Bilgileri
     message += `👤 *Müşteri Bilgileri:*\n`;
     message += `Ad Soyad: ${addressData.fullName}\n`;
@@ -81,17 +114,17 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
     // Teslimat Türü
     message += `🚚 *Teslimat Türü:*\n`;
     switch (addressData.deliveryType) {
-      case 'istanbul-installation':
+      case "istanbul-installation":
         message += `İstanbul İçi Yerinde Kurulum (Ücretsiz)\n`;
         break;
-      case 'domestic-cargo':
+      case "domestic-cargo":
         message += `Türkiye İçi Kargo\n`;
         break;
-      case 'international-cargo':
+      case "international-cargo":
         message += `Yurt Dışı Kargo\n`;
         break;
     }
-    
+
     if (addressData.onlineSupport) {
       message += `💻 Online Destek: Evet\n`;
     }
@@ -102,26 +135,30 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
 
     if (deviceItems.length > 0) {
       message += `🔧 *Cihazlar:*\n`;
-      deviceItems.forEach(item => {
+      deviceItems.forEach((item) => {
         message += `• ${item.product.name}\n`;
         message += `  Kategori: ${item.category}\n`;
         message += `  Adet: ${item.quantity}\n`;
-        message += `  Fiyat: ₺${(item.product.price * item.quantity).toLocaleString('tr-TR')}\n\n`;
+        message += `  Fiyat: ₺${(
+          item.product.price * item.quantity
+        ).toLocaleString("tr-TR")}\n\n`;
       });
     }
 
     if (maskAndAccessoryItems.length > 0) {
       message += `🛠️ *Maskeler ve Aksesuarlar:*\n`;
-      maskAndAccessoryItems.forEach(item => {
+      maskAndAccessoryItems.forEach((item) => {
         message += `• ${item.product.name}\n`;
         message += `  Kategori: ${item.category}\n`;
         message += `  Adet: ${item.quantity}\n`;
-        message += `  Fiyat: ₺${(item.product.price * item.quantity).toLocaleString('tr-TR')}\n\n`;
+        message += `  Fiyat: ₺${(
+          item.product.price * item.quantity
+        ).toLocaleString("tr-TR")}\n\n`;
       });
     }
 
     // Toplam
-    message += `💰 *TOPLAM: ₺${getTotalPrice().toLocaleString('tr-TR')}*\n\n`;
+    message += `💰 *TOPLAM: ₺${getTotalPrice().toLocaleString("tr-TR")}*\n\n`;
 
     // Notlar
     if (addressData.notes) {
@@ -135,62 +172,98 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
 
   const handleWhatsAppOrder = async () => {
     setLoading(true);
-    
+
     try {
       // Kullanıcı kontrolü
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
-        alert('Sipariş vermek için giriş yapmalısınız.');
+        setToast({
+          message: "Sipariş vermek için giriş yapmalısınız.",
+          type: "warning",
+        });
         setLoading(false);
         return;
       }
 
-      // Siparişi veritabanına kaydet
+      // Sipariş vermeden önce tekrar kontrol et
+      if (!canOrder) {
+        setToast({
+          message: "Bugün zaten bir siparişiniz var. Siparişlerim sayfasından mevcut siparişi iptal edin.",
+          type: "warning",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Son kontrol - veritabanından tekrar kontrol et
+      const { checkDailyOrderLimit } = await import('@/lib/orderValidation');
+      const finalCheck = await checkDailyOrderLimit(user.id);
+      
+      if (!finalCheck.canOrder) {
+        setToast({
+          message: finalCheck.message,
+          type: "warning",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Sipariş ürünlerini JSON formatında hazırla
+      const orderProducts = cartItems.map((item) => ({
+        product_id: item.id,
+        quantity: item.quantity,
+        price: (item as any).price || 0,
+      }));
+
+      // Orders tablosuna kayıt için veri hazırla
       const orderData = {
-        user: user.id,
-        products: cartItems.map(item => ({
-          id: item.product.id,
-          name: item.product.name,
-          quantity: item.quantity,
-          price: item.product.price,
-          category: item.category
-        })),
+        products: JSON.stringify(orderProducts), // JSON string olarak kaydet
+        status_id: 1, // order_received durumu
         total: getTotalPrice(),
-        currency: 'TRY',
-        status: 'whatsapp-sent',
-        delivery_info: {
-          ...addressData,
-          delivery_type: addressData.deliveryType,
-          online_support: addressData.onlineSupport
-        }
+        currency: "TL",
+        user: user.id, // UUID olarak kaydet
       };
 
-      const { error } = await supabase
-        .from('orders')
-        .insert(orderData);
+      console.log("Sipariş verisi:", orderData);
+
+      const { data: orderResult, error } = await supabase
+        .from("orders")
+        .insert([orderData])
+        .select()
+        .single();
 
       if (error) {
-        console.error('Sipariş kaydedilirken hata:', error);
-        // Hata olsa bile WhatsApp'a yönlendir
+        console.error("Sipariş kaydedilirken hata:", error);
+        throw error;
       }
+
+      console.log("Sipariş başarıyla kaydedildi:", orderResult);
 
       // WhatsApp mesajını oluştur ve gönder
       const message = generateWhatsAppMessage();
       const whatsappUrl = `https://wa.me/905532808273?text=${message}`;
-      
+
       // Yeni sekmede WhatsApp'ı aç
-      window.open(whatsappUrl, '_blank');
-      
+      window.open(whatsappUrl, "_blank");
+
       // Sepeti temizle ve modal'ı kapat
       clearCart();
       onClose();
-      
-      alert('Siparişiniz WhatsApp üzerinden gönderildi. En kısa sürede size dönüş yapacağız.');
-      
+
+      setToast({
+        message: `Siparişiniz kaydedildi (Sipariş #${orderResult.id}). WhatsApp üzerinden detaylar gönderildi.`,
+        type: "success",
+      });
     } catch (error) {
-      console.error('Sipariş gönderilirken hata:', error);
-      alert('Sipariş gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+      console.error("Sipariş gönderilirken hata:", error);
+      setToast({
+        message:
+          "Sipariş gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -199,17 +272,17 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-2xl font-bold text-gray-900">
-            {step === 'address' ? 'Teslimat Bilgileri' : 'Sipariş Özeti'}
+            {step === "address" ? "Teslimat Bilgileri" : "Sipariş Özeti"}
           </h2>
           <button
             onClick={onClose}
@@ -221,11 +294,21 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
 
         {/* Content */}
         <div className="p-6">
-          {step === 'address' ? (
+          {/* Daily Order Check */}
+          {user && (
+            <DailyOrderCheckComponent 
+              userId={user.id} 
+              onOrderStatusChange={setCanOrder}
+            />
+          )}
+
+          {step === "address" ? (
             <form onSubmit={handleAddressSubmit} className="space-y-6">
               {/* Kişisel Bilgiler */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Kişisel Bilgiler</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Kişisel Bilgiler
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -271,7 +354,9 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
 
               {/* Adres Bilgileri */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Adres Bilgileri</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Adres Bilgileri
+                </h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -350,25 +435,34 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
 
               {/* Teslimat Seçenekleri */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Teslimat Seçenekleri</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Teslimat Seçenekleri
+                </h3>
                 <div className="space-y-3">
                   <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
                     <input
                       type="radio"
                       name="deliveryType"
                       value="istanbul-installation"
-                      checked={addressData.deliveryType === 'istanbul-installation'}
+                      checked={
+                        addressData.deliveryType === "istanbul-installation"
+                      }
                       onChange={handleInputChange}
                       className="mt-1"
                     />
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
                         <MapPin size={20} className="text-blue-600" />
-                        <span className="font-medium">İstanbul İçi Yerinde Kurulum</span>
-                        <span className="text-green-600 font-semibold">(Ücretsiz)</span>
+                        <span className="font-medium">
+                          İstanbul İçi Yerinde Kurulum
+                        </span>
+                        <span className="text-green-600 font-semibold">
+                          (Ücretsiz)
+                        </span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
-                        Cihazınız uzman teknisyenimiz tarafından evinizde kurulur ve eğitim verilir.
+                        Cihazınız uzman teknisyenimiz tarafından evinizde
+                        kurulur ve eğitim verilir.
                       </p>
                     </div>
                   </label>
@@ -378,7 +472,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                       type="radio"
                       name="deliveryType"
                       value="domestic-cargo"
-                      checked={addressData.deliveryType === 'domestic-cargo'}
+                      checked={addressData.deliveryType === "domestic-cargo"}
                       onChange={handleInputChange}
                       className="mt-1"
                     />
@@ -388,7 +482,8 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                         <span className="font-medium">Türkiye İçi Kargo</span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
-                        Cihazınız kargo ile adresinize gönderilir. Kurulum videoları ve telefon desteği sağlanır.
+                        Cihazınız kargo ile adresinize gönderilir. Kurulum
+                        videoları ve telefon desteği sağlanır.
                       </p>
                     </div>
                   </label>
@@ -398,7 +493,9 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                       type="radio"
                       name="deliveryType"
                       value="international-cargo"
-                      checked={addressData.deliveryType === 'international-cargo'}
+                      checked={
+                        addressData.deliveryType === "international-cargo"
+                      }
                       onChange={handleInputChange}
                       className="mt-1"
                     />
@@ -408,7 +505,8 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                         <span className="font-medium">Yurt Dışı Kargo</span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
-                        Cihazınız uluslararası kargo ile gönderilir. Online destek sağlanır.
+                        Cihazınız uluslararası kargo ile gönderilir. Online
+                        destek sağlanır.
                       </p>
                     </div>
                   </label>
@@ -449,7 +547,8 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                disabled={!canOrder}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
               >
                 Devam Et
               </button>
@@ -459,51 +558,82 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
             <div className="space-y-6">
               {/* Teslimat Bilgileri Özeti */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">Teslimat Bilgileri</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Teslimat Bilgileri
+                </h3>
                 <div className="text-sm text-gray-600 space-y-1">
-                  <p><strong>Ad Soyad:</strong> {addressData.fullName}</p>
-                  <p><strong>Telefon:</strong> {addressData.phone}</p>
-                  <p><strong>Adres:</strong> {addressData.address}, {addressData.district}, {addressData.city}</p>
-                  <p><strong>Teslimat:</strong> 
-                    {addressData.deliveryType === 'istanbul-installation' && ' İstanbul İçi Yerinde Kurulum'}
-                    {addressData.deliveryType === 'domestic-cargo' && ' Türkiye İçi Kargo'}
-                    {addressData.deliveryType === 'international-cargo' && ' Yurt Dışı Kargo'}
+                  <p>
+                    <strong>Ad Soyad:</strong> {addressData.fullName}
                   </p>
-                  {addressData.onlineSupport && <p><strong>Online Destek:</strong> Evet</p>}
+                  <p>
+                    <strong>Telefon:</strong> {addressData.phone}
+                  </p>
+                  <p>
+                    <strong>Adres:</strong> {addressData.address},{" "}
+                    {addressData.district}, {addressData.city}
+                  </p>
+                  <p>
+                    <strong>Teslimat:</strong>
+                    {addressData.deliveryType === "istanbul-installation" &&
+                      " İstanbul İçi Yerinde Kurulum"}
+                    {addressData.deliveryType === "domestic-cargo" &&
+                      " Türkiye İçi Kargo"}
+                    {addressData.deliveryType === "international-cargo" &&
+                      " Yurt Dışı Kargo"}
+                  </p>
+                  {addressData.onlineSupport && (
+                    <p>
+                      <strong>Online Destek:</strong> Evet
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Sipariş Detayları */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Sipariş Detayları</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Sipariş Detayları
+                </h3>
                 <div className="space-y-3">
                   {cartItems.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-200">
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center py-2 border-b border-gray-200"
+                    >
                       <div>
                         <p className="font-medium">{item.product.name}</p>
-                        <p className="text-sm text-gray-600">Adet: {item.quantity}</p>
+                        <p className="text-sm text-gray-600">
+                          Adet: {item.quantity}
+                        </p>
                       </div>
-                      <p className="font-semibold">₺{(item.product.price * item.quantity).toLocaleString('tr-TR')}</p>
+                      <p className="font-semibold">
+                        ₺
+                        {(item.product.price * item.quantity).toLocaleString(
+                          "tr-TR"
+                        )}
+                      </p>
                     </div>
                   ))}
                 </div>
                 <div className="flex justify-between items-center pt-4 border-t border-gray-300">
                   <span className="text-lg font-bold">Toplam:</span>
-                  <span className="text-lg font-bold text-blue-600">₺{getTotalPrice().toLocaleString('tr-TR')}</span>
+                  <span className="text-lg font-bold text-blue-600">
+                    ₺{getTotalPrice().toLocaleString("tr-TR")}
+                  </span>
                 </div>
               </div>
 
               {/* Butonlar */}
-              <div className="flex space-x-4">
+              <div className="flex flex-col lg:flex-row gap-4">
                 <button
-                  onClick={() => setStep('address')}
-                  className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                  onClick={() => setStep("address")}
+                  className="flex-1 bg-gray-100 text-gray-700 py-3 m-0 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
                 >
                   Geri Dön
                 </button>
                 <button
                   onClick={handleWhatsAppOrder}
-                  disabled={loading}
+                  disabled={loading || !canOrder}
                   className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                 >
                   {loading ? (

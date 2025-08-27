@@ -9,6 +9,6 @@ export default createMiddleware({
 });
 
 export const config = {
-  // Match only internationalized pathnames
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+  // Match only internationalized pathnames, exclude panel
+  matcher: ['/((?!api|_next|_vercel|panel|.*\\..*).*)']
 };

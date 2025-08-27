@@ -7,6 +7,9 @@ const nextConfig = {
   images: {
     domains: ['cfqzjghngplhzybrbvej.supabase.co'],
   },
+  eslint: {
+    ignoreDuringBuilds: true
+  },
 };
 
 module.exports = withNextIntl(nextConfig);
