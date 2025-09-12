@@ -168,7 +168,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     }
 
     try {
-      const redirectUrl = getPasswordResetUrl();
+      // Always use production URL for password reset emails in production
+      const redirectUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://www.otocpap.com/tr/auth/reset-password'
+        : getPasswordResetUrl();
+      
+      console.log('Password reset redirect URL:', redirectUrl); // Debug log
       
       const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
         redirectTo: redirectUrl
