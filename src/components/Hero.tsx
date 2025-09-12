@@ -40,7 +40,7 @@ export default function Hero() {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        setCurrentBanner(data[0]);
+        setCurrentBanner(data[0] as unknown as Banner);
       } else {
         // Aktif banner yoksa, en son eklenen banner'ı al (default)
         const { data: defaultData, error: defaultError } = await supabase
@@ -52,7 +52,7 @@ export default function Hero() {
         if (defaultError) throw defaultError;
 
         if (defaultData && defaultData.length > 0) {
-          setCurrentBanner(defaultData[0]);
+          setCurrentBanner(defaultData[0] as unknown as Banner);
         }
       }
     } catch (error) {
@@ -88,6 +88,7 @@ export default function Hero() {
             className="object-cover"
             unoptimized
             priority
+            quality={100} // Ensure the best quality
           />
         </div>
       )}
@@ -95,7 +96,11 @@ export default function Hero() {
       <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
-          <div className="relative bg-black/30 backdrop-blur-sm rounded-2xl px-10 py-16">
+          <div
+            className={`relative bg-black/30 backdrop-blur-sm rounded-2xl px-10 py-16 ${
+              !currentBanner?.title ? "opacity-0" : "opacity-100"
+            }`}
+          >
             {loading ? (
               <div className="animate-pulse">
                 <div className="h-16 bg-gray-200 rounded mb-6"></div>
@@ -139,13 +144,15 @@ export default function Hero() {
           </div>
         </div>
         <div className="absolute  -top-8 left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg">
-          <div className="text-sm font-semibold">Ücretsiz</div>
-          <div className="text-xs">Kurulum</div>
+          <div className="text-sm font-semibold">
+            {t("hero.freeInstallation")}
+          </div>
+          <div className="text-xs">{t("hero.installation")}</div>
         </div>
 
         <div className="absolute  -top-10 left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg">
-          <div className="text-sm font-semibold">7/24</div>
-          <div className="text-xs">Destek</div>
+          <div className="text-sm font-semibold">{t("hero.support247")}</div>
+          <div className="text-xs">{t("hero.support")}</div>
         </div>
       </div>
     </section>

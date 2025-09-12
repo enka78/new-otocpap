@@ -1,16 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useTranslations, useLocale } from 'next-intl';
-import { Phone, Clock } from 'lucide-react';
+import Link from "next/link";
+import { useTranslations, useLocale } from "next-intl";
+import { Phone, Clock } from "lucide-react";
 
 export default function Footer() {
   const t = useTranslations();
   const locale = useLocale();
 
   const brands = [
-    'ResMed', 'Philips Respironics', 'LÖWENSTEIN', 
-    'AONMED', 'Devilbiss', 'Respirox'
+    "ResMed",
+    "Philips Respironics",
+    "LÖWENSTEIN",
+    "AONMED",
+    "Devilbiss",
+    "Respirox",
   ];
 
   return (
@@ -24,10 +28,10 @@ export default function Footer() {
               <span className="text-white">Cpap</span>
             </div>
             <div className="text-lg text-gray-300 mb-2">
-              {t('footer.company')}
+              {t("footer.company")}
             </div>
             <p className="text-gray-400 mb-4">
-              {t('footer.description')}
+              Zuhuratbaba Mah. Dr. Tevfik Sağlam Cad. No:5 Bakırköy/İSTANBUL
             </p>
             <div className="flex items-center space-x-4 text-sm text-gray-400">
               <div className="flex items-center space-x-2">
@@ -38,39 +42,56 @@ export default function Footer() {
             <div className="flex items-center space-x-2 text-sm text-gray-400 mt-2">
               <Clock size={16} />
               <div>
-                <div>{t('contact.weekdays')}</div>
-                <div>{t('contact.saturday')}</div>
+                <div>{t("contact.weekdays")}</div>
+                <div>{t("contact.saturday")}</div>
               </div>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">{t('footer.quickLinks')}</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {t("footer.quickLinks")}
+            </h3>
             <ul className="space-y-2">
               <li>
-                <Link href={`/${locale}`} className="text-gray-400 hover:text-white transition-colors">
-                  {t('nav.home')}
+                <Link
+                  href={`/${locale}`}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {t("nav.home")}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/products`} className="text-gray-400 hover:text-white transition-colors">
-                  {t('nav.products')}
+                <Link
+                  href={`/${locale}/products`}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {t("nav.products")}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/blog`} className="text-gray-400 hover:text-white transition-colors">
-                  {t('nav.blog')}
+                <Link
+                  href={`/${locale}/blog`}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {t("nav.blog")}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/about`} className="text-gray-400 hover:text-white transition-colors">
-                  {t('nav.about')}
+                <Link
+                  href={`/${locale}/about`}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {t("nav.about")}
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/contact`} className="text-gray-400 hover:text-white transition-colors">
-                  {t('nav.contact')}
+                <Link
+                  href={`/${locale}/contact`}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {t("nav.contact")}
                 </Link>
               </li>
             </ul>
@@ -78,7 +99,7 @@ export default function Footer() {
 
           {/* Brands */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">{t('footer.brands')}</h3>
+            <h3 className="text-lg font-semibold mb-4">{t("footer.brands")}</h3>
             <ul className="space-y-2">
               {brands.map((brand) => (
                 <li key={brand} className="text-gray-400 text-sm">
@@ -90,7 +111,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2025 Dönüşüm Medikal. Tüm hakları saklıdır.</p>
+          <p>{t("footer.copyRight")}</p>
         </div>
       </div>
     </footer>

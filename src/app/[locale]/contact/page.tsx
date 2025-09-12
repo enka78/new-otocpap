@@ -1,49 +1,73 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Phone, Mail, MapPin, Clock, Send, HelpingHand } from "lucide-react";
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   const t = useTranslations();
-  const locale = useLocale();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSubmitStatus('success');
+      // WhatsApp mesajı oluştur
+      const message = `🏥 *OtoCPAP İletişim Formu*
+
+👤 *Müşteri Bilgileri:*
+Ad Soyad: ${formData.name}
+E-posta: ${formData.email}
+Telefon: ${formData.phone}
+
+📋 *Konu:* ${formData.subject}
+
+💬 *Mesaj:*
+${formData.message}
+
+Bu mesaj OtoCPAP web sitesi iletişim formu üzerinden gönderilmiştir.`;
+
+      // WhatsApp'a yönlendir
+      const whatsappUrl = `https://wa.me/905532808273?text=${encodeURIComponent(
+        message
+      )}`;
+      window.open(whatsappUrl, "_blank");
+
+      setSubmitStatus("success");
       setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
       });
     } catch (error) {
-      setSubmitStatus('error');
+      setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
     }
@@ -52,17 +76,16 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen">
       <Header />
-      
+
       <main className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Page Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {t('contact.title')}
+              {t("contact.title")}
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              CPAP ve BiPAP cihazları hakkında sorularınız için bizimle iletişime geçin. 
-              Uzman ekibimiz size yardımcı olmaktan mutluluk duyar.
+              {t("contact.description")}
             </p>
           </div>
 
@@ -70,8 +93,10 @@ export default function ContactPage() {
             {/* Contact Information */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">İletişim Bilgileri</h2>
-                
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  {t("contact.contactInfo")}
+                </h2>
+
                 <div className="space-y-6">
                   {/* Phone */}
                   <div className="flex items-start space-x-4">
@@ -81,9 +106,10 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">{t('contact.phone')}</h3>
-                      <p className="text-gray-600">+90 212 555 0123</p>
-                      <p className="text-gray-600">+90 532 555 0123</p>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {t("contact.phone")}
+                      </h3>
+                      <p className="text-gray-600">+90 553 280 82 73</p>
                     </div>
                   </div>
 
@@ -95,9 +121,10 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">E-posta</h3>
-                      <p className="text-gray-600">info@donusummedikal.com</p>
-                      <p className="text-gray-600">destek@donusummedikal.com</p>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {t("contact.email")}
+                      </h3>
+                      <p className="text-gray-600">info@otocpap.com</p>
                     </div>
                   </div>
 
@@ -109,12 +136,13 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">Adres</h3>
-                      <p className="text-gray-600">
-                        Merkez Mahallesi<br />
-                        Sağlık Sokak No: 123<br />
-                        Şişli / İstanbul
-                      </p>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {t("contact.address")}
+                      </h3>
+                      <div className="text-gray-600">
+                        Zuhuratbaba Mah. Dr. Tevfik Sağlam Cad. No:5
+                        Bakırköy/İSTANBUL
+                      </div>
                     </div>
                   </div>
 
@@ -126,21 +154,27 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">{t('contact.hours')}</h3>
-                      <p className="text-gray-600">{t('contact.weekdays')}</p>
-                      <p className="text-gray-600">{t('contact.saturday')}</p>
-                      <p className="text-gray-600">Pazar: Kapalı</p>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {t("contact.hours")}
+                      </h3>
+                      <p className="text-gray-600">{t("contact.weekdays")}</p>
+                      <p className="text-gray-600">{t("contact.saturday")}</p>
+                      <p className="text-gray-600">{t("contact.sunday")}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Emergency Contact */}
                 <div className="mt-8 p-4 bg-red-50 rounded-lg border border-red-200">
-                  <h3 className="font-semibold text-red-900 mb-2">Acil Durum Desteği</h3>
+                  <h3 className="font-semibold text-red-900 mb-2">
+                    {t("contact.emergencySupport")}
+                  </h3>
                   <p className="text-sm text-red-700">
-                    Cihaz arızası durumunda 7/24 teknik destek hattımızı arayabilirsiniz.
+                    {t("contact.emergencyDesc")}
                   </p>
-                  <p className="font-semibold text-red-900 mt-2">+90 532 555 0124</p>
+                  <p className="font-semibold text-red-900 mt-2">
+                    +90 553 280 82 73
+                  </p>
                 </div>
               </div>
             </div>
@@ -148,29 +182,32 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Bize Mesaj Gönderin</h2>
-                
-                {submitStatus === 'success' && (
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  {t("contact.sendMessage")}
+                </h2>
+
+                {submitStatus === "success" && (
                   <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                     <p className="text-green-800">
-                      Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.
+                      {t("contact.successMessage")}
                     </p>
                   </div>
                 )}
 
-                {submitStatus === 'error' && (
+                {submitStatus === "error" && (
                   <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-800">
-                      Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.
-                    </p>
+                    <p className="text-red-800">{t("contact.errorMessage")}</p>
                   </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                        Ad Soyad *
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        {t("contact.fullName")} *
                       </label>
                       <input
                         type="text"
@@ -180,13 +217,16 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         required
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Adınız ve soyadınız"
+                        placeholder={t("contact.fullNamePlaceholder")}
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        E-posta *
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        {t("contact.email")} *
                       </label>
                       <input
                         type="email"
@@ -196,15 +236,18 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         required
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="ornek@email.com"
+                        placeholder={t("contact.emailPlaceholder")}
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                        Telefon
+                      <label
+                        htmlFor="phone"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        {t("contact.phone")}
                       </label>
                       <input
                         type="tel"
@@ -213,13 +256,16 @@ export default function ContactPage() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="+90 5XX XXX XX XX"
+                        placeholder={t("contact.phonePlaceholder")}
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                        Konu *
+                      <label
+                        htmlFor="subject"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        {t("contact.subject")} *
                       </label>
                       <select
                         id="subject"
@@ -229,20 +275,31 @@ export default function ContactPage() {
                         required
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
-                        <option value="">Konu seçin</option>
-                        <option value="product-info">Ürün Bilgisi</option>
-                        <option value="technical-support">Teknik Destek</option>
-                        <option value="warranty">Garanti</option>
-                        <option value="pricing">Fiyat Bilgisi</option>
-                        <option value="installation">Kurulum</option>
-                        <option value="other">Diğer</option>
+                        <option value="">{t("contact.selectSubject")}</option>
+                        <option value="product-info">
+                          {t("contact.productInfo")}
+                        </option>
+                        <option value="technical-support">
+                          {t("contact.technicalSupport")}
+                        </option>
+                        <option value="warranty">
+                          {t("contact.warranty")}
+                        </option>
+                        <option value="pricing">{t("contact.pricing")}</option>
+                        <option value="installation">
+                          {t("contact.installation")}
+                        </option>
+                        <option value="other">{t("contact.other")}</option>
                       </select>
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                      Mesaj *
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      {t("contact.message")} *
                     </label>
                     <textarea
                       id="message"
@@ -252,7 +309,7 @@ export default function ContactPage() {
                       required
                       rows={6}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                      placeholder="Mesajınızı buraya yazın..."
+                      placeholder={t("contact.messagePlaceholder")}
                     />
                   </div>
 
@@ -264,12 +321,12 @@ export default function ContactPage() {
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                        Gönderiliyor...
+                        {t("contact.sending")}
                       </>
                     ) : (
                       <>
                         <Send className="w-5 h-5 mr-2" />
-                        Mesaj Gönder
+                        {t("contact.sendButton")}
                       </>
                     )}
                   </button>
@@ -282,18 +339,36 @@ export default function ContactPage() {
           <div className="mt-16">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Konum</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  {t("contact.location")}
+                </h2>
                 <p className="text-gray-600 mb-6">
-                  Mağazamızı ziyaret etmek için aşağıdaki haritayı kullanabilirsiniz.
+                  {t("contact.locationDesc")}
                 </p>
               </div>
-              
+
               {/* Placeholder for map - you can integrate Google Maps or another map service */}
               <div className="h-96 bg-gray-200 flex items-center justify-center">
-                <div className="text-center">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3011.495247140992!2d28.866357475857576!3d40.992532271352694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caa39132b2e789%3A0x6f8c76fd006519ba!2zRMO2bsO8xZ_DvG0gTWVkaWthbCBVeWt1IFZlIFNvbHVudW0gQ2loYXpsYXI!5e0!3m2!1str!2str!4v1757520160970!5m2!1str!2str"
+                  style={{ border: 0, width: "100%", height: "384px" }}
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                    const fallbackDiv = e.currentTarget
+                      .nextElementSibling as HTMLElement;
+                    if (fallbackDiv) fallbackDiv.style.display = "block";
+                  }}
+                ></iframe>
+
+                <div className="text-center" style={{ display: "none" }}>
                   <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">Harita entegrasyonu</p>
-                  <p className="text-sm text-gray-400">Google Maps veya başka bir harita servisi eklenebilir</p>
+                  <p className="text-gray-500">{t("contact.mapIntegration")}</p>
+                  <p className="text-sm text-gray-400">
+                    {t("contact.mapDesc")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -301,7 +376,7 @@ export default function ContactPage() {
         </div>
       </main>
 
-        <Footer />
-      </div>
+      <Footer />
+    </div>
   );
 }

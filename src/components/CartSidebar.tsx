@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-// import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { supabase, getProductImageUrl } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
 import CheckoutModal from "./CheckoutModal";
+import { DailyOrderCheck } from "@/lib/orderValidation";
 
 // interface CartItem {
 //   id: number;
@@ -21,8 +22,10 @@ interface CartSidebarProps {
 }
 
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
+  const t = useTranslations();
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [orderCheck, setOrderCheck] = useState<DailyOrderCheck | null>(null);
 
   const {
     cartItems,
@@ -31,6 +34,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     clearCart,
     getTotalItems,
     getTotalPrice,
+    setToast,
   } = useCart();
 
   useEffect(() => {
@@ -46,13 +50,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     setUser(user);
   };
 
-  console.log("cartItems", cartItems);
-
   const getCategoryName = (categoryId: number) => {
     const item = cartItems.find(
       (item) => item.product.category_id === categoryId
     );
-    return item?.category || "Diğer";
+    return item?.category || t('products.categoryLabel');
   };
 
   if (!isOpen) return null;
@@ -71,7 +73,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         <div className="flex items-center justify-between p-6 border-b">
           <div className="flex items-center space-x-2">
             <ShoppingBag size={24} className="text-blue-600" />
-            <h2 className="text-xl font-bold text-gray-900">Sepetim</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              {t("cart.title")}
+            </h2>
             {cartItems.length > 0 && (
               <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
                 {getTotalItems()}
@@ -92,16 +96,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <div className="text-center py-12">
               <ShoppingBag size={64} className="mx-auto text-gray-300 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Sepetiniz Boş
+                {t("cart.emptyTitle")}
               </h3>
-              <p className="text-gray-500 mb-6">
-                Henüz sepetinize ürün eklemediniz.
-              </p>
-              <button
-                onClick={onClose}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Alışverişe Başla
+              <p className="text-gray-500 mb-6">{t("cart.emptyDescription")}</p>
+              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                {t("cart.startShopping")}
               </button>
             </div>
           ) : (
@@ -144,7 +143,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         </div>
                       ) : (
                         <div className="text-xs text-gray-500">
-                          Fiyat için giriş yapın
+                          {t("cart.loginToSeePrice")}
                         </div>
                       )}
                     </div>
@@ -192,7 +191,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       ) &&
                         user && (
                           <div className="text-sm text-gray-600">
-                            Birim: ₺{item.product.price.toLocaleString("tr-TR")}
+                            {t('cart.unitPrice')} ₺{item.product.price.toLocaleString("tr-TR")}
                           </div>
                         )}
                       {/* Cihaz için uyarı */}
@@ -200,7 +199,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         item.categoryId
                       ) && (
                         <div className="text-xs text-orange-600 mt-1">
-                          Cihazlardan sadece 1 adet
+                          {t('cart.deviceLimit')}
                         </div>
                       )}
                     </div>
@@ -217,7 +216,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             {/* Total */}
             {user && (
               <div className="flex justify-between items-center text-lg font-bold">
-                <span>Toplam:</span>
+                <span>{t("cart.total")}</span>
                 <span className="text-blue-600">
                   ₺{getTotalPrice().toLocaleString("tr-TR")}
                 </span>
@@ -225,24 +224,35 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             )}
 
             {/* Actions */}
-            <div className="space-y-2">
+            <div className="flex gap-4 flex-col md:flex-row">
               <button
                 onClick={clearCart}
-                className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors"
+                className="w-full  bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors"
               >
-                Sepeti Temizle
+                {t("cart.clearCart")}
               </button>
               <button
                 className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
                 onClick={() => {
                   if (!user) {
-                    alert("Sipariş vermek için giriş yapmalısınız.");
+                    setToast({
+                      message: t("cart.loginToOrder"),
+                      type: "warning",
+                    });
+                    return;
+                  }
+                  console.log("orderCheck", orderCheck);
+                  if (orderCheck !== null) {
+                    setToast({
+                      message: t("cart.dailyOrderLimit"),
+                      type: "warning",
+                    });
                     return;
                   }
                   setIsCheckoutOpen(true);
                 }}
               >
-                Sipariş Ver ({getTotalItems()} ürün)
+                {t("cart.placeOrder")} ({getTotalItems()} {t('cart.items')})
               </button>
             </div>
           </div>

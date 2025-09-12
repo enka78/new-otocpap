@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, ShoppingCart, User, Globe, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import AuthModal from "./AuthModal";
 import CartSidebar from "./CartSidebar";
+import AdminPanelLink from "./AdminPanelLink";
 import { useCart } from "@/contexts/CartContext";
 
 export default function Header() {
@@ -15,32 +17,65 @@ export default function Header() {
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [loading, setLoading] = useState(true);
+  const [hasOrders, setHasOrders] = useState(false);
 
   const t = useTranslations();
   const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
   const { getTotalItems, isCartOpen, setIsCartOpen } = useCart();
 
   useEffect(() => {
     // Get initial user
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
+      if (user) {
+        checkUserOrders(user.id);
+      }
       setLoading(false);
     });
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        checkUserOrders(session.user.id);
+      } else {
+        setHasOrders(false);
+      }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const checkUserOrders = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('user', userId)
+        .limit(1);
+
+      if (!error && data && data.length > 0) {
+        setHasOrders(true);
+      } else {
+        setHasOrders(false);
+      }
+    } catch (error) {
+      console.error('Error checking user orders:', error);
+      setHasOrders(false);
+    }
+  };
+
   const toggleLanguage = () => {
     const newLocale = locale === "tr" ? "en" : "tr";
-    window.location.href = `/${newLocale}`;
+    // Mevcut path'i al ve dil kısmını değiştir
+    const currentPath = pathname.replace(`/${locale}`, '') || '/';
+    const newPath = `/${newLocale}${currentPath}`;
+    router.push(newPath);
   };
 
   const handleAuthClick = (mode: "login" | "register") => {
@@ -96,6 +131,14 @@ export default function Header() {
             >
               {t("nav.contact")}
             </Link>
+            {user && hasOrders && (
+              <Link
+                href={`/${locale}/orders`}
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                {t("header.myOrders")}
+              </Link>
+            )}
           </nav>
 
           {/* Right side buttons */}
@@ -103,18 +146,18 @@ export default function Header() {
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors"
+              className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
             >
               <Globe size={20} />
               <span className="text-sm font-medium">
-                {locale.toUpperCase()}
+                {locale === "tr" ? "EN" : "TR"}
               </span>
             </button>
 
             {/* Cart */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative text-gray-700 hover:text-blue-600 transition-colors"
+              className="relative text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
             >
               <ShoppingCart size={20} />
               {getTotalItems() > 0 && (
@@ -132,19 +175,41 @@ export default function Header() {
                 <span className="text-sm text-gray-700 hidden sm:block">
                   {user.user_metadata?.full_name || user.email}
                 </span>
+                {/* Admin Panel Link */}
+                <AdminPanelLink user={user} />
                 <button
                   onClick={handleLogout}
-                  className="text-gray-700 hover:text-red-600 transition-colors"
-                  title="Çıkış Yap"
+                  className="text-gray-700 hover:text-red-600 transition-colors cursor-pointer"
+                  title={t("header.logoutTitle")}
                 >
                   <LogOut size={20} />
                 </button>
               </div>
             ) : (
+              <div className="hidden md:flex items-center space-x-3">
+                <button
+                  onClick={() => handleAuthClick("login")}
+                  className="text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+                  title={t("header.loginTitle")}
+                >
+                  <User size={20} />
+                </button>
+                <button
+                  onClick={() => handleAuthClick("register")}
+                  className="bg-blue-600 cursor-pointer text-sm text-white  p-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  title={t("header.registerTitle")}
+                >
+                  {t("header.signUp")}
+                </button>
+              </div>
+            )}
+
+            {/* Mobile User Icon - only show when not logged in */}
+            {!loading && !user && (
               <button
                 onClick={() => handleAuthClick("login")}
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-                title="Giriş Yap"
+                className="md:hidden text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+                title={t("header.loginTitle")}
               >
                 <User size={20} />
               </button>
@@ -153,7 +218,7 @@ export default function Header() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden text-gray-700"
+              className="md:hidden text-gray-700 cursor-pointer"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -194,21 +259,29 @@ export default function Header() {
               >
                 {t("nav.contact")}
               </Link>
+              {user && hasOrders && (
+                <Link
+                  href={`/${locale}/orders`}
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  {t("header.myOrders")}
+                </Link>
+              )}
 
               {/* Mobile Auth Buttons */}
               {!loading && !user && (
                 <div className="pt-4 border-t space-y-2">
                   <button
                     onClick={() => handleAuthClick("login")}
-                    className="w-full text-left text-gray-700 hover:text-blue-600 transition-colors"
+                    className="w-full text-left text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
                   >
-                    Giriş Yap
+                    {t("header.login")}
                   </button>
                   <button
                     onClick={() => handleAuthClick("register")}
-                    className="w-full text-left bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="w-full text-left bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                   >
-                    Üye Ol
+                    {t("header.signUp")}
                   </button>
                 </div>
               )}
@@ -219,11 +292,13 @@ export default function Header() {
                   <div className="text-gray-700">
                     {user.user_metadata?.full_name || user.email}
                   </div>
+                  {/* Mobile Admin Panel Link */}
+                  <AdminPanelLink user={user} isMobile={true} />
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left text-red-600 hover:text-red-700 transition-colors"
+                    className="w-full text-left text-red-600 hover:text-red-700 transition-colors cursor-pointer"
                   >
-                    Çıkış Yap
+                    {t("header.logout")}
                   </button>
                 </div>
               )}
