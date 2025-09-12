@@ -4,21 +4,34 @@
 
 /**
  * Get the base URL for the application
- * Uses NEXT_PUBLIC_SITE_URL in production, falls back to window.location.origin
+ * Uses www.otocpap.com in production, NEXT_PUBLIC_SITE_URL for custom domains, falls back to window.location.origin
  */
 export const getBaseUrl = (): string => {
   // In server-side rendering or build time
   if (typeof window === 'undefined') {
+    // Check if we're in production with Vercel deployment
+    if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_SITE_URL) {
+      return 'https://www.otocpap.com';
+    }
     return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   }
   
-  // In client-side, prefer environment variable but fallback to current origin
-  return process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+  // In client-side, check current domain and redirect logic
+  const currentOrigin = window.location.origin;
+  
+  // If we're on Vercel preview/deployment but want to use production domain
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_SITE_URL) {
+    return 'https://www.otocpap.com';
+  }
+  
+  // Use environment variable if set, otherwise current origin
+  return process.env.NEXT_PUBLIC_SITE_URL || currentOrigin;
 };
 
 /**
  * Get the current locale from the pathname
  * Defaults to 'tr' if not found
+ * Handles both Vercel and production domain scenarios
  */
 export const getCurrentLocale = (): string => {
   if (typeof window === 'undefined') {
@@ -35,6 +48,7 @@ export const getCurrentLocale = (): string => {
 
 /**
  * Generate password reset redirect URL with proper locale
+ * Always uses the production domain (www.otocpap.com) for email links
  */
 export const getPasswordResetUrl = (): string => {
   const baseUrl = getBaseUrl();
