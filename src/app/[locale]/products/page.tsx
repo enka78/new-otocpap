@@ -6,15 +6,17 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { supabase, Product, getProductImageUrl } from "@/lib/supabase";
+import { supabase, Product, Category, Brand, getProductImageUrl } from "@/lib/supabase";
 import { Eye, ShoppingCart, Filter } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [selectedBrand, setSelectedBrand] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -24,6 +26,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     checkUser();
+    fetchCategoriesAndBrands();
   }, []);
 
   const checkUser = async () => {
@@ -45,6 +48,30 @@ export default function ProductsPage() {
   useEffect(() => {
     fetchProducts();
   }, [selectedCategory, selectedBrand, searchTerm]);
+
+  const fetchCategoriesAndBrands = async () => {
+    try {
+      // Fetch categories
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from("categories")
+        .select("*")
+        .order("order", { ascending: true });
+
+      if (categoriesError) throw categoriesError;
+      setCategories((categoriesData || []) as unknown as Category[]);
+
+      // Fetch brands
+      const { data: brandsData, error: brandsError } = await supabase
+        .from("brands")
+        .select("*")
+        .order("order", { ascending: true });
+
+      if (brandsError) throw brandsError;
+      setBrands((brandsData || []) as unknown as Brand[]);
+    } catch (error) {
+      console.error("Error fetching categories and brands:", error);
+    }
+  };
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -124,17 +151,17 @@ export default function ProductsPage() {
                     value={selectedCategory || ""}
                     onChange={(e) =>
                       setSelectedCategory(
-                        e.target.value ? Number(e.target.value) : null
+                        e.target.value ? e.target.value : null
                       )
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">{t("products.allCategories")}</option>
-                    {/* {categories.map((category) => (
+                    {categories.map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
                       </option>
-                    ))} */}
+                    ))}
                   </select>
                 </div>
 
@@ -147,17 +174,17 @@ export default function ProductsPage() {
                     value={selectedBrand || ""}
                     onChange={(e) =>
                       setSelectedBrand(
-                        e.target.value ? Number(e.target.value) : null
+                        e.target.value ? e.target.value : null
                       )
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">{t("products.allBrands")}</option>
-                    {/* {brands.map((brand) => (
+                    {brands.map((brand) => (
                       <option key={brand.id} value={brand.id}>
                         {brand.name}
                       </option>
-                    ))} */}
+                    ))}
                   </select>
                 </div>
 
