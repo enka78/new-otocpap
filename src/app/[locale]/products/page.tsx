@@ -9,11 +9,8 @@ import Footer from "@/components/Footer";
 import { supabase, Product, getProductImageUrl } from "@/lib/supabase";
 import { Eye, ShoppingCart, Filter } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { useCategoriesAndBrands } from "@/contexts/CategoriesAndBrandsContext";
 
 export default function ProductsPage() {
-  const { categories, brands } = useCategoriesAndBrands();
-
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -133,11 +130,11 @@ export default function ProductsPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">{t("products.allCategories")}</option>
-                    {categories.map((category) => (
+                    {/* {categories.map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
                       </option>
-                    ))}
+                    ))} */}
                   </select>
                 </div>
 
@@ -156,11 +153,11 @@ export default function ProductsPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">{t("products.allBrands")}</option>
-                    {brands.map((brand) => (
+                    {/* {brands.map((brand) => (
                       <option key={brand.id} value={brand.id}>
                         {brand.name}
                       </option>
-                    ))}
+                    ))} */}
                   </select>
                 </div>
 
@@ -225,12 +222,12 @@ export default function ProductsPage() {
 
                         {/* Brand */}
                         <p className="text-sm font-medium text-blue-600 mb-1">
-                          {(product as any).brands?.name || "Marka"}
+                          {(product as any).brands?.name || t('products.brandLabel')}
                         </p>
 
                         {/* Category */}
                         <p className="text-sm text-gray-500 mb-3">
-                          {(product as any).categories?.name || "Kategori"}
+                          {(product as any).categories?.name || t('products.categoryLabel')}
                         </p>
 
                         {/* Price */}

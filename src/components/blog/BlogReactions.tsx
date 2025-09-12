@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslations, useLocale } from "next-intl";
 
 interface ReactionType {
   id: number;
   name: string;
   display_name: string;
+  display_name_en?: string;
   icon: string;
   color: string;
   order_index: number;
@@ -18,6 +20,7 @@ interface BlogReaction {
   reaction_type_id: number;
   name: string;
   display_name: string;
+  display_name_en?: string;
   icon: string;
   color: string;
   count: number;
@@ -34,6 +37,8 @@ interface BlogReactionsProps {
 
 export default function BlogReactions({ blogId }: BlogReactionsProps) {
   const { user } = useAuth();
+  const t = useTranslations();
+  const locale = useLocale();
   const [reactions, setReactions] = useState<BlogReaction[]>([]);
   const [userReactions, setUserReactions] = useState<UserReaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,16 +59,16 @@ export default function BlogReactions({ blogId }: BlogReactionsProps) {
 
   const fetchReactions = async () => {
     try {
-      // Önce reaction types'ları çek
+      // First fetch reaction types with display_name_en
       const { data: reactionTypes, error: typesError } = await supabase
         .from("reaction_types")
-        .select("*")
+        .select("id, name, display_name, display_name_en, icon, color, order_index")
         .eq("is_active", true)
         .order("order_index");
 
       if (typesError) throw typesError;
 
-      // Her reaction type için count'u hesapla
+      // Calculate count for each reaction type
       const reactionsWithCounts = await Promise.all(
         (reactionTypes || []).map(async (type: any) => {
           const { count } = await supabase
@@ -77,6 +82,7 @@ export default function BlogReactions({ blogId }: BlogReactionsProps) {
             reaction_type_id: type.id,
             name: type.name,
             display_name: type.display_name,
+            display_name_en: type.display_name_en,
             icon: type.icon,
             color: type.color,
             order_index: type.order_index,
@@ -112,7 +118,7 @@ export default function BlogReactions({ blogId }: BlogReactionsProps) {
 
   const toggleReaction = async (reactionTypeId: number) => {
     if (!user) {
-      alert("Reaksiyon vermek için giriş yapmalısınız.");
+      alert(t("blog.loginToReact") + " " + t("blog.loginLink") + ".");
       return;
     }
 
@@ -120,7 +126,7 @@ export default function BlogReactions({ blogId }: BlogReactionsProps) {
 
     try {
       if (hasReaction) {
-        // Reaksiyonu kaldır
+        // Remove reaction
         const { error } = await supabase
           .from("blog_reactions")
           .delete()
@@ -132,7 +138,7 @@ export default function BlogReactions({ blogId }: BlogReactionsProps) {
 
         setUserReactions(prev => prev.filter(r => r.reaction_type_id !== reactionTypeId));
       } else {
-        // Reaksiyon ekle
+        // Add reaction
         const { error } = await supabase
           .from("blog_reactions")
           .insert({
@@ -143,7 +149,7 @@ export default function BlogReactions({ blogId }: BlogReactionsProps) {
 
         if (error) throw error;
 
-        // Yeni reaksiyonu user reactions'a ekle
+        // Add new reaction to user reactions
         const reactionType = reactions.find(r => r.reaction_type_id === reactionTypeId);
         if (reactionType) {
           setUserReactions(prev => [...prev, {
@@ -153,19 +159,27 @@ export default function BlogReactions({ blogId }: BlogReactionsProps) {
         }
       }
 
-      // Reaksiyon sayılarını güncelle
+      // Update reaction counts
       fetchReactions();
     } catch (error) {
       console.error("Error toggling reaction:", error);
-      alert("Reaksiyon işlemi sırasında bir hata oluştu.");
+      alert(t("common.error") + ": " + t("blog.reactionError"));
     }
+  };
+
+  // Helper function to get display name based on locale
+  const getDisplayName = (reaction: BlogReaction) => {
+    if (locale === 'en' && reaction.display_name_en) {
+      return reaction.display_name_en;
+    }
+    return reaction.display_name;
   };
 
   if (!mounted || loading) {
     return (
       <div className="bg-gray-50 rounded-lg p-6 mt-8">
         <div className="flex items-center justify-center py-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" aria-label={t("blog.loadingReactions")}></div>
         </div>
       </div>
     );
@@ -174,12 +188,12 @@ export default function BlogReactions({ blogId }: BlogReactionsProps) {
   return (
     <div className="bg-gray-50 rounded-lg p-6 mt-8">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Bu yazı hakkında ne düşünüyorsunuz?
+        {t("blog.reactionTitle")}
       </h3>
       
       {!user && (
         <p className="text-sm text-gray-600 mb-4">
-          Reaksiyon vermek için <a href="/auth/login" className="text-blue-600 hover:underline">giriş yapın</a>.
+          {t("blog.loginToReact")} <a href="/auth/login" className="text-blue-600 hover:underline">{t("blog.loginLink")}</a>.
         </p>
       )}
 
@@ -205,7 +219,9 @@ export default function BlogReactions({ blogId }: BlogReactionsProps) {
             >
               <div className="flex items-center space-x-2">
                 <span className="text-lg">{reaction.icon}</span>
-                <span className="text-sm font-medium">{reaction.display_name}</span>
+                <span className="text-sm font-medium">
+                  {getDisplayName(reaction)}
+                </span>
               </div>
               {reaction.count > 0 && (
                 <span className={`

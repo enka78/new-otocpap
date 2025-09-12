@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Settings } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -18,6 +19,7 @@ export default function AdminPanelLink({
 }: AdminPanelLinkProps) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const t = useTranslations();
 
   useEffect(() => {
     if (!user) {
@@ -34,9 +36,19 @@ export default function AdminPanelLink({
           .from("user_roles")
           .select("role")
           .eq("user_id", user.id)
-          .single();
+          .maybeSingle();
+
+        if (!userRole) {
+          console.warn("AdminPanelLink: No role found for user:", user.id);
+        }
 
         console.log("AdminPanelLink: User role query result:", {
+          userRole,
+          error,
+        });
+
+        console.log("AdminPanelLink: Full Supabase response:", {
+          userId: user.id,
           userRole,
           error,
         });
@@ -68,7 +80,7 @@ export default function AdminPanelLink({
         href="/panel"
         className="w-full text-left text-blue-600 hover:text-blue-700 transition-colors block"
       >
-        Admin Panel
+        {t('admin.adminPanel')}
       </Link>
     );
   }
@@ -77,7 +89,7 @@ export default function AdminPanelLink({
     <Link
       href="/panel"
       className="text-gray-700 hover:text-blue-600 transition-colors"
-      title="Admin Panel"
+      title={t('admin.adminPanelTitle')}
     >
       <Settings size={20} />
     </Link>

@@ -88,6 +88,7 @@ export default function Hero() {
             className="object-cover"
             unoptimized
             priority
+            quality={100} // Ensure the best quality
           />
         </div>
       )}
@@ -95,7 +96,11 @@ export default function Hero() {
       <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
-          <div className="relative bg-black/30 backdrop-blur-sm rounded-2xl px-10 py-16">
+          <div
+            className={`relative bg-black/30 backdrop-blur-sm rounded-2xl px-10 py-16 ${
+              !currentBanner?.title ? "opacity-0" : "opacity-100"
+            }`}
+          >
             {loading ? (
               <div className="animate-pulse">
                 <div className="h-16 bg-gray-200 rounded mb-6"></div>
@@ -139,7 +144,9 @@ export default function Hero() {
           </div>
         </div>
         <div className="absolute  -top-8 left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg">
-          <div className="text-sm font-semibold">{t("hero.freeInstallation")}</div>
+          <div className="text-sm font-semibold">
+            {t("hero.freeInstallation")}
+          </div>
           <div className="text-xs">{t("hero.installation")}</div>
         </div>
 

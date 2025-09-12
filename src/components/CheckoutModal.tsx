@@ -8,6 +8,7 @@ import { createOrder } from "@/lib/orders";
 import { User } from "@/types/user";
 import { CartItem } from "@/types/cart";
 import DailyOrderCheckComponent from "./order/DailyOrderCheck";
+import { useTranslations } from "next-intl";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -32,11 +33,11 @@ interface AddressData {
 }
 
 export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
+  const t = useTranslations();
   const { cartItems, getTotalPrice, clearCart, setToast } = useCart();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"address" | "summary">("address");
   const [user, setUser] = useState<User | null>(null);
-  const [canOrder, setCanOrder] = useState(true);
 
   useEffect(() => {
     // Get current user
@@ -188,34 +189,15 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         return;
       }
 
-      // Sipariş vermeden önce tekrar kontrol et
-      if (!canOrder) {
-        setToast({
-          message: "Bugün zaten bir siparişiniz var. Siparişlerim sayfasından mevcut siparişi iptal edin.",
-          type: "warning",
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Son kontrol - veritabanından tekrar kontrol et
-      const { checkDailyOrderLimit } = await import('@/lib/orderValidation');
-      const finalCheck = await checkDailyOrderLimit(user.id);
-      
-      if (!finalCheck.canOrder) {
-        setToast({
-          message: finalCheck.message,
-          type: "warning",
-        });
-        setLoading(false);
-        return;
-      }
-
       // Sipariş ürünlerini JSON formatında hazırla
       const orderProducts = cartItems.map((item) => ({
         product_id: item.id,
         quantity: item.quantity,
         price: (item as any).price || 0,
+        product_name: item.product.name,
+        product_image: item.product.image1,
+        product_brand: item.product.brand_id,
+        product_category: item.product.category_id,
       }));
 
       // Orders tablosuna kayıt için veri hazırla
@@ -227,7 +209,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         user: user.id, // UUID olarak kaydet
       };
 
-      console.log("Sipariş verisi:", orderData);
+      console.log(t("orderDataLog"), orderData);
 
       const { data: orderResult, error } = await supabase
         .from("orders")
@@ -282,7 +264,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-2xl font-bold text-gray-900">
-            {step === "address" ? "Teslimat Bilgileri" : "Sipariş Özeti"}
+            {step === "address" ? t("checkout.deliveryInfo") : t("checkout.orderSummary")}
           </h2>
           <button
             onClick={onClose}
@@ -296,9 +278,9 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         <div className="p-6">
           {/* Daily Order Check */}
           {user && (
-            <DailyOrderCheckComponent 
-              userId={user.id} 
-              onOrderStatusChange={setCanOrder}
+            <DailyOrderCheckComponent
+              userId={user.id}
+              onOrderStatusChange={() => {}}
             />
           )}
 
@@ -307,12 +289,12 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
               {/* Kişisel Bilgiler */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Kişisel Bilgiler
+                  {t("checkout.personalInfo")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ad Soyad *
+                      {t("checkout.fullName")} *
                     </label>
                     <input
                       type="text"
@@ -325,7 +307,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Telefon *
+                      {t("checkout.phone")} *
                     </label>
                     <input
                       type="tel"
@@ -338,7 +320,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      E-posta *
+                      {t("checkout.email")} *
                     </label>
                     <input
                       type="email"
@@ -355,12 +337,12 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
               {/* Adres Bilgileri */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Adres Bilgileri
+                  {t("checkout.addressInfo")}
                 </h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Adres *
+                      {t("checkout.address")} *
                     </label>
                     <textarea
                       name="address"
@@ -374,7 +356,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        İlçe *
+                        {t("checkout.district")} *
                       </label>
                       <input
                         type="text"
@@ -387,7 +369,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        İl *
+                        {t("checkout.city")} *
                       </label>
                       <input
                         type="text"
@@ -400,7 +382,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Posta Kodu
+                        {t("checkout.postalCode")}
                       </label>
                       <input
                         type="text"
@@ -413,7 +395,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ülke *
+                      {t("checkout.country")} *
                     </label>
                     <select
                       name="country"
@@ -422,12 +404,12 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
-                      <option value="Türkiye">Türkiye</option>
-                      <option value="Almanya">Almanya</option>
-                      <option value="Hollanda">Hollanda</option>
-                      <option value="Belçika">Belçika</option>
-                      <option value="Fransa">Fransa</option>
-                      <option value="Diğer">Diğer</option>
+                      <option value="Türkiye">{t('country.turkey')}</option>
+                      <option value="Almanya">{t('country.germany')}</option>
+                      <option value="Hollanda">{t('country.netherlands')}</option>
+                      <option value="Belçika">{t('country.belgium')}</option>
+                      <option value="Fransa">{t('country.france')}</option>
+                      <option value="Diğer">{t('country.other')}</option>
                     </select>
                   </div>
                 </div>
@@ -436,7 +418,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
               {/* Teslimat Seçenekleri */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Teslimat Seçenekleri
+                  {t("checkout.deliveryOptions")}
                 </h3>
                 <div className="space-y-3">
                   <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -454,15 +436,14 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                       <div className="flex items-center space-x-2">
                         <MapPin size={20} className="text-blue-600" />
                         <span className="font-medium">
-                          İstanbul İçi Yerinde Kurulum
+                          {t("checkout.istanbulInstallation")}
                         </span>
                         <span className="text-green-600 font-semibold">
-                          (Ücretsiz)
+                          ({t('common.free')})
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
-                        Cihazınız uzman teknisyenimiz tarafından evinizde
-                        kurulur ve eğitim verilir.
+                        {t("checkout.istanbulInstallationDescription")}
                       </p>
                     </div>
                   </label>
@@ -479,11 +460,12 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
                         <Truck size={20} className="text-orange-600" />
-                        <span className="font-medium">Türkiye İçi Kargo</span>
+                        <span className="font-medium">
+                          {t("checkout.domesticCargo")}
+                        </span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
-                        Cihazınız kargo ile adresinize gönderilir. Kurulum
-                        videoları ve telefon desteği sağlanır.
+                        {t("checkout.domesticCargoDescription")}
                       </p>
                     </div>
                   </label>
@@ -502,11 +484,12 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
                         <Globe size={20} className="text-purple-600" />
-                        <span className="font-medium">Yurt Dışı Kargo</span>
+                        <span className="font-medium">
+                          {t("checkout.internationalCargo")}
+                        </span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
-                        Cihazınız uluslararası kargo ile gönderilir. Online
-                        destek sağlanır.
+                        {t("checkout.internationalCargoDescription")}
                       </p>
                     </div>
                   </label>
@@ -522,10 +505,10 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                       onChange={handleInputChange}
                       className="rounded"
                     />
-                    <span className="font-medium">Online Destek İstiyorum</span>
+                    <span className="font-medium">{t("checkout.onlineSupport")}</span>
                   </label>
                   <p className="text-sm text-gray-600 mt-1 ml-6">
-                    Video konferans ile kurulum desteği ve kullanım eğitimi
+                    {t("checkout.onlineSupportDescription")}
                   </p>
                 </div>
               </div>
@@ -533,24 +516,23 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
               {/* Özel Notlar */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Özel Notlar
+                  {t("checkout.specialNotes")}
                 </label>
                 <textarea
                   name="notes"
                   value={addressData.notes}
                   onChange={handleInputChange}
                   rows={3}
-                  placeholder="Siparişinizle ilgili özel notlarınız..."
+                  placeholder={t("checkout.specialNotesPlaceholder")}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                disabled={!canOrder}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
-                Devam Et
+                {t("checkout.continue")}
               </button>
             </form>
           ) : (
@@ -559,31 +541,31 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
               {/* Teslimat Bilgileri Özeti */}
               <div className="bg-gray-50 rounded-lg p-4">
                 <h3 className="font-semibold text-gray-900 mb-3">
-                  Teslimat Bilgileri
+                  {t("checkout.deliveryInfo")}
                 </h3>
                 <div className="text-sm text-gray-600 space-y-1">
                   <p>
-                    <strong>Ad Soyad:</strong> {addressData.fullName}
+                    <strong>{t("checkout.fullName")}:</strong> {addressData.fullName}
                   </p>
                   <p>
-                    <strong>Telefon:</strong> {addressData.phone}
+                    <strong>{t("checkout.phone")}:</strong> {addressData.phone}
                   </p>
                   <p>
-                    <strong>Adres:</strong> {addressData.address},{" "}
+                    <strong>{t("checkout.address")}:</strong> {addressData.address},{" "}
                     {addressData.district}, {addressData.city}
                   </p>
                   <p>
-                    <strong>Teslimat:</strong>
+                    <strong>{t("checkout.delivery")}</strong>
                     {addressData.deliveryType === "istanbul-installation" &&
-                      " İstanbul İçi Yerinde Kurulum"}
+                      " " + t("checkout.istanbulInstallation")}
                     {addressData.deliveryType === "domestic-cargo" &&
-                      " Türkiye İçi Kargo"}
+                      " " + t("checkout.domesticCargo")}
                     {addressData.deliveryType === "international-cargo" &&
-                      " Yurt Dışı Kargo"}
+                      " " + t("checkout.internationalCargo")}
                   </p>
                   {addressData.onlineSupport && (
                     <p>
-                      <strong>Online Destek:</strong> Evet
+                      <strong>{t("checkout.onlineSupport")}:</strong> {t('common.yes')}
                     </p>
                   )}
                 </div>
@@ -592,7 +574,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
               {/* Sipariş Detayları */}
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">
-                  Sipariş Detayları
+                  {t("checkout.orderDetails")}
                 </h3>
                 <div className="space-y-3">
                   {cartItems.map((item) => (
@@ -603,7 +585,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                       <div>
                         <p className="font-medium">{item.product.name}</p>
                         <p className="text-sm text-gray-600">
-                          Adet: {item.quantity}
+                          {t("checkout.quantity")}: {item.quantity}
                         </p>
                       </div>
                       <p className="font-semibold">
@@ -616,7 +598,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   ))}
                 </div>
                 <div className="flex justify-between items-center pt-4 border-t border-gray-300">
-                  <span className="text-lg font-bold">Toplam:</span>
+                  <span className="text-lg font-bold">{t("checkout.total")}:</span>
                   <span className="text-lg font-bold text-blue-600">
                     ₺{getTotalPrice().toLocaleString("tr-TR")}
                   </span>
@@ -629,22 +611,22 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   onClick={() => setStep("address")}
                   className="flex-1 bg-gray-100 text-gray-700 py-3 m-0 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
                 >
-                  Geri Dön
+                  {t("checkout.goBack")}
                 </button>
                 <button
                   onClick={handleWhatsAppOrder}
-                  disabled={loading || !canOrder}
+                  disabled={loading}
                   className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                 >
                   {loading ? (
                     <>
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Gönderiliyor...
+                      {t("checkout.sending")}
                     </>
                   ) : (
                     <>
                       <MessageCircle size={20} className="mr-2" />
-                      WhatsApp ile Sipariş Ver
+                      {t("checkout.orderWithWhatsApp")}
                     </>
                   )}
                 </button>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Send, HelpingHand } from "lucide-react";
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -139,14 +139,10 @@ Bu mesaj OtoCPAP web sitesi iletişim formu üzerinden gönderilmiştir.`;
                       <h3 className="font-semibold text-gray-900 mb-1">
                         {t("contact.address")}
                       </h3>
-                      <p className="text-gray-600">
-                        {t("contact.addressFull").split('\n').map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            {index < t("contact.addressFull").split('\n').length - 1 && <br />}
-                          </span>
-                        ))}
-                      </p>
+                      <div className="text-gray-600">
+                        Zuhuratbaba Mah. Dr. Tevfik Sağlam Cad. No:5
+                        Bakırköy/İSTANBUL
+                      </div>
                     </div>
                   </div>
 
@@ -200,9 +196,7 @@ Bu mesaj OtoCPAP web sitesi iletişim formu üzerinden gönderilmiştir.`;
 
                 {submitStatus === "error" && (
                   <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-800">
-                      {t("contact.errorMessage")}
-                    </p>
+                    <p className="text-red-800">{t("contact.errorMessage")}</p>
                   </div>
                 )}
 
@@ -282,11 +276,19 @@ Bu mesaj OtoCPAP web sitesi iletişim formu üzerinden gönderilmiştir.`;
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="">{t("contact.selectSubject")}</option>
-                        <option value="product-info">{t("contact.productInfo")}</option>
-                        <option value="technical-support">{t("contact.technicalSupport")}</option>
-                        <option value="warranty">{t("contact.warranty")}</option>
+                        <option value="product-info">
+                          {t("contact.productInfo")}
+                        </option>
+                        <option value="technical-support">
+                          {t("contact.technicalSupport")}
+                        </option>
+                        <option value="warranty">
+                          {t("contact.warranty")}
+                        </option>
                         <option value="pricing">{t("contact.pricing")}</option>
-                        <option value="installation">{t("contact.installation")}</option>
+                        <option value="installation">
+                          {t("contact.installation")}
+                        </option>
                         <option value="other">{t("contact.other")}</option>
                       </select>
                     </div>
@@ -337,7 +339,9 @@ Bu mesaj OtoCPAP web sitesi iletişim formu üzerinden gönderilmiştir.`;
           <div className="mt-16">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">{t("contact.location")}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  {t("contact.location")}
+                </h2>
                 <p className="text-gray-600 mb-6">
                   {t("contact.locationDesc")}
                 </p>
@@ -345,7 +349,21 @@ Bu mesaj OtoCPAP web sitesi iletişim formu üzerinden gönderilmiştir.`;
 
               {/* Placeholder for map - you can integrate Google Maps or another map service */}
               <div className="h-96 bg-gray-200 flex items-center justify-center">
-                <div className="text-center">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3011.495247140992!2d28.866357475857576!3d40.992532271352694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caa39132b2e789%3A0x6f8c76fd006519ba!2zRMO2bsO8xZ_DvG0gTWVkaWthbCBVeWt1IFZlIFNvbHVudW0gQ2loYXpsYXI!5e0!3m2!1str!2str!4v1757520160970!5m2!1str!2str"
+                  style={{ border: 0, width: "100%", height: "384px" }}
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                    const fallbackDiv = e.currentTarget
+                      .nextElementSibling as HTMLElement;
+                    if (fallbackDiv) fallbackDiv.style.display = "block";
+                  }}
+                ></iframe>
+
+                <div className="text-center" style={{ display: "none" }}>
                   <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500">{t("contact.mapIntegration")}</p>
                   <p className="text-sm text-gray-400">

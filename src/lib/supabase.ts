@@ -6,12 +6,159 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 // Singleton pattern - sadece bir instance oluştur
 let supabaseInstance: ReturnType<typeof createClient> | null = null
 
+// Helper function to handle auth errors and clear invalid sessions
+const handleAuthErrorInternal = async (error: any) => {
+  if (error?.message?.includes('Invalid Refresh Token') || 
+      error?.message?.includes('Refresh Token Not Found') ||
+      error?.code === 'invalid_refresh_token') {
+    console.log('Invalid refresh token detected, clearing session...')
+    
+    try {
+      // Force clear the session from storage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('supabase.auth.token')
+        sessionStorage.removeItem('supabase.auth.token')
+        
+        // Clear all supabase keys from localStorage
+        const keys = Object.keys(localStorage)
+        keys.forEach(key => {
+          if (key.startsWith('sb-')) {
+            localStorage.removeItem(key)
+          }
+        })
+      }
+    } catch (clearError) {
+      console.warn('Error clearing storage, but continuing...', clearError)
+    }
+    
+    // Optionally redirect to login page
+    if (typeof window !== 'undefined') {
+      window.location.href = '/'
+    }
+  }
+  return error
+}
+
 export const supabase = (() => {
   if (!supabaseInstance) {
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey)
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce',
+        storageKey: 'supabase.auth.token',
+        storage: {
+          getItem: (key: string) => {
+            if (typeof window === 'undefined') return null
+            try {
+              return localStorage.getItem(key)
+            } catch {
+              return null
+            }
+          },
+          setItem: (key: string, value: string) => {
+            if (typeof window === 'undefined') return
+            try {
+              localStorage.setItem(key, value)
+            } catch {
+              // Ignore storage errors
+            }
+          },
+          removeItem: (key: string) => {
+            if (typeof window === 'undefined') return
+            try {
+              localStorage.removeItem(key)
+            } catch {
+              // Ignore storage errors
+            }
+          }
+        }
+      },
+      // Add global error handler
+      global: {
+        headers: {
+          'X-Client-Info': 'supabase-js-web'
+        }
+      }
+    })
+    
+    // Add global error handling for auth errors
+    const originalGetSession = supabaseInstance.auth.getSession
+    supabaseInstance.auth.getSession = async function() {
+      try {
+        return await originalGetSession.call(this)
+      } catch (error: any) {
+        if (error?.message?.includes('Invalid Refresh Token') || 
+            error?.message?.includes('Refresh Token Not Found')) {
+          await handleAuthErrorInternal(error)
+          return { data: { session: null }, error: null }
+        }
+        throw error
+      }
+    }
   }
   return supabaseInstance
 })()
+
+// Helper function to handle auth errors and clear invalid sessions
+export const handleAuthError = async (error: any) => {
+  return handleAuthErrorInternal(error)
+}
+
+// Function to completely clear auth state
+export const clearAuthState = () => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    // Clear specific auth tokens
+    localStorage.removeItem('supabase.auth.token')
+    sessionStorage.removeItem('supabase.auth.token')
+    
+    // Clear all supabase keys from localStorage
+    const keys = Object.keys(localStorage)
+    keys.forEach(key => {
+      if (key.startsWith('sb-')) {
+        localStorage.removeItem(key)
+      }
+    })
+    
+    console.log('Auth state cleared successfully')
+  } catch (error) {
+    console.warn('Error clearing auth state:', error)
+  }
+}
+
+// Function to check if we have a potentially invalid session
+export const hasValidSession = async (): Promise<boolean> => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession()
+    
+    if (error || !session) {
+      return false
+    }
+    
+    // Check if token is expired
+    const now = Math.floor(Date.now() / 1000)
+    if (session.expires_at && session.expires_at < now) {
+      return false
+    }
+    
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Enhanced auth function with error handling
+export const safeAuthCall = async <T>(authFunction: () => Promise<T>): Promise<T | null> => {
+  try {
+    return await authFunction()
+  } catch (error: any) {
+    await handleAuthError(error)
+    return null
+  }
+}
 
 // Database types
 export interface Product {

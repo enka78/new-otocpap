@@ -1,16 +1,16 @@
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { Inter } from 'next/font/google';
-import '../globals.css';
-import { CartProvider } from '@/contexts/CartContext';
-import { CategoriesAndBrandsProvider } from '@/contexts/CategoriesAndBrandsContext';
-import GlobalToast from '@/components/GlobalToast';
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { Inter } from "next/font/google";
+import "../globals.css";
+import { CartProvider } from "@/contexts/CartContext";
+import GlobalToast from "@/components/GlobalToast";
+import { AuthErrorBoundary } from "@/components/AuthErrorBoundary";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export default async function LocaleLayout({
   children,
-  params
+  params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -18,16 +18,18 @@ export default async function LocaleLayout({
   const { locale } = await params;
   const messages = await getMessages();
 
+  console.log("Locale during SSR:", locale);
+
   return (
     <html lang={locale}>
-      <body className={inter.className}>
+      <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
-          <CategoriesAndBrandsProvider>
+          <AuthErrorBoundary>
             <CartProvider>
               {children}
               <GlobalToast />
             </CartProvider>
-          </CategoriesAndBrandsProvider>
+          </AuthErrorBoundary>
         </NextIntlClientProvider>
       </body>
     </html>

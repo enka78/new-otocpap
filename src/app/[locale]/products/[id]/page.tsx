@@ -21,7 +21,7 @@ export default function ProductDetailPage() {
   const t = useTranslations();
   const locale = useLocale();
   const productId = params.id;
-  const { addToCart } = useCart();
+  const { addToCart, setToast } = useCart();
 
   useEffect(() => {
     if (productId) {
@@ -48,7 +48,7 @@ export default function ProductDetailPage() {
 
   const fetchProduct = async () => {
     if (!productId) return;
-    
+
     try {
       const { data, error } = await supabase
         .from("products")
@@ -201,7 +201,7 @@ export default function ProductDetailPage() {
                               e.preventDefault();
                               const target = e.target as HTMLImageElement;
                               target.src =
-                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk9UT0NQQVA8L3RleHQ+PC9zdmc+";
+                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk9UT0NQQVA8L3RleHQ+PC9zdmc+";
                             }}
                           />
                         ) : (
@@ -246,24 +246,33 @@ export default function ProductDetailPage() {
                   className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
                 >
                   <ShoppingCart size={20} className="mr-2" />
-                  Sepete Ekle
+                  {t("products.addToCart")}
                 </button>
                 <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <Heart size={20} />
-                </button>
-                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <Share2 size={20} />
+                  <Share2
+                    size={20}
+                    onClick={() => {
+                      const productUrl = window.location.href;
+                      navigator.clipboard.writeText(productUrl);
+                      setToast({
+                        message: t("products.urlCopied"),
+                        type: "success",
+                      });
+                    }}
+                  />
                 </button>
               </div>
 
               {/* Product Details */}
               <div className="border-t pt-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Ürün Detayları
+                  {t("products.addToCart")}
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Kategori:</span>
+                    <span className="text-gray-600">
+                      {t("products.category")}
+                    </span>
                     <span className="font-medium">
                       {
                         (product as Product & { categories: { name: string } })
@@ -298,7 +307,7 @@ export default function ProductDetailPage() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Ürün Açıklaması
+                  {t("products.productDescription")}
                 </h2>
                 <div className="prose max-w-none">
                   <div

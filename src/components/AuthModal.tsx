@@ -50,19 +50,19 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
   const validatePassword = (password: string) => {
     if (password.length < 8) {
-      return { isValid: false, message: 'Şifre en az 8 karakter olmalıdır.' };
+      return { isValid: false, message: t('auth.passwordMinLength') };
     }
     
     if (!/[A-Z]/.test(password)) {
-      return { isValid: false, message: 'Şifre en az bir büyük harf içermelidir.' };
+      return { isValid: false, message: t('auth.passwordUppercase') };
     }
     
     if (!/[0-9]/.test(password)) {
-      return { isValid: false, message: 'Şifre en az bir rakam içermelidir.' };
+      return { isValid: false, message: t('auth.passwordNumber') };
     }
     
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      return { isValid: false, message: 'Şifre en az bir özel karakter içermelidir (!@#$%^&* vb.)' };
+      return { isValid: false, message: t('auth.passwordSpecial') };
     }
     
     return { isValid: true, message: '' };
@@ -92,13 +92,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
       if (error) throw error;
 
-      setSuccess('Giriş başarılı! Yönlendiriliyorsunuz...');
+      setSuccess(t('auth.loginSuccess'));
       setTimeout(() => {
         onClose();
         window.location.reload();
       }, 1500);
     } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-      setError(error.message || 'Giriş yapılırken bir hata oluştu.');
+      setError(error.message || t('auth.loginError'));
     } finally {
       setLoading(false);
     }
@@ -110,7 +110,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Şifreler eşleşmiyor.');
+      setError(t('auth.passwordMismatch'));
       setLoading(false);
       return;
     }
@@ -137,13 +137,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
       if (error) throw error;
 
-      setSuccess('Kayıt başarılı! E-posta adresinizi kontrol edin.');
+      setSuccess(t('auth.registerSuccess'));
       setTimeout(() => {
         setMode('login');
         setSuccess('');
       }, 3000);
     } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-      setError(error.message || 'Kayıt olurken bir hata oluştu.');
+      setError(error.message || t('auth.registerError'));
     } finally {
       setLoading(false);
     }
@@ -167,7 +167,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-2xl font-bold text-gray-900">
-            {mode === 'login' ? 'Giriş Yap' : 'Üye Ol'}
+            {mode === 'login' ? t('auth.loginTitle') : t('auth.registerTitle')}
           </h2>
           <button
             onClick={onClose}
@@ -198,7 +198,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  E-posta
+                  {t('auth.email')}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -209,14 +209,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     onChange={handleInputChange}
                     required
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="ornek@email.com"
+                    placeholder={t('auth.emailPlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Şifre
+                  {t('auth.password')}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -227,7 +227,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     onChange={handleInputChange}
                     required
                     className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="••••••••"
+                    placeholder={t('auth.passwordPlaceholder')}
                   />
                   <button
                     type="button"
@@ -244,7 +244,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 disabled={loading}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                {loading ? t('auth.loggingIn') : t('auth.loginButton')}
               </button>
             </form>
           )}
@@ -254,7 +254,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ad Soyad
+                  {t('auth.fullName')}
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -265,14 +265,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     onChange={handleInputChange}
                     required
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Adınız Soyadınız"
+                    placeholder={t('auth.fullNamePlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  E-posta
+                  {t('auth.email')}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -283,14 +283,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     onChange={handleInputChange}
                     required
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="ornek@email.com"
+                    placeholder={t('auth.emailPlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Telefon
+                  {t('auth.phone')}
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -300,14 +300,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     value={formData.phone}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="+90 5XX XXX XX XX"
+                    placeholder={t('auth.phonePlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Şifre
+                  {t('auth.password')}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -318,7 +318,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     onChange={handleInputChange}
                     required
                     className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="••••••••"
+                    placeholder={t('auth.passwordPlaceholder')}
                   />
                   <button
                     type="button"
@@ -332,7 +332,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Şifre Tekrar
+                  {t('auth.confirmPassword')}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -343,7 +343,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     onChange={handleInputChange}
                     required
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="••••••••"
+                    placeholder={t('auth.passwordPlaceholder')}
                   />
                 </div>
               </div>
@@ -353,7 +353,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 disabled={loading}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Kayıt olunuyor...' : 'Üye Ol'}
+                {loading ? t('auth.registering') : t('auth.registerButton')}
               </button>
             </form>
           )}
@@ -362,22 +362,22 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           <div className="mt-6 text-center">
             {mode === 'login' ? (
               <p className="text-gray-600">
-                Hesabınız yok mu?{' '}
+                {t('auth.noAccount')}{' '}
                 <button
                   onClick={() => switchMode('register')}
                   className="text-blue-600 hover:text-blue-700 font-semibold"
                 >
-                  Üye Ol
+                  {t('auth.switchToRegister')}
                 </button>
               </p>
             ) : (
               <p className="text-gray-600">
-                Zaten hesabınız var mı?{' '}
+                {t('auth.hasAccount')}{' '}
                 <button
                   onClick={() => switchMode('login')}
                   className="text-blue-600 hover:text-blue-700 font-semibold"
                 >
-                  Giriş Yap
+                  {t('auth.switchToLogin')}
                 </button>
               </p>
             )}

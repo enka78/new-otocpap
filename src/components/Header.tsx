@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, ShoppingCart, User, Globe, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import AuthModal from "./AuthModal";
@@ -20,6 +21,8 @@ export default function Header() {
 
   const t = useTranslations();
   const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
   const { getTotalItems, isCartOpen, setIsCartOpen } = useCart();
 
   useEffect(() => {
@@ -69,7 +72,10 @@ export default function Header() {
 
   const toggleLanguage = () => {
     const newLocale = locale === "tr" ? "en" : "tr";
-    window.location.href = `/${newLocale}`;
+    // Mevcut path'i al ve dil kısmını değiştir
+    const currentPath = pathname.replace(`/${locale}`, '') || '/';
+    const newPath = `/${newLocale}${currentPath}`;
+    router.push(newPath);
   };
 
   const handleAuthClick = (mode: "login" | "register") => {
@@ -130,7 +136,7 @@ export default function Header() {
                 href={`/${locale}/orders`}
                 className="text-gray-700 hover:text-blue-600 transition-colors"
               >
-                Siparişlerim
+                {t("header.myOrders")}
               </Link>
             )}
           </nav>
@@ -140,18 +146,18 @@ export default function Header() {
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors"
+              className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
             >
               <Globe size={20} />
               <span className="text-sm font-medium">
-                {locale.toUpperCase()}
+                {locale === "tr" ? "EN" : "TR"}
               </span>
             </button>
 
             {/* Cart */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative text-gray-700 hover:text-blue-600 transition-colors"
+              className="relative text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
             >
               <ShoppingCart size={20} />
               {getTotalItems() > 0 && (
@@ -173,8 +179,8 @@ export default function Header() {
                 <AdminPanelLink user={user} />
                 <button
                   onClick={handleLogout}
-                  className="text-gray-700 hover:text-red-600 transition-colors"
-                  title="Çıkış Yap"
+                  className="text-gray-700 hover:text-red-600 transition-colors cursor-pointer"
+                  title={t("header.logoutTitle")}
                 >
                   <LogOut size={20} />
                 </button>
@@ -183,17 +189,17 @@ export default function Header() {
               <div className="hidden md:flex items-center space-x-3">
                 <button
                   onClick={() => handleAuthClick("login")}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                  title="Giriş Yap"
+                  className="text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+                  title={t("header.loginTitle")}
                 >
                   <User size={20} />
                 </button>
                 <button
                   onClick={() => handleAuthClick("register")}
                   className="bg-blue-600 cursor-pointer text-sm text-white  p-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  title="Üye Ol"
+                  title={t("header.registerTitle")}
                 >
-                  Üye Ol
+                  {t("header.signUp")}
                 </button>
               </div>
             )}
@@ -202,8 +208,8 @@ export default function Header() {
             {!loading && !user && (
               <button
                 onClick={() => handleAuthClick("login")}
-                className="md:hidden text-gray-700 hover:text-blue-600 transition-colors"
-                title="Giriş Yap"
+                className="md:hidden text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+                title={t("header.loginTitle")}
               >
                 <User size={20} />
               </button>
@@ -212,7 +218,7 @@ export default function Header() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden text-gray-700"
+              className="md:hidden text-gray-700 cursor-pointer"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -258,7 +264,7 @@ export default function Header() {
                   href={`/${locale}/orders`}
                   className="text-gray-700 hover:text-blue-600 transition-colors"
                 >
-                  Siparişlerim
+                  {t("header.myOrders")}
                 </Link>
               )}
 
@@ -267,15 +273,15 @@ export default function Header() {
                 <div className="pt-4 border-t space-y-2">
                   <button
                     onClick={() => handleAuthClick("login")}
-                    className="w-full text-left text-gray-700 hover:text-blue-600 transition-colors"
+                    className="w-full text-left text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
                   >
-                    Giriş Yap
+                    {t("header.login")}
                   </button>
                   <button
                     onClick={() => handleAuthClick("register")}
-                    className="w-full text-left bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="w-full text-left bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                   >
-                    Üye Ol
+                    {t("header.signUp")}
                   </button>
                 </div>
               )}
@@ -290,9 +296,9 @@ export default function Header() {
                   <AdminPanelLink user={user} isMobile={true} />
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left text-red-600 hover:text-red-700 transition-colors"
+                    className="w-full text-left text-red-600 hover:text-red-700 transition-colors cursor-pointer"
                   >
-                    Çıkış Yap
+                    {t("header.logout")}
                   </button>
                 </div>
               )}
