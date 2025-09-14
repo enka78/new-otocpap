@@ -77,7 +77,8 @@ export default function AdminPanelLink({
   if (isMobile) {
     return (
       <Link
-        href="/panel"
+        href="https://otocap-dashboard.vercel.app/login"
+        target="_blank"
         className="w-full text-left text-blue-600 hover:text-blue-700 transition-colors block"
       >
         {t('admin.adminPanel')}
@@ -87,7 +88,8 @@ export default function AdminPanelLink({
 
   return (
     <Link
-      href="/panel"
+      href="https://otocap-dashboard.vercel.app/login"
+      target="_blank"
       className="text-gray-700 hover:text-blue-600 transition-colors"
       title={t('admin.adminPanelTitle')}
     >
