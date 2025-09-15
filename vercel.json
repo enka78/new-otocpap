@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/panel/:path*",
+      "destination": "https://otocap-dashboard.vercel.app/:path*"
+    }
+  ]
+}
