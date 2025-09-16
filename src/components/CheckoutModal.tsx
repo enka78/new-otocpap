@@ -200,29 +200,42 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         product_category: item.product.category_id,
       }));
 
-      // Orders tablosuna kayıt için veri hazırla
-      const orderData = {
-        products: JSON.stringify(orderProducts), // JSON string olarak kaydet
-        status_id: 1, // order_received durumu
-        total: getTotalPrice(),
-        currency: "TL",
-        user: user.id, // UUID olarak kaydet
+      // Sipariş API'sine gönderilecek verileri hazırla
+      const firstCartItem = cartItems[0]; // İlk ürünü al (tek ürün sipariş sistemi için)
+      const orderApiData = {
+        user_id: user.id,
+        product_id: firstCartItem.id,
+        quantity: firstCartItem.quantity,
+        total_price: getTotalPrice(),
+        delivery_address: addressData.address,
+        phone: addressData.phone,
+        notes: addressData.notes,
+        user_name: addressData.fullName,
+        user_email: addressData.email,
+        user_district: addressData.district,
+        user_city: addressData.city,
+        user_postal_code: addressData.postalCode,
+        user_country: addressData.country,
+        delivery_type: addressData.deliveryType,
+        online_support: addressData.onlineSupport
       };
 
-      console.log(t("orderDataLog"), orderData);
+      // API endpoint'ine sipariş gönder
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderApiData)
+      });
 
-      const { data: orderResult, error } = await supabase
-        .from("orders")
-        .insert([orderData])
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Sipariş kaydedilirken hata:", error);
-        throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Sipariş gönderilemedi');
       }
 
-      console.log("Sipariş başarıyla kaydedildi:", orderResult);
+      const result = await response.json();
+      console.log('Sipariş başarıyla kaydedildi:', result);
 
       // WhatsApp mesajını oluştur ve gönder
       const message = generateWhatsAppMessage();
@@ -236,7 +249,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
       onClose();
 
       setToast({
-        message: `Siparişiniz kaydedildi (Sipariş #${orderResult.id}). WhatsApp üzerinden detaylar gönderildi.`,
+        message: `Siparişiniz kaydedildi (Sipariş #${result.order.id}). WhatsApp üzerinden detaylar gönderildi.`,
         type: "success",
       });
     } catch (error) {

@@ -175,7 +175,8 @@
     "orderSummary": "Sipariş Özeti",
     "totalAmount": "Toplam Tutar",
     "statusDescription": "Sipariş durumu açıklaması",
-    "status": "Durum"
+    "status": "Durum",
+    "customerInfo": "Müşteri Bilgileri"
   },
   "checkout": {
     "orderLimitReached": "Bugün zaten bir sipariş verdiniz. Lütfen mevcut siparişi Siparişler sayfasından iptal edin.",

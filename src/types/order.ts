@@ -3,7 +3,22 @@ import { Product } from "./product";
 export interface Order {
   id: number;
   user_id: string;
-  user: string;
+  user: string | {
+    user_id: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: {
+      full_address: string;
+      district: string;
+      city: string;
+      postal_code: string;
+      country: string;
+    };
+    delivery_type: string;
+    online_support: boolean;
+    notes: string;
+  };
   status_id: number;
   status: OrderStatus;
   total: number;

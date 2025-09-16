@@ -175,7 +175,8 @@
     "orderSummary": "Order Summary",
     "totalAmount": "Total Amount",
     "statusDescription": "Order status description",
-    "status": "Status"
+    "status": "Status",
+    "customerInfo": "Customer Information"
   },
   "checkout": {
     "orderLimitReached": "You have already placed an order today. Please cancel the existing order from the Orders page.",

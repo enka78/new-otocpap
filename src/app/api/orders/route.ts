@@ -9,7 +9,23 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { user_id, product_id, quantity, total_price, delivery_address, phone, notes } = body;
+    const { 
+      user_id, 
+      product_id, 
+      quantity, 
+      total_price, 
+      delivery_address, 
+      phone, 
+      notes,
+      user_name,
+      user_email,
+      user_district,
+      user_city,
+      user_postal_code,
+      user_country,
+      delivery_type,
+      online_support
+    } = body;
 
     // Validate required fields
     if (!user_id || !product_id || !quantity || !total_price || !delivery_address || !phone) {
@@ -72,11 +88,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // User bilgilerini JSON olarak hazırla
+    const userInfo = {
+      user_id: user_id,
+      name: user_name || '',
+      email: user_email || '',
+      phone: phone,
+      address: {
+        full_address: delivery_address,
+        district: user_district || '',
+        city: user_city || '',
+        postal_code: user_postal_code || '',
+        country: user_country || 'Türkiye'
+      },
+      delivery_type: delivery_type || 'istanbul-installation',
+      online_support: online_support || false,
+      notes: notes || ''
+    };
+
     // Create the order
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .insert({
-        user: user_id,
+        user: JSON.stringify(userInfo), // Kullanıcı bilgilerini JSON olarak kaydet
         products: JSON.stringify([{ product_id, quantity, price: total_price / quantity }]),
         total: total_price,
         delivery_address,
@@ -122,8 +156,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user's orders with status information
-    const { data: orders, error } = await supabase
+    // Get all orders first (since user field is now JSON, we can't filter directly)
+    const { data: allOrders, error } = await supabase
       .from('orders')
       .select(`
         *,
@@ -134,7 +168,6 @@ export async function GET(request: NextRequest) {
           description
         )
       `)
-      .eq('user', userId)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -145,9 +178,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Filter orders by user_id from JSON data
+    const userOrders = allOrders?.filter(order => {
+      try {
+        const userInfo = typeof order.user === 'string' ? JSON.parse(order.user) : order.user;
+        return userInfo.user_id === userId;
+      } catch (parseError) {
+        // Fallback: check if user field directly matches userId (for old data)
+        return order.user === userId;
+      }
+    }) || [];
+
     // Enrich orders with product information
     const enrichedOrders = await Promise.all(
-      (orders || []).map(async (order) => {
+      userOrders.map(async (order) => {
         try {
           // Parse products JSON
           const products = JSON.parse(order.products || '[]');
