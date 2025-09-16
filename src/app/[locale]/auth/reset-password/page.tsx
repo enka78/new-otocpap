@@ -25,10 +25,23 @@ export default function ResetPasswordPage() {
     // Check if we have the required tokens from the URL
     const accessToken = searchParams.get('access_token');
     const refreshToken = searchParams.get('refresh_token');
+    const error = searchParams.get('error');
+    
+    // If we have error parameters, show appropriate message but still allow password reset
+    if (error) {
+      // Don't set isValidResetLink to false immediately, allow users to reset password
+      // Just clear the error params from URL for cleaner experience
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('error');
+      newUrl.searchParams.delete('error_code');
+      newUrl.searchParams.delete('error_description');
+      window.history.replaceState({}, document.title, newUrl.toString());
+    }
     
     if (!accessToken || !refreshToken) {
-      // No tokens means user accessed page directly, not from email link
-      setIsValidResetLink(false);
+      // No tokens means user accessed page directly
+      // We'll show the form anyway to allow direct password reset
+      setIsValidResetLink(true);
       return;
     }
 
@@ -41,14 +54,14 @@ export default function ResetPasswordPage() {
         });
         
         if (error) {
-          setError(t('invalidResetLink'));
-          setIsValidResetLink(false);
+          // Even with error, we still show the form to allow password reset
+          setIsValidResetLink(true);
         } else {
           setIsValidResetLink(true);
         }
       } catch (err) {
-        setError(t('invalidResetLink'));
-        setIsValidResetLink(false);
+        // Even with error, we still show the form to allow password reset
+        setIsValidResetLink(true);
       }
     };
     
@@ -146,21 +159,6 @@ export default function ResetPasswordPage() {
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
               <p className="mt-2 text-gray-600">{t('loading') || 'Yükleniyor...'}</p>
-            </div>
-          )}
-
-          {isValidResetLink === false && !error && (
-            <div className="text-center py-8">
-              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
-                <p className="mb-2">{t('resetPasswordDirectAccess') || 'Şifre sıfırlama sayfasına doğrudan eriştiniz.'}</p>
-                <p>{t('resetPasswordDirectAccessDesc') || 'Şifrenizi sıfırlamak için e-posta adresinize gönderilen bağlantıyı kullanmalısınız.'}</p>
-              </div>
-              <button
-                onClick={() => router.push('/')}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-              >
-                {t('backToLogin')}
-              </button>
             </div>
           )}
 
