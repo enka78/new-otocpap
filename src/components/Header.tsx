@@ -53,14 +53,25 @@ export default function Header() {
 
   const checkUserOrders = async (userId: string) => {
     try {
+      // Get all orders since user field is now JSON
       const { data, error } = await supabase
         .from('orders')
-        .select('id')
-        .eq('user', userId)
-        .limit(1);
+        .select('id, user')
+        .limit(100); // Get reasonable amount to check
 
       if (!error && data && data.length > 0) {
-        setHasOrders(true);
+        // Filter orders by user_id from JSON data
+        const userOrders = data.filter(order => {
+          try {
+            const userInfo = typeof order.user === 'string' ? JSON.parse(order.user) : order.user;
+            return userInfo.user_id === userId;
+          } catch (parseError) {
+            // Fallback: check if user field directly matches userId (for old data)
+            return order.user === userId;
+          }
+        });
+        
+        setHasOrders(userOrders.length > 0);
       } else {
         setHasOrders(false);
       }

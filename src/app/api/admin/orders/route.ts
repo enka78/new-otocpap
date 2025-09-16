@@ -13,11 +13,6 @@ export async function GET() {
       .from('orders')
       .select(`
         *,
-        users:user (
-          id,
-          email,
-          full_name
-        ),
         status:status_id (
           id,
           name,
@@ -35,9 +30,30 @@ export async function GET() {
       );
     }
 
+    // Parse user JSON data for each order
+    const enrichedOrders = orders?.map(order => {
+      try {
+        const userInfo = typeof order.user === 'string' ? JSON.parse(order.user) : order.user;
+        return {
+          ...order,
+          user_info: userInfo
+        };
+      } catch (parseError) {
+        console.error('Error parsing user data for order:', order.id, parseError);
+        return {
+          ...order,
+          user_info: {
+            user_id: order.user,
+            name: 'Unknown',
+            email: 'Unknown'
+          }
+        };
+      }
+    }) || [];
+
     return NextResponse.json({
       success: true,
-      orders: orders || []
+      orders: enrichedOrders
     });
 
   } catch (error) {

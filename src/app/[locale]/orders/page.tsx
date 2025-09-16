@@ -239,6 +239,23 @@ export default function OrdersPage() {
     }
   };
 
+  // Helper function to parse user info from JSON
+  const parseUserInfo = (userField: string | any) => {
+    try {
+      if (typeof userField === 'string') {
+        return JSON.parse(userField);
+      }
+      return userField;
+    } catch {
+      return {
+        user_id: userField,
+        name: 'Unknown',
+        email: 'Unknown',
+        address: 'Not specified'
+      };
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen">
@@ -402,6 +419,34 @@ export default function OrdersPage() {
                       )}
                     </div>
 
+                    {/* Customer Info */}
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h5 className="text-sm font-medium text-blue-900 mb-3 flex items-center">
+                        <User className="w-4 h-4 mr-2" />
+                        {t("orders.customerInfo")}
+                      </h5>
+                      <div className="text-sm text-blue-700 space-y-2">
+                        {(() => {
+                          const userInfo = parseUserInfo(order.user);
+                          return (
+                            <>
+                              <div>
+                                <span className="font-medium">{userInfo.name || 'Unknown'}</span>
+                              </div>
+                              {userInfo.address && (
+                                <div className="flex items-start">
+                                  <strong className="flex-shrink-0">Teslimat Adresi:</strong>
+                                  <span className="flex-1 ml-2">
+                                    {userInfo.address}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+
                     {/* Delivery Info */}
                     {order.delivery_date && (
                       <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -510,6 +555,34 @@ export default function OrdersPage() {
                   <p className="text-sm text-gray-600">
                     {selectedOrder.status?.description || t('orders.statusDescription')}
                   </p>
+                </div>
+
+                {/* Customer Information */}
+                <div className="mt-6 p-6 bg-white rounded-xl border">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <User className="w-5 h-5 mr-2" />
+                    {t("orders.customerInfo")}
+                  </h4>
+                  <div className="space-y-4">
+                    {(() => {
+                      const userInfo = parseUserInfo(selectedOrder.user);
+                      return (
+                        <>
+                          <div>
+                            <p className="text-gray-900 font-medium">{userInfo.name || 'Unknown'}</p>
+                          </div>
+                          {userInfo.address && (
+                            <div>
+                              <p className="text-sm font-medium text-gray-700 mb-1">Teslimat Adresi:</p>
+                              <div className="text-gray-900">
+                                <p className="whitespace-pre-line">{userInfo.address}</p>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
 
                 {/* Delivery Appointment */}
