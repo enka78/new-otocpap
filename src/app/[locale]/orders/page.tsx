@@ -433,11 +433,23 @@ export default function OrdersPage() {
                               <div>
                                 <span className="font-medium">{userInfo.name || 'Unknown'}</span>
                               </div>
+                              {userInfo.phone && (
+                                <div>
+                                  <strong>Telefon:</strong> {userInfo.phone}
+                                </div>
+                              )}
+                              {userInfo.email && (
+                                <div>
+                                  <strong>E-posta:</strong> {userInfo.email}
+                                </div>
+                              )}
                               {userInfo.address && (
                                 <div className="flex items-start">
                                   <strong className="flex-shrink-0">Teslimat Adresi:</strong>
                                   <span className="flex-1 ml-2">
-                                    {userInfo.address}
+                                    {typeof userInfo.address === 'object' 
+                                      ? `${userInfo.address.full_address}, ${userInfo.address.district}, ${userInfo.address.city}, ${userInfo.address.postal_code}, ${userInfo.address.country}`
+                                      : userInfo.address}
                                   </span>
                                 </div>
                               )}
@@ -571,11 +583,25 @@ export default function OrdersPage() {
                           <div>
                             <p className="text-gray-900 font-medium">{userInfo.name || 'Unknown'}</p>
                           </div>
+                          {userInfo.phone && (
+                            <div>
+                              <strong>Telefon:</strong> {userInfo.phone}
+                            </div>
+                          )}
+                          {userInfo.email && (
+                            <div>
+                              <strong>E-posta:</strong> {userInfo.email}
+                            </div>
+                          )}
                           {userInfo.address && (
                             <div>
                               <p className="text-sm font-medium text-gray-700 mb-1">Teslimat Adresi:</p>
                               <div className="text-gray-900">
-                                <p className="whitespace-pre-line">{userInfo.address}</p>
+                                <p className="whitespace-pre-line">
+                                  {typeof userInfo.address === 'object' 
+                                    ? `${userInfo.address.full_address}\n${userInfo.address.district}, ${userInfo.address.city}\n${userInfo.address.postal_code}, ${userInfo.address.country}`
+                                    : userInfo.address}
+                                </p>
                               </div>
                             </div>
                           )}

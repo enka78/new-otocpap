@@ -200,16 +200,33 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         product_category: item.product.category_id,
       }));
 
+      // Prepare customer information as JSON object
+      const customerInfo = {
+        user_id: user.id,
+        name: addressData.fullName,
+        email: addressData.email,
+        phone: addressData.phone,
+        address: {
+          full_address: addressData.address,
+          district: addressData.district,
+          city: addressData.city,
+          postal_code: addressData.postalCode,
+          country: addressData.country
+        },
+        delivery_type: addressData.deliveryType,
+        online_support: addressData.onlineSupport,
+        notes: addressData.notes
+      };
+
       // Orders tablosuna kayıt için veri hazırla
       const orderData = {
         products: JSON.stringify(orderProducts), // JSON string olarak kaydet
         status_id: 1, // order_received durumu
         total: getTotalPrice(),
         currency: "TL",
-        user: user.id, // UUID olarak kaydet
+        user: JSON.stringify(customerInfo), // Save customer info as JSON string
       };
 
-      console.log(t("orderDataLog"), orderData);
 
       const { data: orderResult, error } = await supabase
         .from("orders")
