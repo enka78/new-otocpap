@@ -63,6 +63,7 @@ export default function Hero() {
         title: t("hero.title"),
         sub_title: t("hero.subtitle"),
         image: undefined,
+        mobile_image: undefined,
         add_button: false,
         btn_text: undefined,
         add_link: undefined,
@@ -77,15 +78,30 @@ export default function Hero() {
 
   return (
     <section className="relative bg-gradient-to-br from-blue-50 to-indigo-100 py-20 overflow-hidden">
-      {/* Background Image */}
+      {/* Background Images */}
       {currentBanner?.image && (
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 hidden sm:block">
           <Image
             src={getBannerImageUrl(currentBanner.image)}
             alt="Banner Background"
             fill
             sizes="100vw"
             className="object-cover"
+            unoptimized
+            priority
+            quality={100} // Ensure the best quality
+          />
+        </div>
+      )}
+      
+      {currentBanner?.mobile_image && (
+        <div className="absolute inset-0 sm:hidden">
+          <Image
+            src={getBannerImageUrl(currentBanner.mobile_image)}
+            alt="Banner Background Mobile"
+            fill
+            sizes="100vw"
+            className="object-fill"
             unoptimized
             priority
             quality={100} // Ensure the best quality
@@ -143,14 +159,14 @@ export default function Hero() {
             )}
           </div>
         </div>
-        <div className="absolute  -top-8 left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg">
+        <div className="absolute -bottom-8 lg:bottom-auto lg:-top-8 left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg">
           <div className="text-sm font-semibold">
             {t("hero.freeInstallation")}
           </div>
           <div className="text-xs">{t("hero.installation")}</div>
         </div>
 
-        <div className="absolute  -top-10 left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg">
+        <div className="absolute -bottom-10 lg:bottom-auto  lg:-top-10 left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg">
           <div className="text-sm font-semibold">{t("hero.support247")}</div>
           <div className="text-xs">{t("hero.support")}</div>
         </div>

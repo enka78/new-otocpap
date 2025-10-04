@@ -247,6 +247,7 @@ export interface Banner {
   title: string
   sub_title: string
   image?: string
+  mobile_image?: string
   add_button: boolean
   btn_text?: string
   add_link?: string
