@@ -3,19 +3,11 @@
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { Phone, Clock } from "lucide-react";
+import BrandsSection from "@/components/BrandsSection";
 
 export default function Footer() {
   const t = useTranslations();
   const locale = useLocale();
-
-  const brands = [
-    "ResMed",
-    "Philips Respironics",
-    "LÖWENSTEIN",
-    "AONMED",
-    "Devilbiss",
-    "Respirox",
-  ];
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -100,13 +92,7 @@ export default function Footer() {
           {/* Brands */}
           <div>
             <h3 className="text-lg font-semibold mb-4">{t("footer.brands")}</h3>
-            <ul className="space-y-2">
-              {brands.map((brand) => (
-                <li key={brand} className="text-gray-400 text-sm">
-                  {brand}
-                </li>
-              ))}
-            </ul>
+            <BrandsSection variant="footer" />
           </div>
         </div>
 
