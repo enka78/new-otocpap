@@ -134,18 +134,12 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       </p>
 
                       {/* Price */}
-                      {user ? (
                         <div className="text-sm font-bold text-blue-600">
                           ₺
                           {(item.product.price * item.quantity).toLocaleString(
                             "tr-TR"
                           )}
                         </div>
-                      ) : (
-                        <div className="text-xs text-gray-500">
-                          {t("cart.loginToSeePrice")}
-                        </div>
-                      )}
                     </div>
 
                     {/* Remove Button */}
@@ -214,14 +208,13 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         {cartItems.length > 0 && (
           <div className="border-t p-6 space-y-4">
             {/* Total */}
-            {user && (
-              <div className="flex justify-between items-center text-lg font-bold">
-                <span>{t("cart.total")}</span>
-                <span className="text-blue-600">
-                  ₺{getTotalPrice().toLocaleString("tr-TR")}
-                </span>
-              </div>
-            )}
+
+            <div className="flex justify-between items-center text-lg font-bold">
+              <span>{t("cart.total")}</span>
+              <span className="text-blue-600">
+                ₺{getTotalPrice().toLocaleString("tr-TR")}
+              </span>
+            </div>
 
             {/* Actions */}
             <div className="flex gap-4 flex-col md:flex-row">

@@ -259,15 +259,9 @@ export default function ProductsPage() {
 
                         {/* Price */}
                         <div className="mb-4">
-                          {user ? (
-                            <div className="text-lg font-bold text-blue-600">
-                              ₺{product.price.toLocaleString("tr-TR")}
-                            </div>
-                          ) : (
-                            <div className="text-sm text-gray-500">
-                              {t("products.priceVisible")}
-                            </div>
-                          )}
+                          <div className="text-lg font-bold text-blue-600">
+                            ₺{product.price.toLocaleString("tr-TR")}
+                          </div>
                         </div>
 
                         {/* Action Buttons */}
