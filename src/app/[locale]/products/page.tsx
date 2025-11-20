@@ -122,7 +122,7 @@ export default function ProductsPage() {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Filters Sidebar */}
             <div className="lg:w-64 flex-shrink-0">
-              <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+              <div className="bg-white rounded-lg shadow-md p-6 sticky top-9">
                 <div className="flex items-center mb-4">
                   <Filter size={20} className="mr-2" />
                   <h3 className="font-semibold">{t("products.filters")}</h3>
@@ -259,15 +259,9 @@ export default function ProductsPage() {
 
                         {/* Price */}
                         <div className="mb-4">
-                          {user ? (
-                            <div className="text-lg font-bold text-blue-600">
-                              ₺{product.price.toLocaleString("tr-TR")}
-                            </div>
-                          ) : (
-                            <div className="text-sm text-gray-500">
-                              {t("products.priceVisible")}
-                            </div>
-                          )}
+                          <div className="text-lg font-bold text-blue-600">
+                            ₺{product.price.toLocaleString("tr-TR")}
+                          </div>
                         </div>
 
                         {/* Action Buttons */}

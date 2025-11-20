@@ -102,7 +102,7 @@ export default function HomePage() {
                               alt={brand.name}
                               fill
                               sizes="120px"
-                              className="object-contain"
+                              className="object-contain p-2.5"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src =
