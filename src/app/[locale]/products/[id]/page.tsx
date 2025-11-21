@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import { supabase, Product, getProductImageUrl } from "@/lib/supabase";
 import { ArrowLeft, ShoppingCart, Heart, Share2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { hasRealContent } from "@/helpers/hasRealContent";
 
 export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
@@ -219,24 +220,12 @@ export default function ProductDetailPage() {
 
               {/* Price */}
               <div className="bg-gray-50 rounded-lg p-6">
-                {user ? (
-                  <div>
-                    <div className="text-sm text-gray-600 mb-2">Fiyat</div>
-                    <div className="text-3xl font-bold text-blue-600">
-                      ₺{product.price.toLocaleString("tr-TR")}
-                    </div>
+                <div>
+                  <div className="text-sm text-gray-600 mb-2">Fiyat</div>
+                  <div className="text-3xl font-bold text-blue-600">
+                    ₺{product.price.toLocaleString("tr-TR")}
                   </div>
-                ) : (
-                  <div>
-                    <div className="text-sm text-gray-600 mb-2">
-                      {t("products.priceVisible")}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      Fiyat bilgisi için lütfen giriş yapın veya bizimle
-                      iletişime geçin.
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
 
               {/* Action Buttons */}
@@ -305,30 +294,33 @@ export default function ProductDetailPage() {
 
             {/* Right Column - Product Description */}
             <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  {t("products.productDescription")}
-                </h2>
-                <div
-                  className="prose-content"
-                  dangerouslySetInnerHTML={{
-                    __html: renderDescription(product.description),
-                  }}
-                />
-              </div>
-              {product.usage_instructions && (
+              {product.description && hasRealContent(product.description) && (
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    Kullanım Talimatları
-                  </h3>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                    {t("products.productDescription")}
+                  </h2>
                   <div
                     className="prose-content"
                     dangerouslySetInnerHTML={{
-                      __html: renderDescription(product.usage_instructions),
+                      __html: renderDescription(product.description),
                     }}
                   />
                 </div>
               )}
+              {product.usage_instructions &&
+                hasRealContent(product.usage_instructions) && (
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                      Kullanım Talimatları
+                    </h3>
+                    <div
+                      className="prose-content"
+                      dangerouslySetInnerHTML={{
+                        __html: renderDescription(product.usage_instructions),
+                      }}
+                    />
+                  </div>
+                )}
             </div>
           </div>
         </div>
