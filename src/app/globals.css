@@ -8,7 +8,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-family: "Inter", Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
@@ -18,13 +18,80 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+}
+
+/* Prose content styling for product descriptions */
+.prose-content {
+  @apply max-w-none;
+}
+
+.prose-content ul {
+  list-style: disc;
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.prose-content ul li {
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.prose-content ol {
+  list-style: decimal;
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.prose-content ol li {
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.prose-content h1,
+.prose-content h2,
+.prose-content h3,
+.prose-content h4,
+.prose-content h5,
+.prose-content h6 {
+  font-weight: 600;
+  color: #111827;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-content h1 {
+  font-size: 1.5rem;
+}
+
+.prose-content h2 {
+  font-size: 1.25rem;
+}
+
+.prose-content h3 {
+  font-size: 1.125rem;
+}
+
+.prose-content p {
+  margin-bottom: 1rem;
+  color: #374151;
+  line-height: 1.625;
+}
+
+.prose-content strong {
+  font-weight: 700;
+}
+
+.prose-content em {
+  font-style: italic;
 }
 
 /* Custom scrollbar */
