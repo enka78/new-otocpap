@@ -309,25 +309,22 @@ export default function ProductDetailPage() {
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
                   {t("products.productDescription")}
                 </h2>
-                <div className="prose max-w-none">
-                  <div
-                    className="text-gray-700 leading-relaxed"
-                    dangerouslySetInnerHTML={{
-                      __html: product.description || "",
-                    }}
-                  />
-                </div>
+                <div
+                  className="prose-content"
+                  dangerouslySetInnerHTML={{
+                    __html: renderDescription(product.description),
+                  }}
+                />
               </div>
-
               {product.usage_instructions && (
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     Kullanım Talimatları
                   </h3>
                   <div
-                    className="prose max-w-none text-gray-700"
+                    className="prose-content"
                     dangerouslySetInnerHTML={{
-                      __html: product.usage_instructions || "",
+                      __html: renderDescription(product.usage_instructions),
                     }}
                   />
                 </div>
@@ -340,4 +337,8 @@ export default function ProductDetailPage() {
       <Footer />
     </div>
   );
+}
+
+function renderDescription(text?: string) {
+  return text || "";
 }
