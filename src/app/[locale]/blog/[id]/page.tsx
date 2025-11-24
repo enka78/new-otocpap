@@ -148,7 +148,7 @@ export default function BlogDetailPage() {
           </nav>
 
           {/* Article Header */}
-          <article className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+          <article className="prose-content bg-white rounded-lg shadow-lg overflow-hidden mb-8">
             {/* Featured Image */}
             <div className="relative h-80 bg-gray-200 flex items-center justify-center overflow-hidden">
               {post.image ? (

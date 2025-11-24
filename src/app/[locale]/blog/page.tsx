@@ -131,11 +131,11 @@ export default function BlogPage() {
 
                   {/* Post Content */}
                   <div className="p-6 flex flex-col flex-grow">
-                    <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                    <h1 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2">
                       {post.title}
-                    </h2>
+                    </h1>
 
-                    <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">
+                    <p className="text-gray-600 text-base mb-4 line-clamp-3 flex-grow">
                       {post.sub_title}
                     </p>
 
