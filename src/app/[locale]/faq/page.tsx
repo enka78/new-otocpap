@@ -2,12 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import LegalPageLayout from "@/components/LegalPageLayout";
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { ChevronDown, ChevronUp, HelpCircle, Phone } from "lucide-react";
 
 interface FAQItem {
     question: string;
-    answer: string | JSX.Element;
+    answer: string | ReactNode;
 }
 
 export default function FAQPage() {
