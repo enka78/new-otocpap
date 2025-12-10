@@ -12,7 +12,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="text-2xl font-bold mb-4">
@@ -84,6 +84,47 @@ export default function Footer() {
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   {t("nav.contact")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal Links */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">
+              {t("footer.information")}
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href={`/${locale}/privacy-policy`}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {t("footer.privacyPolicy")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/distance-sales-agreement`}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {t("footer.distanceSalesAgreement")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/delivery-return-conditions`}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {t("footer.deliveryReturnConditions")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/faq`}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  {t("footer.faq")}
                 </Link>
               </li>
             </ul>

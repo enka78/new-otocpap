@@ -181,10 +181,10 @@ export default function OrdersPage() {
       setOrders(enrichedOrders);
     } catch (error: any) {
       console.error("Error fetching orders:", error);
-      
+
       // Handle auth errors specifically
-      if (error?.message?.includes('Invalid Refresh Token') || 
-          error?.message?.includes('Refresh Token Not Found')) {
+      if (error?.message?.includes('Invalid Refresh Token') ||
+        error?.message?.includes('Refresh Token Not Found')) {
         await handleAuthError(error);
       }
     } finally {
@@ -337,7 +337,7 @@ export default function OrdersPage() {
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center space-x-6 text-sm">
                         <div className="flex items-center text-gray-600">
                           <Calendar className="w-4 h-4 mr-2" />
@@ -367,7 +367,7 @@ export default function OrdersPage() {
                         {order.product_details?.length || 0} {t("common.items")}
                       </span>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {order.product_details?.slice(0, 3).map((item, index) => (
                         <div
@@ -406,7 +406,7 @@ export default function OrdersPage() {
                           </div>
                         </div>
                       ))}
-                      
+
                       {order.product_details && order.product_details.length > 3 && (
                         <div className="flex items-center justify-center p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
                           <div className="text-center">
@@ -447,7 +447,7 @@ export default function OrdersPage() {
                                 <div className="flex items-start">
                                   <strong className="flex-shrink-0">Teslimat Adresi:</strong>
                                   <span className="flex-1 ml-2">
-                                    {typeof userInfo.address === 'object' 
+                                    {typeof userInfo.address === 'object'
                                       ? `${userInfo.address.full_address}, ${userInfo.address.district}, ${userInfo.address.city}, ${userInfo.address.postal_code}, ${userInfo.address.country}`
                                       : userInfo.address}
                                   </span>
@@ -598,7 +598,7 @@ export default function OrdersPage() {
                               <p className="text-sm font-medium text-gray-700 mb-1">Teslimat Adresi:</p>
                               <div className="text-gray-900">
                                 <p className="whitespace-pre-line">
-                                  {typeof userInfo.address === 'object' 
+                                  {typeof userInfo.address === 'object'
                                     ? `${userInfo.address.full_address}\n${userInfo.address.district}, ${userInfo.address.city}\n${userInfo.address.postal_code}, ${userInfo.address.country}`
                                     : userInfo.address}
                                 </p>
@@ -653,52 +653,76 @@ export default function OrdersPage() {
                 </h3>
                 <div className="space-y-4">
                   {selectedOrder.product_details &&
-                  selectedOrder.product_details.length > 0
+                    selectedOrder.product_details.length > 0
                     ? selectedOrder.product_details.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center p-6 bg-gray-50 rounded-xl border hover:bg-gray-100 transition-colors"
-                        >
-                          {/* Product Image */}
-                          <div className="w-20 h-20 flex-shrink-0 mr-6">
-                            {item.product_image ? (
-                              <img
-                                src={item.product_image}
-                                alt={item.product_name || t("products.unknown")}
-                                className="w-full h-full object-cover rounded-lg"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                                <Package className="w-8 h-8 text-gray-400" />
+                      <div
+                        key={index}
+                        className="flex items-center p-6 bg-gray-50 rounded-xl border hover:bg-gray-100 transition-colors"
+                      >
+                        {/* Product Image */}
+                        <div className="w-20 h-20 flex-shrink-0 mr-6">
+                          {item.product_image ? (
+                            <img
+                              src={item.product_image}
+                              alt={item.product_name || t("products.unknown")}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                              <Package className="w-8 h-8 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 text-lg mb-2">
+                            {item.product_name || `${t('products.unknown')} ID: ${item.product_id}`}
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                            {item.product_brand && (
+                              <div>
+                                {item.product_brand}
                               </div>
                             )}
-                          </div>
-
-                          {/* Product Info */}
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 text-lg mb-2">
-                              {item.product_name || `${t('products.unknown')} ID: ${item.product_id}`}
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                              {item.product_brand && (
-                                <div>
-                                   {item.product_brand}
-                                </div>
-                              )}
-                              {item.product_category && (
-                                <div>
-                                  {item.product_category}
-                                </div>
-                              )}
+                            {item.product_category && (
                               <div>
-                                <span className="font-medium">{t("checkout.quantity")}:</span> {item.quantity}
+                                {item.product_category}
                               </div>
+                            )}
+                            <div>
+                              <span className="font-medium">{t("checkout.quantity")}:</span> {item.quantity}
                             </div>
                           </div>
+                        </div>
 
-                          {/* Price Info */}
-                          <div className="text-right ml-6">
-                            <p className="font-bold text-xl text-blue-600 mb-1">
+                        {/* Price Info */}
+                        <div className="text-right ml-6">
+                          <p className="font-bold text-xl text-blue-600 mb-1">
+                            {(item.price * item.quantity).toFixed(2)} ₺
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {item.price.toFixed(2)} ₺/{t("common.unit")}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                    : parseOrderProducts(selectedOrder.products).map(
+                      (item, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center p-6 bg-gray-50 rounded-xl border"
+                        >
+                          <div>
+                            <p className="font-semibold text-gray-900">
+                              {t('products.unknown')} ID: {item.product_id}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {t("checkout.quantity")}: {item.quantity}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-xl text-blue-600">
                               {(item.price * item.quantity).toFixed(2)} ₺
                             </p>
                             <p className="text-sm text-gray-500">
@@ -706,32 +730,8 @@ export default function OrdersPage() {
                             </p>
                           </div>
                         </div>
-                      ))
-                    : parseOrderProducts(selectedOrder.products).map(
-                        (item, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center p-6 bg-gray-50 rounded-xl border"
-                          >
-                            <div>
-                              <p className="font-semibold text-gray-900">
-                                {t('products.unknown')} ID: {item.product_id}
-                              </p>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {t("checkout.quantity")}: {item.quantity}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-bold text-xl text-blue-600">
-                                {(item.price * item.quantity).toFixed(2)} ₺
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                {item.price.toFixed(2)} ₺/{t("common.unit")}
-                              </p>
-                            </div>
-                          </div>
-                        )
-                      )}
+                      )
+                    )}
                 </div>
               </div>
 
