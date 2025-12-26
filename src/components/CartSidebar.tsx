@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { supabase, getProductImageUrl } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
-import CheckoutModal from "./CheckoutModal";
+import { useRouter } from "next/navigation";
 import { DailyOrderCheck } from "@/lib/orderValidation";
 
 // interface CartItem {
@@ -23,8 +23,8 @@ interface CartSidebarProps {
 
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const t = useTranslations();
+  const router = useRouter();
   const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [orderCheck, setOrderCheck] = useState<DailyOrderCheck | null>(null);
 
   const {
@@ -134,12 +134,12 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       </p>
 
                       {/* Price */}
-                        <div className="text-sm font-bold text-blue-600">
-                          ₺
-                          {(item.product.price * item.quantity).toLocaleString(
-                            "tr-TR"
-                          )}
-                        </div>
+                      <div className="text-sm font-bold text-blue-600">
+                        ₺
+                        {(item.product.price * item.quantity).toLocaleString(
+                          "tr-TR"
+                        )}
+                      </div>
                     </div>
 
                     {/* Remove Button */}
@@ -155,29 +155,29 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     {![1, 3, 5, 7, 8, 9, 10, 11, 13, 14].includes(
                       item.categoryId
                     ) && (
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
-                          }
-                          className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors"
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span className="w-8 text-center font-semibold">
-                          {item.quantity}
-                        </span>
-                        {/* Plus butonu sadece maske ve aksesuar için aktif */}
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
-                          }
-                          className={`w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-full transition-colors hover:bg-gray-50 cursor-pointer`}
-                        >
-                          <Plus size={14} />
-                        </button>
-                      </div>
-                    )}
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity - 1)
+                            }
+                            className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors"
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span className="w-8 text-center font-semibold">
+                            {item.quantity}
+                          </span>
+                          {/* Plus butonu sadece maske ve aksesuar için aktif */}
+                          <button
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity + 1)
+                            }
+                            className={`w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-full transition-colors hover:bg-gray-50 cursor-pointer`}
+                          >
+                            <Plus size={14} />
+                          </button>
+                        </div>
+                      )}
 
                     <div className="text-right flex justify-end w-full">
                       {![1, 3, 5, 7, 8, 9, 10, 11, 13, 14].includes(
@@ -192,10 +192,10 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       {[1, 3, 5, 7, 8, 9, 10, 11, 13, 14].includes(
                         item.categoryId
                       ) && (
-                        <div className="text-xs text-orange-600 mt-1">
-                          {t('cart.deviceLimit')}
-                        </div>
-                      )}
+                          <div className="text-xs text-orange-600 mt-1">
+                            {t('cart.deviceLimit')}
+                          </div>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -242,7 +242,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     });
                     return;
                   }
-                  setIsCheckoutOpen(true);
+                  router.push("/payment");
+                  onClose();
                 }}
               >
                 {t("cart.placeOrder")} ({getTotalItems()} {t('cart.items')})
@@ -252,11 +253,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         )}
       </div>
 
-      {/* Checkout Modal */}
-      <CheckoutModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-      />
     </>
   );
+
 }

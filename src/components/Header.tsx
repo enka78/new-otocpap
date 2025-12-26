@@ -70,7 +70,7 @@ export default function Header() {
             return order.user === userId;
           }
         });
-        
+
         setHasOrders(userOrders.length > 0);
       } else {
         setHasOrders(false);

@@ -137,10 +137,21 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+
+
+        {/* Payment Trust Badge - PayTR */}
+        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">
           <p>{t("footer.copyRight")}</p>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-2 space-y-2 md:space-y-0 md:space-x-4 mt-4 md:mt-0">
+            <span className="text-gray-400 text-xs text-center md:text-right">
+              Ödemeleriniz PayTR güvenli ödeme altyapısı ile 256-bit SSL üzerinden korunmaktadır.
+            </span>
+            <div className="h-8 w-24 relative opacity-90 hover:opacity-100 transition-opacity">
+              <img src="/PayTR-Logo.svg" alt="PayTR" className="h-full w-full object-contain brightness-0 invert" />
+            </div>
+          </div>
         </div>
       </div>
-    </footer>
+    </footer >
   );
 }

@@ -92,8 +92,8 @@ export default function ProductsPage() {
         query = query.ilike("name", `%${searchTerm}%`);
       }
 
-      const { data, error } = await query.order("created_at", {
-        ascending: false,
+      const { data, error } = await query.order("order_number", {
+        ascending: true,
       });
 
       if (error) throw error;

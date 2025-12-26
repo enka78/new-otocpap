@@ -6,8 +6,11 @@ import {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
 import { Product, supabase } from "@/lib/supabase";
+
+// ... other imports
 
 interface CartItem {
   id: number;
@@ -33,6 +36,8 @@ interface CartContextType {
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  getShippingCost: () => number;
+  getFinalTotal: () => number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   checkout: () => Promise<boolean>;
@@ -47,6 +52,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toast, setToast] = useState<ToastMessage | null>(null);
 
+  const [isInitialized, setIsInitialized] = useState(false);
+
   // Load cart from localStorage on mount
   useEffect(() => {
     try {
@@ -57,17 +64,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("Error loading cart:", error);
+    } finally {
+      setIsInitialized(true);
     }
   }, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
+    if (!isInitialized) return;
     try {
       localStorage.setItem("cart", JSON.stringify(cartItems));
     } catch (error) {
       console.error("Error saving cart:", error);
     }
-  }, [cartItems]);
+  }, [cartItems, isInitialized]);
 
   const addToCart = (
     product: Product & { categories?: { name: string } },
@@ -108,9 +118,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCartItems([]);
-  };
+  }, []);
 
   const getTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -145,6 +155,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         getTotalItems,
         getTotalPrice,
+        getShippingCost: () => {
+          const total = cartItems.reduce((total, item) => total + item.quantity * item.product.price, 0);
+          return total >= 3000 ? 0 : 200;
+        },
+        getFinalTotal: () => {
+          const total = cartItems.reduce((total, item) => total + item.quantity * item.product.price, 0);
+          const shipping = total >= 3000 ? 0 : 200;
+          return total + shipping;
+        },
         isCartOpen,
         setIsCartOpen,
         checkout,
