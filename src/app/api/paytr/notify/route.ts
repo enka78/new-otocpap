@@ -1,9 +1,12 @@
+export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from "next/server";
 import { paytrService } from "@/lib/paytr";
 import { supabase } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
     try {
+         console.log("🔥 PAYTR NOTIFY HIT");
         // PayTR sends x-www-form-urlencoded data
         const formData = await req.formData();
         const merchant_oid = formData.get("merchant_oid") as string;
