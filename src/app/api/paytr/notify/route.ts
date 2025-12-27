@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
                 currency: "TL",
                 user: JSON.stringify(customerInfo),
                 payment_method: "credit_card",
-                payment_reference: merchant_oid
+                payment_provider_reference: merchant_oid
             };
 
             // Update Session Status
