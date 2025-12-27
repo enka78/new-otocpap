@@ -4,7 +4,7 @@ interface PaytrTokenParams {
     merchant_oid: string;
     email: string;
     payment_amount: number; // In kurus (100 * TL)
-    user_basket: any[][]; // [["product name", "price", "quantity"], ...]
+    user_basket: string; // [["product name", "price", "quantity"], ...]
     no_installment: number; // 0 or 1
     max_installment: number; // 0 to 12
     user_name: string;
