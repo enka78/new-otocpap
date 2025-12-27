@@ -20,21 +20,6 @@ function SuccessContent() {
     // Use whichever exists.
     const reference = urlReference || oid;
 
-    // State to hold the final display string (usually just the reference)
-    // But we might want to check if the order exists in DB to be sure?
-    // For PayTR, order creation is async, so we might need to poll if we want to confirm details.
-    // For Bank, it's already created.
-
-    // However, the user request says: "bu alandaki numarayı kullanıcıya sipariş numarası olarak göstermeliyiz"
-    // So we just show the reference.
-
-    // IF PayTR -> oid is the reference. But does it exist in "orders" yet?
-    // User wants to ensure "payment_reference" column's value is what is shown.
-    // oid IS that value (we insert it in notify route).
-
-    // So we can just display 'reference'. 
-    // BUT for safety/UX, let's verify Order existence for PayTR if 'oid' is present.
-
     const [displayId, setDisplayId] = useState<string | null>(reference);
     const [isChecking, setIsChecking] = useState(false);
 
@@ -49,25 +34,26 @@ function SuccessContent() {
                 setIsChecking(true);
                 // Poll a few times to see if order arrives
                 let attempts = 0;
-                const max = 5;
+                const max = 10; // Increase max attempts
                 const interval = setInterval(async () => {
                     attempts++;
                     const { data } = await supabase
                         .from('orders')
-                        .select('payment_reference')
+                        .select('id')
                         .eq('payment_reference', oid)
                         .maybeSingle();
 
                     if (data) {
-                        // Confirmed
+                        // Confirmed - Use the numeric ID for display
+                        setDisplayId((data as any).id.toString());
                         clearInterval(interval);
                         setIsChecking(false);
                     } else if (attempts >= max) {
                         clearInterval(interval);
                         setIsChecking(false);
-                        // Still show the oid, it's the reference anyway.
+                        // Still show the oid if not found after polling
                     }
-                }, 1000);
+                }, 1500); // Slightly longer interval for DB sync
             }
         };
 
