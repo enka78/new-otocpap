@@ -11,7 +11,10 @@ export async function POST(req: NextRequest) {
            1. CLIENT IP
         ---------------------------------------------------- */
         const forwarded = req.headers.get("x-forwarded-for");
-        let ip = forwarded ? forwarded.split(",")[0] : (req.headers.get("x-real-ip") || "127.0.0.1");
+        let ip =
+            forwarded?.split(",")[0] ||
+            req.headers.get("x-real-ip") ||
+            "127.0.0.1";
 
         if (ip === "::1" || ip === "::") ip = "127.0.0.1";
 
@@ -21,16 +24,16 @@ export async function POST(req: NextRequest) {
         const sessionId = crypto.randomUUID().replace(/-/g, "");
 
         /* ----------------------------------------------------
-           3. USER BASKET (PayTR format + Base64)
-           Format: [["Ürün Adı","18.00",1], ...]
+           3. USER BASKET (PHP ÖRNEĞİYLE BİREBİR)
+           [["Ürün Adı","18.00",1], ...]
         ---------------------------------------------------- */
-        const userBasketArray = cartItems.map((item: any) => [
-            item.product.name,
-            Number(item.product.price).toFixed(2),
-            item.quantity
+        const userBasketArray: any[][] = cartItems.map((item: any) => [
+            String(item.product?.name || "Ürün"),
+            Number(item.product?.price || 0).toFixed(2), // STRING
+            Number(item.quantity || 1)
         ]);
 
-        const user_basket = Buffer.from(
+        const user_basket: string = Buffer.from(
             JSON.stringify(userBasketArray),
             "utf-8"
         ).toString("base64");
@@ -62,21 +65,38 @@ export async function POST(req: NextRequest) {
         const totalAmountKurus = Math.round(Number(totalAmount) * 100);
 
         /* ----------------------------------------------------
-           6. PAYTR TOKEN REQUEST
+           6. SAFE ADDRESS (undefined FIX)
         ---------------------------------------------------- */
-        const { token, iframeUrl } = await paytrService.getIframeTokenWithIp({
-            merchant_oid: sessionId,
-            email: user.email,
-            payment_amount: totalAmountKurus,
-            user_basket: user_basket, // 🔥 PAYTR FORMAT
-            no_installment: 0,
-            max_installment: 12,
-            user_name: user.fullName || user.name,
-            user_address: `${user.address.full_address} ${user.address.district} ${user.address.city}`,
-            user_phone: user.phone,
-            currency: "TL",
-            test_mode: process.env.PAYTR_TEST_MODE === "1" ? "1" : "0"
-        }, ip);
+        const user_address =
+            user?.address?.full_address ||
+            "Adres bilgisi girilmedi";
+
+        /* ----------------------------------------------------
+           7. PAYTR TOKEN REQUEST
+        ---------------------------------------------------- */
+        const { token, iframeUrl } =
+            await paytrService.getIframeTokenWithIp(
+                {
+                    merchant_oid: sessionId,
+                    email: user.email,
+                    payment_amount: totalAmountKurus,
+                    user_basket, // ✅ Base64(JSON)
+                    no_installment: 0,
+                    max_installment: 12,
+                    user_name: user.fullName || user.name,
+                    user_address,
+                    user_phone: user.phone,
+                    currency: "TL",
+                    test_mode:
+                        process.env.PAYTR_TEST_MODE === "1" ? "1" : "0"
+                },
+                ip
+            );
+
+        /* ----------------------------------------------------
+           DEBUG (GEÇİCİ)
+        ---------------------------------------------------- */
+        console.log("USER_BASKET_DECODE:", Buffer.from(user_basket, "base64").toString("utf-8"));
 
         return NextResponse.json({ token, iframeUrl });
 
