@@ -139,7 +139,6 @@
     "faq": "SSS",
     "copyRight": "© 2025 Dönüşüm Medikal. Tüm hakları saklıdır."
   },
-  "urlCopied": "Ürün URL'si panoya kopyalandı!",
   "blog": {
     "title": "Blog",
     "description": "CPAP, BiPAP ve uyku apnesi hakkında uzman görüşleri, kullanım ipuçları ve güncel bilgiler",
@@ -210,6 +209,8 @@
     "specialNotes": "Özel Notlar",
     "specialNotesPlaceholder": "Özel isteklerinizi veya notlarınızı yazınız...",
     "continue": "Devam Et",
+    "paymentSelection": "Ödeme Yöntemi",
+    "sending": "Gönderiliyor...",
     "orderSummary": "Sipariş Özeti",
     "delivery": "Teslimat:",
     "orderDetails": "Sipariş Detayları",
@@ -285,7 +286,8 @@
     "loginToSeePrice": "Fiyat için giriş yapın",
     "unitPrice": "Birim:",
     "deviceLimit": "Cihazlardan sadece 1 adet",
-    "items": "ürün"
+    "items": "ürün",
+    "continueShopping": "Alışverişe Devam Et"
   },
   "header": {
     "myOrders": "Siparişlerim",

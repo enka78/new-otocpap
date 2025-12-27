@@ -56,7 +56,8 @@
     "notFoundDescription": "The product you are looking for does not exist.",
     "returnToProducts": "Return to Products",
     "productDescription": "Product Description",
-    "usageInstructions": "Usage Instructions"
+    "usageInstructions": "Usage Instructions",
+    "urlCopied": "Product URL copied to clipboard!"
   },
   "about": {
     "title": "About Us",
@@ -139,7 +140,6 @@
     "faq": "FAQ",
     "copyRight": "© 2025 Dönüşüm Medikal. All rights reserved."
   },
-  "urlCopied": "Product URL copied to clipboard!",
   "blog": {
     "title": "Blog",
     "description": "Expert opinions, usage tips, and updates about CPAP, BiPAP, and sleep apnea",
@@ -210,6 +210,8 @@
     "specialNotes": "Special Notes",
     "specialNotesPlaceholder": "Please write any special requests or notes...",
     "continue": "Continue",
+    "paymentSelection": "Payment Method",
+    "sending": "Sending...",
     "orderSummary": "Order Summary",
     "delivery": "Delivery:",
     "orderDetails": "Order Details",
@@ -285,7 +287,8 @@
     "loginToSeePrice": "Log in to see the price",
     "unitPrice": "Unit:",
     "deviceLimit": "Only 1 device allowed",
-    "items": "items"
+    "items": "items",
+    "continueShopping": "Continue Shopping"
   },
   "header": {
     "myOrders": "My Orders",
