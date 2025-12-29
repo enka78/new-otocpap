@@ -213,7 +213,7 @@ export class PaytrService {
       merchant_oid + this.config.merchant_salt + status + total_amount;
 
     const calculatedHash = crypto
-      .createHash("sha256")
+      .createHmac("sha256", this.config.merchant_key)
       .update(hashStr)
       .digest("base64");
 
