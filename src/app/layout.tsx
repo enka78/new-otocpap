@@ -75,6 +75,8 @@ export default function RootLayout({
         <meta name="rating" content="general" />
         <meta name="theme-color" content="#ffffff" />
         <meta name="msapplication-TileColor" content="#ffffff" />
+
+        <meta name="google-site-verification" content="eIeEpBNc1oC_vGcfVVYQ8GWg9N_TiDlN4eYYPEN_Uas" />
         
         {/* Geographic Meta Tags */}
         <meta name="geo.region" content="TR" />
