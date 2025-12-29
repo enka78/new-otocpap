@@ -35,6 +35,8 @@ interface Order {
   total: number;
   products: string; // JSON string
   user: string;
+  payment_method?: string;
+  payment_reference?: string;
   delivery_date?: string | null;
   delivery_time?: string | null;
   delivery_notes?: string | null;
@@ -560,6 +562,34 @@ export default function OrdersPage() {
                       </p>
                     </div>
                   </div>
+
+                  {/* Payment Method */}
+                  {selectedOrder.payment_method && (
+                    <div className="flex items-center space-x-3">
+                      <CreditCard className="w-5 h-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-600">{t('orders.paymentMethod', 'Ödeme Yöntemi')}</p>
+                        <p className="font-medium text-gray-900">
+                          {selectedOrder.payment_method === "bank_transfer"
+                            ? t('orders.paymentMethodBank', 'Havale/EFT')
+                            : t('orders.paymentMethodCard', 'Kredi/Banka Kartı')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Payment Reference */}
+                  {selectedOrder.payment_reference && (
+                    <div className="flex items-center space-x-3">
+                      <span className="font-mono text-gray-400 text-lg">#</span>
+                      <div>
+                        <p className="text-sm text-gray-600">{t('orders.paymentReference', 'Ödeme Referansı')}</p>
+                        <p className="font-medium text-gray-900 font-mono">
+                          {selectedOrder.payment_reference}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Status Description */}

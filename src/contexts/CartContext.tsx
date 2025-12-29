@@ -36,8 +36,8 @@ interface CartContextType {
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
-  getShippingCost: () => number;
-  getFinalTotal: () => number;
+  getShippingCost: (deliveryType?: string) => number;
+  getFinalTotal: (deliveryType?: string) => number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   checkout: () => Promise<boolean>;
@@ -155,13 +155,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         getTotalItems,
         getTotalPrice,
-        getShippingCost: () => {
-          const total = cartItems.reduce((total, item) => total + item.quantity * item.product.price, 0);
+        getShippingCost: (deliveryType?: string) => {
+          if (deliveryType !== "domestic-cargo") {
+            return 0;
+          }
+          const total = cartItems.reduce(
+            (total, item) => total + item.quantity * item.product.price,
+            0
+          );
           return total >= 3000 ? 0 : 200;
         },
-        getFinalTotal: () => {
-          const total = cartItems.reduce((total, item) => total + item.quantity * item.product.price, 0);
-          const shipping = total >= 3000 ? 0 : 200;
+        getFinalTotal: (deliveryType?: string) => {
+          const total = cartItems.reduce(
+            (total, item) => total + item.quantity * item.product.price,
+            0
+          );
+          let shipping = 0;
+          if (deliveryType === "domestic-cargo") {
+            shipping = total >= 3000 ? 0 : 200;
+          }
           return total + shipping;
         },
         isCartOpen,

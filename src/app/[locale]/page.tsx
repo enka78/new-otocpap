@@ -6,8 +6,7 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import BrandsSection from "@/components/BrandsSection";
-import { Truck } from "lucide-react";
-
+import StripBanner from "@/components/StripBanner";
 
 export default function HomePage() {
   const t = useTranslations();
@@ -16,18 +15,13 @@ export default function HomePage() {
     <div className="min-h-screen">
       <Header />
       <main>
-        <Hero />
-
-        {/* Free Shipping Banner */}
-        <div className="bg-orange-600 text-white py-3 px-4 shadow-md relative z-10">
-          <div className="max-w-7xl mx-auto flex items-center justify-center text-center space-x-2 animate-fade-in">
-            <Truck />
-            <span className="font-bold text-sm md:text-base">
-              ₺3000 ve üzeri alışverişlerinizde KARGO BEDAVA!
-            </span>
-          </div>
+        <div className="block md:hidden">
+          <StripBanner />
         </div>
-
+        <Hero />
+        <div className="hidden md:block">
+          <StripBanner />
+        </div>
         <FeaturedProducts />
 
         {/* About Section */}

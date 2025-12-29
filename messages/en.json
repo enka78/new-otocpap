@@ -182,7 +182,11 @@
     "totalAmount": "Total Amount",
     "statusDescription": "Order status description",
     "status": "Status",
-    "customerInfo": "Customer Information"
+    "customerInfo": "Customer Information",
+    "paymentMethod": "Payment Method",
+    "paymentMethodBank": "Bank Transfer",
+    "paymentMethodCard": "Credit Card",
+    "paymentReference":"Payment Reference"
   },
   "checkout": {
     "orderLimitReached": "You have already placed an order today. Please cancel the existing order from the Orders page.",
@@ -200,7 +204,7 @@
     "country": "Country",
     "deliveryOptions": "Delivery Options",
     "istanbulInstallation": "Istanbul Installation",
-    "istanbulInstallationDescription": "Free installation service in Istanbul and surrounding provinces",
+    "istanbulInstallationDescription": "Free on-site installation with device purchases",
     "domesticCargo": "Domestic Cargo",
     "domesticCargoDescription": "Cargo delivery within Turkey",
     "internationalCargo": "International Cargo",
