@@ -9,9 +9,7 @@ export async function POST(req: NextRequest) {
     console.log("🔥 PAYTR NOTIFY HIT");
     // PayTR sends x-www-form-urlencoded data
     const formData = await req.formData();
-    const merchant_oid = String(formData.get("merchant_oid") ?? "")
-      .trim()
-      .replace(/\s+/g, "");
+    const merchant_oid = (formData.get("merchant_oid") ?? "").toString().trim();
     const status = formData.get("status") as string;
     const total_amount = formData.get("total_amount") as string;
     const hash = formData.get("hash") as string;
@@ -38,15 +36,17 @@ export async function POST(req: NextRequest) {
       console.log(`Payment Success for Order ${merchant_oid}`);
 
       // A. Retrieve Session Data
-      const { data: sessionData, error: sessionFetchError } = await supabase
+      const { data: sessionData } = await supabase
         .from("checkout_sessions")
         .select("*")
         .eq("id", merchant_oid)
-        .single();
+        .maybeSingle();
 
-
-      if (sessionFetchError || !sessionData) {
-        console.error("Session Not Found:", sessionFetchError);
+      if (!sessionData) {
+        console.warn(
+          "Session not found, probably already processed:",
+          merchant_oid
+        );
         return new NextResponse("OK");
       }
 
@@ -67,14 +67,7 @@ export async function POST(req: NextRequest) {
 
       // B. Create Real Order
 
-      // 1. Get status_id for 'order_received'
-      const { data: statusData } = await supabase
-        .from("status")
-        .select("*")
-        .eq("name", "order_received")
-        .single();
-
-      const statusId = statusData?.id || 1;
+      const statusId = 1;
 
       // 2. Map cart items to orderProducts structure
       const sData = sessionData as any;
@@ -120,7 +113,7 @@ export async function POST(req: NextRequest) {
       // Update Session Status
       await supabase
         .from("checkout_sessions")
-        .update({ status: "processed" })
+        .update({ status_id: statusId })
         .eq("id", merchant_oid);
 
       // Insert Order
@@ -138,7 +131,7 @@ export async function POST(req: NextRequest) {
 
       await supabase
         .from("checkout_sessions")
-        .update({ status: "failed" })
+        .update({ status_id: 11 })
         .eq("id", merchant_oid);
     }
 
