@@ -18,9 +18,11 @@ function SuccessContent() {
     const oid = searchParams.get("oid"); // From PayTR
 
     // Use whichever exists.
-    const reference = urlReference || oid;
+    const reference = urlReference || '';
 
-    const [displayId, setDisplayId] = useState<string | null>(reference);
+    // Initialize displayId only for Bank Transfer (where it's passed directly)
+    // For PayTR (oid), we wait until verifyPayTROrder finds it in the database
+    const [displayId, setDisplayId] = useState<string | null>(urlReference);
     const [isChecking, setIsChecking] = useState(false);
 
     useEffect(() => {
@@ -36,7 +38,7 @@ function SuccessContent() {
                 setIsChecking(true);
                 // Poll a few times to see if order arrives
                 let attempts = 0;
-                const max = 10; // Increase max attempts
+                const max = 15; // Increased attempts
                 const interval = setInterval(async () => {
                     attempts++;
                     const { data } = await supabase
@@ -53,9 +55,11 @@ function SuccessContent() {
                     } else if (attempts >= max) {
                         clearInterval(interval);
                         setIsChecking(false);
-                        // Still show the oid if not found after polling
+                        // If still not found, we could fallback to oid if we really want,
+                        // but better to show a "Contact Support" if it's missing.
+                        // For now we just stop checking.
                     }
-                }, 1500); // Slightly longer interval for DB sync
+                }, 2000); // 2 second interval
             }
         };
 
@@ -74,13 +78,22 @@ function SuccessContent() {
                     Siparişiniz Alındı!
                 </h1>
 
-                {displayId && (
-                    <p className="text-lg font-semibold text-blue-600 mb-4">
+                {displayId ? (
+                    <p className="text-lg font-semibold text-blue-600 mb-4 animate-in fade-in zoom-in duration-500">
                         Sipariş No: #{displayId}
                     </p>
-                )}
+                ) : isChecking ? (
+                    <div className="flex flex-col items-center justify-center space-y-2 mb-4">
+                        <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" />
+                        </div>
+                        <span className="text-lg font-medium text-blue-600">Sipariş Numaranız Hazırlanıyor...</span>
+                    </div>
+                ) : null}
 
-                {isChecking && <p className="text-sm text-gray-500 mb-4">Sipariş onayı kontrol ediliyor...</p>}
+                {isChecking && <p className="text-xs text-gray-400 mb-4 italic">Ödeme onayı bekleniyor, lütfen sayfayı kapatmayınız.</p>}
 
                 <p className="text-gray-600 mb-8">
                     {method === "bank"
