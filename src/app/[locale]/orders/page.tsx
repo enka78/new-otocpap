@@ -568,11 +568,11 @@ export default function OrdersPage() {
                     <div className="flex items-center space-x-3">
                       <CreditCard className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-600">{t('orders.paymentMethod', 'Ödeme Yöntemi')}</p>
+                        <p className="text-sm text-gray-600">{t('orders.paymentMethod')}</p>
                         <p className="font-medium text-gray-900">
                           {selectedOrder.payment_method === "bank_transfer"
-                            ? t('orders.paymentMethodBank', 'Havale/EFT')
-                            : t('orders.paymentMethodCard', 'Kredi/Banka Kartı')}
+                            ? t('orders.paymentMethodBank')
+                            : t('orders.paymentMethodCard')}
                         </p>
                       </div>
                     </div>
@@ -583,7 +583,7 @@ export default function OrdersPage() {
                     <div className="flex items-center space-x-3">
                       <span className="font-mono text-gray-400 text-lg">#</span>
                       <div>
-                        <p className="text-sm text-gray-600">{t('orders.paymentReference', 'Ödeme Referansı')}</p>
+                        <p className="text-sm text-gray-600">{t('orders.paymentReference')}</p>
                         <p className="font-medium text-gray-900 font-mono">
                           {selectedOrder.payment_reference}
                         </p>
