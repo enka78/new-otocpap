@@ -9,7 +9,9 @@ export async function POST(req: NextRequest) {
     console.log("🔥 PAYTR NOTIFY HIT");
     // PayTR sends x-www-form-urlencoded data
     const formData = await req.formData();
-    const merchant_oid = formData.get("merchant_oid") as string;
+    const merchant_oid = String(formData.get("merchant_oid") ?? "")
+      .trim()
+      .replace(/\s+/g, "");
     const status = formData.get("status") as string;
     const total_amount = formData.get("total_amount") as string;
     const hash = formData.get("hash") as string;
@@ -39,8 +41,8 @@ export async function POST(req: NextRequest) {
       const { data: sessionData, error: sessionFetchError } = await supabase
         .from("checkout_sessions")
         .select("*")
-        .eq("id", merchant_oid)
-        .single();
+        .eq("id", merchant_oid);
+
 
       if (sessionFetchError || !sessionData) {
         console.error("Session Not Found:", sessionFetchError);
