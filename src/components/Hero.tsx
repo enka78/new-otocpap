@@ -109,11 +109,11 @@ export default function Hero() {
         </div>
       )}
 
-      <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-8xl mx-auto px-2 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div
-            className={`relative bg-black/30 backdrop-blur-sm rounded-2xl px-10 py-16 ${
+            className={`relative bg-black/30 flex flex-col items-center md:items-start md:backdrop-blur-sm rounded-2xl p-4 md:px-10 md:py-16 ${
               !currentBanner?.title ? "opacity-0" : "opacity-100"
             }`}
           >
@@ -124,10 +124,10 @@ export default function Hero() {
               </div>
             ) : (
               <>
-                <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+                <h1 className="text-2xl lg:text-5xl font-bold text-white text-center md:text-left  md:mb-6">
                   {currentBanner?.title || t("hero.title")}
                 </h1>
-                <p className="text-xl text-white mb-8 leading-relaxed">
+                <p className="text-xl text-white mb-8 text-center md:text-left leading-relaxed">
                   {currentBanner?.sub_title || t("hero.subtitle")}
                 </p>
               </>
@@ -137,7 +137,7 @@ export default function Hero() {
             {currentBanner?.add_button && currentBanner?.add_link ? (
               <Link
                 href={currentBanner.add_link}
-                className="inline-flex items-center bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors group"
+                className="inline-flex w-fit items-center bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors group"
               >
                 {currentBanner.btn_text || t("hero.cta")}
                 <ArrowRight
@@ -159,14 +159,14 @@ export default function Hero() {
             )}
           </div>
         </div>
-        <div className="absolute -bottom-8 lg:bottom-auto lg:-top-8 left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg">
+        <div className="absolute -top-12 left-20 md:-top-8 md:left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg">
           <div className="text-sm font-semibold">
             {t("hero.freeInstallation")}
           </div>
           <div className="text-xs">{t("hero.installation")}</div>
         </div>
 
-        <div className="absolute -bottom-10 lg:bottom-auto  lg:-top-10 left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg">
+        <div className="absolute -top-14 left-4 md:-top-10 md:left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg">
           <div className="text-sm font-semibold">{t("hero.support247")}</div>
           <div className="text-xs">{t("hero.support")}</div>
         </div>

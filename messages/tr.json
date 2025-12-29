@@ -181,7 +181,11 @@
     "totalAmount": "Toplam Tutar",
     "statusDescription": "Sipariş durumu açıklaması",
     "status": "Durum",
-    "customerInfo": "Müşteri Bilgileri"
+    "customerInfo": "Müşteri Bilgileri",
+    "paymentMethod": "Ödeme Yöntemi",
+    "paymentMethodBank": "Banka Transferi",
+    "paymentMethodCard": "Kredi Kartı",
+    "paymentReference": "Sipariş No"
   },
   "checkout": {
     "orderLimitReached": "Bugün zaten bir sipariş verdiniz. Lütfen mevcut siparişi Siparişler sayfasından iptal edin.",
@@ -199,7 +203,7 @@
     "country": "Ülke",
     "deliveryOptions": "Teslimat Seçenekleri",
     "istanbulInstallation": "İstanbul İçi Yerinde Kurulum",
-    "istanbulInstallationDescription": "İstanbul ve çevre illerde ücretsiz kurulum hizmeti",
+    "istanbulInstallationDescription": "Cihaz alışverişlerinde ücretsiz yerinde kurulum",
     "domesticCargo": "Türkiye İçi Kargo",
     "domesticCargoDescription": "Türkiye içi kargo teslimatı",
     "internationalCargo": "Yurt Dışı Kargo",
