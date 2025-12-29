@@ -26,6 +26,8 @@ function SuccessContent() {
     useEffect(() => {
         // Clear cart on successful payment arrival
         clearCart();
+        // Clear session
+        sessionStorage.removeItem("checkout_session_id");
     }, [clearCart]);
 
     useEffect(() => {
@@ -39,13 +41,13 @@ function SuccessContent() {
                     attempts++;
                     const { data } = await supabase
                         .from('orders')
-                        .select('id')
-                        .eq('payment_reference', oid)
+                        .select('id, payment_reference')
+                        .eq('payment_provider_reference', oid)
                         .maybeSingle();
 
                     if (data) {
-                        // Confirmed - Use the numeric ID for display
-                        setDisplayId((data as any).id.toString());
+                        // Confirmed - Use the database-generated payment_reference for display
+                        setDisplayId(((data as any).payment_reference || (data as any).id).toString());
                         clearInterval(interval);
                         setIsChecking(false);
                     } else if (attempts >= max) {

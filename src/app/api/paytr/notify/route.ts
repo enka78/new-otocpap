@@ -2,11 +2,10 @@ export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
 import { paytrService } from "@/lib/paytr";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("🔥 PAYTR NOTIFY HIT");
     // PayTR sends x-www-form-urlencoded data
     const formData = await req.formData();
     const merchant_oid = (formData.get("merchant_oid") ?? "").toString().trim();
@@ -14,8 +13,12 @@ export async function POST(req: NextRequest) {
     const total_amount = formData.get("total_amount") as string;
     const hash = formData.get("hash") as string;
 
+    console.log("🔥 PAYTR NOTIFY HIT", { merchant_oid, status, total_amount });
+
     // Optional fields often sent by PayTR
     const fail_reason = formData.get("failed_reason_msg");
+
+    console.log("📝 Callback Data:", { merchant_oid, status, total_amount, hash });
 
     // 1. Verify Hash
     const isValid = paytrService.validateCallback({
@@ -26,32 +29,40 @@ export async function POST(req: NextRequest) {
     });
 
     if (!isValid) {
-      console.error("PayTR Callback: Invalid Hash");
+      console.error("❌ PayTR Callback: Invalid Hash");
       return new NextResponse("OK");
     }
+
+    console.log("✅ Hash Validated");
 
     // 2. Handle Payment Status
     if (status === "success") {
       // Payment Successful
-      console.log(`Payment Success for Order ${merchant_oid}`);
+      console.log(`💰 Payment Success for Session ${merchant_oid}`);
 
       // A. Retrieve Session Data
-      const { data: sessionData } = await supabase
+      const { data: sessionData, error: sessionFetchError } = await supabaseAdmin
         .from("checkout_sessions")
         .select("*")
         .eq("id", merchant_oid)
         .maybeSingle();
 
+      if (sessionFetchError) {
+        console.error("❌ Session Fetch Error:", sessionFetchError);
+      }
+
       if (!sessionData) {
         console.warn(
-          "Session not found, probably already processed:",
+          "⚠️ Session not found, probably already processed:",
           merchant_oid
         );
         return new NextResponse("OK");
       }
 
+      console.log("📄 Session Data Found:", sessionData.id);
+
       if (sessionData.status === "processed") {
-        // Already processed
+        console.log("⏭️ Session already processed");
         return new NextResponse("OK");
       }
 
@@ -60,14 +71,23 @@ export async function POST(req: NextRequest) {
       const expectedAmount = Math.round(sessionTotal * 100);
       if (parseInt(total_amount) !== expectedAmount) {
         console.error(
-          `Amount Mismatch! Expected: ${expectedAmount}, Received: ${total_amount}`
+          `❌ Amount Mismatch! Expected: ${expectedAmount}, Received: ${total_amount}`
         );
         return new NextResponse("PAYTR notification failed: amount mismatch");
       }
 
       // B. Create Real Order
+      // Get 'order_received' status ID dynamically
+      const { data: statusData, error: statusError } = await supabaseAdmin
+        .from('status')
+        .select('id')
+        .eq('name', 'order_received')
+        .single();
 
-      const statusId = 1;
+      const statusId = statusData?.id || 1;
+      if (statusError) {
+        console.warn("⚠️ Status fetch error, using default 1:", statusError);
+      }
 
       // 2. Map cart items to orderProducts structure
       const sData = sessionData as any;
@@ -110,34 +130,55 @@ export async function POST(req: NextRequest) {
         payment_provider_reference: merchant_oid,
       };
 
-      // Update Session Status
-      await supabase
+      console.log("📦 Preparing Order Data:", orderData);
+
+      // Update Session Status - Use both for compatibility if needed
+      const { error: sessionUpdateError } = await supabaseAdmin
         .from("checkout_sessions")
-        .update({ status_id: statusId })
+        .update({
+          status: "processed"
+        })
         .eq("id", merchant_oid);
 
+      if (sessionUpdateError) {
+        console.error("❌ Session Status Update Error:", sessionUpdateError);
+      }
+
       // Insert Order
-      const { error: orderError } = await supabase
+      const { data: newOrder, error: orderError } = await supabaseAdmin
         .from("orders")
-        .insert([orderData]);
+        .insert([orderData])
+        .select()
+        .single();
 
       if (orderError) {
-        console.error("Failed to insert approved order:", orderError);
+        console.error("❌ Order Insertion Failed:", orderError);
         return new NextResponse("Order insertion failed", { status: 500 });
       }
+
+      console.log("🎊 Order Created Successfully:", newOrder.id);
     } else {
       // Payment Failed
-      console.log(`Payment Failed for Order ${merchant_oid}: ${fail_reason}`);
+      console.log(`❌ Payment Failed for Order ${merchant_oid}: ${fail_reason}`);
 
-      await supabase
+      // Try to get payment_failed status ID
+      const { data: failStatus } = await supabaseAdmin
+        .from('status')
+        .select('id')
+        .eq('name', 'payment_failed')
+        .maybeSingle();
+
+      await supabaseAdmin
         .from("checkout_sessions")
-        .update({ status_id: 11 })
+        .update({
+          status: "failed"
+        })
         .eq("id", merchant_oid);
     }
 
     return new NextResponse("OK");
   } catch (error) {
-    console.error("PayTR Callback Error:", error);
+    console.error("💥 PayTR Callback Error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
