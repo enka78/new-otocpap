@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
            6. SAFE ADDRESS (undefined FIX)
         ---------------------------------------------------- */
         const user_address =
-            user?.address?.full_address ||
+            user?.address ||
             "Adres bilgisi girilmedi";
 
         /* ----------------------------------------------------
