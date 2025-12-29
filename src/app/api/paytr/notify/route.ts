@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       const { data: sessionData, error: sessionFetchError } = await supabase
         .from("checkout_sessions")
         .select("*")
-        .eq("id", merchant_oid)
+        .eq("merchant_oid", merchant_oid)
         .single();
 
       if (sessionFetchError || !sessionData) {
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
       await supabase
         .from("checkout_sessions")
         .update({ status: "processed" })
-        .eq("id", merchant_oid);
+        .eq("merchant_oid", merchant_oid);
 
       // Insert Order
       const { error: orderError } = await supabase
@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
       await supabase
         .from("checkout_sessions")
         .update({ status: "failed" })
-        .eq("id", merchant_oid);
+        .eq("merchant_oid", merchant_oid);
     }
 
     return new NextResponse("OK");
