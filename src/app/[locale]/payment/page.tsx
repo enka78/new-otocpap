@@ -27,9 +27,9 @@ interface AddressData {
   postalCode: string;
   country: string;
   deliveryType:
-    | "istanbul-installation"
-    | "domestic-cargo"
-    | "international-cargo";
+  | "istanbul-installation"
+  | "domestic-cargo"
+  | "international-cargo";
   onlineSupport: boolean;
   notes: string;
 }
@@ -50,6 +50,8 @@ export default function PaymentPage() {
   const [step, setStep] = useState<"address" | "payment">("address");
   const [paymentMethod, setPaymentMethod] = useState<"paytr" | "bank">("paytr");
   const [user, setUser] = useState<User | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const syncAttempted = useRef(false);
 
   // Address State
   const [addressData, setAddressData] = useState<AddressData>({
@@ -86,6 +88,40 @@ export default function PaymentPage() {
     }
   }, [cartItems.length, router]);
 
+  // Initialize or retrieve Session ID
+  useEffect(() => {
+    let currentId = sessionStorage.getItem("checkout_session_id");
+    if (!currentId) {
+      currentId = crypto.randomUUID().replace(/-/g, "");
+      sessionStorage.setItem("checkout_session_id", currentId);
+    }
+    setSessionId(currentId);
+  }, []);
+
+  // Sync Checkout Session (Debounced)
+  useEffect(() => {
+    if (cartItems.length === 0 || !sessionId) return;
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        await fetch("/api/checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: sessionId,
+            userData: { ...user, ...addressData },
+            cartItems,
+            totalAmount: getFinalTotal(addressData.deliveryType),
+          }),
+        });
+      } catch (err) {
+        console.error("Session sync failed:", err);
+      }
+    }, 1000); // 1 second debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [cartItems, user, addressData, getFinalTotal, sessionId]);
+
   // Handlers
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -116,6 +152,7 @@ export default function PaymentPage() {
           user: { ...user, ...addressData }, // Combine user auth data with form data
           cartItems,
           totalAmount: getFinalTotal(addressData.deliveryType),
+          sessionId: sessionId, // Pass our session ID
         }),
       });
 
@@ -138,9 +175,17 @@ export default function PaymentPage() {
   const handleBankTransfer = async () => {
     setLoading(true);
     try {
-      // We must creates order immediately for transfer
-      // Reuse logic from previous CheckoutModal where we insert into 'orders'
-      // status_id = 1 (Received / Pending Transfer)
+      // Force a session sync before creating the order
+      await fetch("/api/checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: sessionId,
+          userData: { ...user, ...addressData },
+          cartItems,
+          totalAmount: getFinalTotal(addressData.deliveryType),
+        }),
+      });
 
       const orderProducts = cartItems.map((item) => ({
         product_id: item.id,
@@ -173,14 +218,21 @@ export default function PaymentPage() {
       const paymentRef =
         "BT" + Math.random().toString(36).substring(2, 10).toUpperCase();
 
+      // Get default status (order_received)
+      const { data: statusData } = await supabase
+        .from('status')
+        .select('id')
+        .eq('name', 'order_received')
+        .single();
+
       const orderData = {
         products: JSON.stringify(orderProducts),
-        status_id: 1, // Assuming 1 = Pending/Received
+        status_id: statusData?.id || 1,
         total: getFinalTotal(addressData.deliveryType),
         currency: "TL",
         user: JSON.stringify(customerInfo),
         payment_method: "bank_transfer",
-        payment_reference: paymentRef,
+        payment_provider_reference: sessionId || paymentRef,
       };
 
       const { data, error } = await supabase
@@ -193,9 +245,9 @@ export default function PaymentPage() {
 
       // Clear cart & Redirect
       clearCart();
-      // Use payment_reference as the displayed order ID
-      const orderId = data.payment_reference || data.id;
-      router.push(`/payment/success?method=bank&orderId=${orderId}`);
+      // Use the database-generated payment_reference for the success page display
+      const displayOrderId = data.payment_reference || data.id;
+      router.push(`/payment/success?method=bank&orderId=${displayOrderId}`);
     } catch (err) {
       console.error(err);
       alert("Sipariş oluşturulurken hata oluştu.");
@@ -249,9 +301,8 @@ export default function PaymentPage() {
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div
-            className={`p-4 md:p-8 ${
-              step === "address" ? "" : "grid lg:grid-cols-2 gap-8"
-            }`}
+            className={`p-4 md:p-8 ${step === "address" ? "" : "grid lg:grid-cols-2 gap-8"
+              }`}
           >
             {/* Address Form Step */}
             {step === "address" && (
@@ -472,11 +523,10 @@ export default function PaymentPage() {
 
                       <div className="space-y-3 mb-6">
                         <label
-                          className={`flex flex-row items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                            paymentMethod === "paytr"
-                              ? "border-blue-600 bg-blue-50/50"
-                              : "border-gray-200"
-                          }`}
+                          className={`flex flex-row items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "paytr"
+                            ? "border-blue-600 bg-blue-50/50"
+                            : "border-gray-200"
+                            }`}
                         >
                           <input
                             type="radio"
@@ -507,11 +557,10 @@ export default function PaymentPage() {
                         </label>
 
                         <label
-                          className={`flex flex-row items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                            paymentMethod === "bank"
-                              ? "border-blue-600 bg-blue-50/50"
-                              : "border-gray-200"
-                          }`}
+                          className={`flex flex-row items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "bank"
+                            ? "border-blue-600 bg-blue-50/50"
+                            : "border-gray-200"
+                            }`}
                         >
                           <input
                             type="radio"
