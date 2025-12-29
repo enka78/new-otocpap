@@ -41,7 +41,8 @@ export async function POST(req: NextRequest) {
       const { data: sessionData, error: sessionFetchError } = await supabase
         .from("checkout_sessions")
         .select("*")
-        .eq("id", merchant_oid);
+        .eq("id", merchant_oid)
+        .single();
 
 
       if (sessionFetchError || !sessionData) {
