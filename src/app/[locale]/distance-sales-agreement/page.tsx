@@ -23,11 +23,11 @@ export default function DistanceSalesAgreementPage() {
                     <div className="mb-4">
                         <h3 className="text-lg font-medium text-gray-800 mb-2">1.1. SATICI BİLGİLERİ</h3>
                         <div className="bg-gray-50 p-4 rounded-lg space-y-1 text-sm">
-                            <p><strong>Unvan:</strong> Dönüşüm Medikal</p>
-                            <p><strong>Adres:</strong> Zuhuratbaba Mah. Dr. Tevfik Sağlam Cad. No:5 Bakırköy/İSTANBUL</p>
+                            <p><strong>Unvan:</strong> Dönüşüm Medikal Ve Sağlık Hiz. Tic. Ltd. Şti. </p>
+                            <p><strong>Adres:</strong> Kartaltpe Mah. Süvari Cad. No:10 İç Kapı No:21 TORKAM AVM OFİS Küçükçekmece/İSTANBUL</p>
                             <p><strong>Telefon:</strong> +90 553 280 82 73</p>
                             <p><strong>E-posta:</strong> info@otocpap.com</p>
-                            <p><strong>MERSİS / Vergi No:</strong> ………………………………………</p>
+                            <p><strong>MERSİS / Vergi No:</strong> 3131410087</p>
                         </div>
                     </div>
 
