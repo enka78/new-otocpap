@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { checkDailyOrderLimit, cancelOrder, DailyOrderCheck } from '@/lib/orderValidation';
 import { AlertTriangle, Clock, XCircle } from 'lucide-react';
+import { formatCurrency } from '@/lib/format';
 
 interface DailyOrderCheckProps {
   userId: string;
@@ -35,7 +36,7 @@ export default function DailyOrderCheckComponent({ userId, onOrderStatusChange }
 
     setCancelling(true);
     const result = await cancelOrder(orderCheck.existingOrder.id, userId);
-    
+
     if (result.success) {
       // Sipariş durumunu yeniden kontrol et
       await checkUserOrders();
@@ -76,7 +77,7 @@ export default function DailyOrderCheckComponent({ userId, onOrderStatusChange }
           <p className="text-yellow-700 mb-4">
             {orderCheck.message}
           </p>
-          
+
           {orderCheck.existingOrder && (
             <div className="bg-white rounded-lg p-4 mb-4 border border-yellow-200">
               <h4 className="font-medium text-gray-900 mb-2">{t('dailyOrder.existingOrder')}</h4>
@@ -91,7 +92,7 @@ export default function DailyOrderCheckComponent({ userId, onOrderStatusChange }
                 </div>
                 <div>
                   <span className="text-gray-600">{t('dailyOrder.amount')}</span>
-                  <span className="ml-2 font-medium">{orderCheck.existingOrder.total_amount.toFixed(2)} ₺</span>
+                  <span className="ml-2 font-medium">{formatCurrency(orderCheck.existingOrder.total_amount)}</span>
                 </div>
                 <div>
                   <span className="text-gray-600">{t('dailyOrder.date')}</span>
