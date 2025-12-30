@@ -8,6 +8,7 @@ import { supabase, getProductImageUrl } from "@/lib/supabase";
 import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
 import { DailyOrderCheck } from "@/lib/orderValidation";
+import { formatCurrency } from "@/lib/format";
 
 // interface CartItem {
 //   id: number;
@@ -133,12 +134,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         {getCategoryName(item.product.category_id)}
                       </p>
 
-                      {/* Price */}
                       <div className="text-sm font-bold text-blue-600">
-                        ₺
-                        {(item.product.price * item.quantity).toLocaleString(
-                          "tr-TR"
-                        )}
+                        {formatCurrency(item.product.price * item.quantity)}
                       </div>
                     </div>
 
@@ -185,7 +182,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       ) &&
                         user && (
                           <div className="text-sm text-gray-600">
-                            {t('cart.unitPrice')} ₺{item.product.price.toLocaleString("tr-TR")}
+                            {t('cart.unitPrice')} {formatCurrency(item.product.price)}
                           </div>
                         )}
                       {/* Cihaz için uyarı */}
@@ -212,7 +209,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <div className="flex justify-between items-center text-lg font-bold">
               <span>{t("cart.total")}</span>
               <span className="text-blue-600">
-                ₺{getTotalPrice().toLocaleString("tr-TR")}
+                {formatCurrency(getTotalPrice())}
               </span>
             </div>
 

@@ -26,6 +26,7 @@ import {
   getStatusColor,
   getStatusIcon,
 } from "@/lib/orderStatus";
+import { formatCurrency } from "@/lib/format";
 
 interface Order {
   id: number;
@@ -346,7 +347,7 @@ export default function OrdersPage() {
                           {new Date(order.created_at).toLocaleDateString("tr-TR")}
                         </div>
                         <div className="flex items-center font-semibold text-blue-600">
-                          {order.total.toFixed(2)} ₺
+                          {formatCurrency(order.total)}
                         </div>
                         <button
                           onClick={() => setSelectedOrder(order)}
@@ -403,7 +404,7 @@ export default function OrdersPage() {
                               {t("checkout.quantity")}: {item.quantity}
                             </p>
                             <p className="text-sm font-semibold text-blue-600 mt-1">
-                              {(item.price * item.quantity).toFixed(2)} ₺
+                              {formatCurrency(item.price * item.quantity)}
                             </p>
                           </div>
                         </div>
@@ -547,7 +548,7 @@ export default function OrdersPage() {
                     <div>
                       <p className="text-sm text-gray-600">{t("orders.totalAmount")}</p>
                       <p className="font-bold text-blue-600 text-lg">
-                        {selectedOrder.total.toFixed(2)} ₺
+                        {formatCurrency(selectedOrder.total)}
                       </p>
                     </div>
                   </div>
@@ -729,10 +730,10 @@ export default function OrdersPage() {
                         {/* Price Info */}
                         <div className="text-right ml-6">
                           <p className="font-bold text-xl text-blue-600 mb-1">
-                            {(item.price * item.quantity).toFixed(2)} ₺
+                            {formatCurrency(item.price * item.quantity)}
                           </p>
                           <p className="text-sm text-gray-500">
-                            {item.price.toFixed(2)} ₺/{t("common.unit")}
+                            {formatCurrency(item.price)}/{t("common.unit")}
                           </p>
                         </div>
                       </div>
@@ -753,10 +754,10 @@ export default function OrdersPage() {
                           </div>
                           <div className="text-right">
                             <p className="font-bold text-xl text-blue-600">
-                              {(item.price * item.quantity).toFixed(2)} ₺
+                              {formatCurrency(item.price * item.quantity)}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {item.price.toFixed(2)} ₺/{t("common.unit")}
+                              {formatCurrency(item.price)}/{t("common.unit")}
                             </p>
                           </div>
                         </div>
@@ -773,7 +774,7 @@ export default function OrdersPage() {
                       {t("orders.totalAmount")}
                     </span>
                     <span className="text-2xl font-bold text-blue-600">
-                      {selectedOrder.total.toFixed(2)} ₺
+                      {formatCurrency(selectedOrder.total)}
                     </span>
                   </div>
                 </div>

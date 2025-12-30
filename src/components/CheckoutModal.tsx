@@ -9,6 +9,7 @@ import { User } from "@/types/user";
 import { CartItem } from "@/types/cart";
 import DailyOrderCheckComponent from "./order/DailyOrderCheck";
 import { useTranslations } from "next-intl";
+import { formatCurrency } from "@/lib/format";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -25,9 +26,9 @@ interface AddressData {
   postalCode: string;
   country: string;
   deliveryType:
-    | "istanbul-installation"
-    | "domestic-cargo"
-    | "international-cargo";
+  | "istanbul-installation"
+  | "domestic-cargo"
+  | "international-cargo";
   onlineSupport: boolean;
   notes: string;
 }
@@ -140,9 +141,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         message += `• ${item.product.name}\n`;
         message += `  Kategori: ${item.category}\n`;
         message += `  Adet: ${item.quantity}\n`;
-        message += `  Fiyat: ₺${(
-          item.product.price * item.quantity
-        ).toLocaleString("tr-TR")}\n\n`;
+        message += `  Fiyat: ${formatCurrency(item.product.price * item.quantity)}\n\n`;
       });
     }
 
@@ -152,14 +151,12 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         message += `• ${item.product.name}\n`;
         message += `  Kategori: ${item.category}\n`;
         message += `  Adet: ${item.quantity}\n`;
-        message += `  Fiyat: ₺${(
-          item.product.price * item.quantity
-        ).toLocaleString("tr-TR")}\n\n`;
+        message += `  Fiyat: ${formatCurrency(item.product.price * item.quantity)}\n\n`;
       });
     }
 
     // Toplam
-    message += `💰 *TOPLAM: ₺${getTotalPrice().toLocaleString("tr-TR")}*\n\n`;
+    message += `💰 *TOPLAM: ${formatCurrency(getTotalPrice())}*\n\n`;
 
     // Notlar
     if (addressData.notes) {
@@ -297,7 +294,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
           {user && (
             <DailyOrderCheckComponent
               userId={user.id}
-              onOrderStatusChange={() => {}}
+              onOrderStatusChange={() => { }}
             />
           )}
 
@@ -606,10 +603,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                         </p>
                       </div>
                       <p className="font-semibold">
-                        ₺
-                        {(item.product.price * item.quantity).toLocaleString(
-                          "tr-TR"
-                        )}
+                        {formatCurrency(item.product.price * item.quantity)}
                       </p>
                     </div>
                   ))}
@@ -617,7 +611,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                 <div className="flex justify-between items-center pt-4 border-t border-gray-300">
                   <span className="text-lg font-bold">{t("checkout.total")}:</span>
                   <span className="text-lg font-bold text-blue-600">
-                    ₺{getTotalPrice().toLocaleString("tr-TR")}
+                    {formatCurrency(getTotalPrice())}
                   </span>
                 </div>
               </div>

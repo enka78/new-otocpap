@@ -11,6 +11,7 @@ import { supabase, Product, getProductImageUrl } from "@/lib/supabase";
 import { ArrowLeft, ShoppingCart, Heart, Share2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { hasRealContent } from "@/helpers/hasRealContent";
+import { formatCurrency } from "@/lib/format";
 
 export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
@@ -185,11 +186,10 @@ export default function ProductDetailPage() {
                       <button
                         key={index}
                         onClick={() => setSelectedImage(index)}
-                        className={`w-20 h-20 rounded-lg border-2 relative bg-white ${
-                          selectedImage === index
+                        className={`w-20 h-20 rounded-lg border-2 relative bg-white ${selectedImage === index
                             ? "border-blue-600"
                             : "border-gray-200"
-                        }`}
+                          }`}
                       >
                         {image ? (
                           <Image
@@ -223,7 +223,7 @@ export default function ProductDetailPage() {
                 <div>
                   <div className="text-sm text-gray-600 mb-2">Fiyat</div>
                   <div className="text-3xl font-bold text-blue-600">
-                    ₺{product.price.toLocaleString("tr-TR")}
+                    {formatCurrency(product.price)}
                   </div>
                 </div>
               </div>
@@ -281,9 +281,8 @@ export default function ProductDetailPage() {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Stok Durumu:</span>
                     <span
-                      className={`font-medium ${
-                        product.quantity > 0 ? "text-green-600" : "text-red-600"
-                      }`}
+                      className={`font-medium ${product.quantity > 0 ? "text-green-600" : "text-red-600"
+                        }`}
                     >
                       {product.quantity > 0 ? "Stokta Var" : "Stokta Yok"}
                     </span>

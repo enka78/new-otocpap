@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { formatCurrency } from "@/lib/format";
 
 // Define Address Data Interface (reused/adapted)
 interface AddressData {
@@ -225,10 +226,14 @@ export default function PaymentPage() {
         .eq('name', 'order_received')
         .single();
 
+      const finalTotal = getFinalTotal(addressData.deliveryType);
+      const bankDiscount = paymentMethod === "bank" ? finalTotal * 0.05 : 0;
+      const amountToPay = finalTotal - bankDiscount;
+
       const orderData = {
         products: JSON.stringify(orderProducts),
         status_id: statusData?.id || 1,
-        total: getFinalTotal(addressData.deliveryType),
+        total: amountToPay,
         currency: "TL",
         user: JSON.stringify(customerInfo),
         payment_method: "bank_transfer",
@@ -470,10 +475,7 @@ export default function PaymentPage() {
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-gray-600">Ara Toplam</span>
                       <span className="font-medium">
-                        ₺
-                        {getTotalPrice().toLocaleString("tr-TR", {
-                          minimumFractionDigits: 2,
-                        })}
+                        {formatCurrency(getTotalPrice())}
                       </span>
                     </div>
                     {addressData.deliveryType === "domestic-cargo" &&
@@ -487,20 +489,22 @@ export default function PaymentPage() {
                             <span className="font-medium text-green-600">
                               {shipping === 0
                                 ? "Ücretsiz"
-                                : `₺${shipping.toLocaleString("tr-TR")}`}
+                                : `${formatCurrency(shipping)}`}
                             </span>
                           </div>
                         );
                       })()}
+                    {paymentMethod === "bank" && (
+                      <div className="flex justify-between items-center mb-1 text-green-600 font-medium">
+                        <span>Havale/EFT İndirimi (%5)</span>
+                        <span>-{formatCurrency(getFinalTotal(addressData.deliveryType) * 0.05)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between items-center text-xl font-bold text-blue-600 mt-2">
                       <span>Toplam</span>
                       <span>
-                        ₺
-                        {getFinalTotal(addressData.deliveryType).toLocaleString(
-                          "tr-TR",
-                          {
-                            minimumFractionDigits: 2,
-                          }
+                        {formatCurrency(
+                          getFinalTotal(addressData.deliveryType) * (paymentMethod === "bank" ? 0.95 : 1)
                         )}
                       </span>
                     </div>
