@@ -5,7 +5,12 @@ import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { supabase, handleAuthError, clearAuthState, hasValidSession } from "@/lib/supabase";
+import {
+  supabase,
+  handleAuthError,
+  clearAuthState,
+  hasValidSession,
+} from "@/lib/supabase";
 import {
   Package,
   Calendar,
@@ -99,7 +104,7 @@ export default function OrdersPage() {
       // First check if we have any valid session
       const hasSession = await hasValidSession();
       if (!hasSession) {
-        console.log('No valid session found, redirecting to home');
+        console.log("No valid session found, redirecting to home");
         clearAuthState();
         router.push(`/${locale}`);
         return;
@@ -107,18 +112,18 @@ export default function OrdersPage() {
 
       const {
         data: { user },
-        error
+        error,
       } = await supabase.auth.getUser();
 
       if (error) {
-        console.error('Auth error in checkAuthAndFetchOrders:', error);
+        console.error("Auth error in checkAuthAndFetchOrders:", error);
         await handleAuthError(error);
         router.push(`/${locale}`);
         return;
       }
 
       if (!user) {
-        console.log('No user found, redirecting to home');
+        console.log("No user found, redirecting to home");
         router.push(`/${locale}`);
         return;
       }
@@ -126,7 +131,7 @@ export default function OrdersPage() {
       setUser(user);
       await fetchOrders(user.id);
     } catch (error: any) {
-      console.error('Error checking auth:', error);
+      console.error("Error checking auth:", error);
       await handleAuthError(error);
       router.push(`/${locale}`);
     }
@@ -145,28 +150,36 @@ export default function OrdersPage() {
 
       // Fetch brands and categories data with error handling
       const [brandsResponse, categoriesResponse] = await Promise.all([
-        supabase.from('brands').select('id, name').then(response => {
-          if (response.error) {
-            console.error('Error fetching brands:', response.error);
-            return { data: [], error: response.error };
-          }
-          return response;
-        }),
-        supabase.from('categories').select('id, name').then(response => {
-          if (response.error) {
-            console.error('Error fetching categories:', response.error);
-            return { data: [], error: response.error };
-          }
-          return response;
-        })
+        supabase
+          .from("brands")
+          .select("id, name")
+          .then((response) => {
+            if (response.error) {
+              console.error("Error fetching brands:", response.error);
+              return { data: [], error: response.error };
+            }
+            return response;
+          }),
+        supabase
+          .from("categories")
+          .select("id, name")
+          .then((response) => {
+            if (response.error) {
+              console.error("Error fetching categories:", response.error);
+              return { data: [], error: response.error };
+            }
+            return response;
+          }),
       ]);
 
       const brands = brandsResponse.data || [];
       const categories = categoriesResponse.data || [];
 
       // Create lookup maps for performance
-      const brandMap = new Map(brands.map(brand => [brand.id, brand.name]));
-      const categoryMap = new Map(categories.map(category => [category.id, category.name]));
+      const brandMap = new Map(brands.map((brand) => [brand.id, brand.name]));
+      const categoryMap = new Map(
+        categories.map((category) => [category.id, category.name])
+      );
 
       // Parse the `products` field from JSON and enrich orders
       const enrichedOrders = result.orders.map((order: any) => ({
@@ -175,9 +188,13 @@ export default function OrdersPage() {
           ...product,
           product_image: `https://cfqzjghngplhzybrbvej.supabase.co/storage/v1/object/public/products-images/${product.product_image}`,
           // Convert brand_id to brand name
-          product_brand: product.product_brand ? brandMap.get(product.product_brand) || t('products.unknown') : undefined,
+          product_brand: product.product_brand
+            ? brandMap.get(product.product_brand) || t("products.unknown")
+            : undefined,
           // Convert category_id to category name
-          product_category: product.product_category ? categoryMap.get(product.product_category) || t('products.unknown') : undefined,
+          product_category: product.product_category
+            ? categoryMap.get(product.product_category) || t("products.unknown")
+            : undefined,
         })),
       }));
 
@@ -186,8 +203,10 @@ export default function OrdersPage() {
       console.error("Error fetching orders:", error);
 
       // Handle auth errors specifically
-      if (error?.message?.includes('Invalid Refresh Token') ||
-        error?.message?.includes('Refresh Token Not Found')) {
+      if (
+        error?.message?.includes("Invalid Refresh Token") ||
+        error?.message?.includes("Refresh Token Not Found")
+      ) {
         await handleAuthError(error);
       }
     } finally {
@@ -216,7 +235,7 @@ export default function OrdersPage() {
   };
 
   const getOrderStatusText = (order: Order) => {
-    return order.status?.display_name || t('common.unknown');
+    return order.status?.display_name || t("common.unknown");
   };
 
   const getOrderStatusColor = (order: Order) => {
@@ -245,16 +264,16 @@ export default function OrdersPage() {
   // Helper function to parse user info from JSON
   const parseUserInfo = (userField: string | any) => {
     try {
-      if (typeof userField === 'string') {
+      if (typeof userField === "string") {
         return JSON.parse(userField);
       }
       return userField;
     } catch {
       return {
         user_id: userField,
-        name: 'Unknown',
-        email: 'Unknown',
-        address: 'Not specified'
+        name: "Unknown",
+        email: "Unknown",
+        address: "Not specified",
       };
     }
   };
@@ -339,13 +358,19 @@ export default function OrdersPage() {
                             {getOrderStatusText(order)}
                           </span>
                         </div>
+                        <div className="text-white font-extrabold px-6 py-2 bg-orange-600 rounded-full">
+                          {t(`orders.${JSON.parse(order.user).delivery_type}`)} 
+                        </div>
                       </div>
 
                       <div className="flex items-center space-x-6 text-sm">
                         <div className="flex items-center text-gray-600">
                           <Calendar className="w-4 h-4 mr-2" />
-                          {new Date(order.created_at).toLocaleDateString("tr-TR")}
+                          {new Date(order.created_at).toLocaleDateString(
+                            "tr-TR"
+                          )}
                         </div>
+
                         <div className="flex items-center font-semibold text-blue-600">
                           {formatCurrency(order.total)}
                         </div>
@@ -410,16 +435,18 @@ export default function OrdersPage() {
                         </div>
                       ))}
 
-                      {order.product_details && order.product_details.length > 3 && (
-                        <div className="flex items-center justify-center p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                          <div className="text-center">
-                            <Package className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                            <p className="text-sm text-gray-500">
-                              +{order.product_details.length - 3} {t("common.moreItems")}
-                            </p>
+                      {order.product_details &&
+                        order.product_details.length > 3 && (
+                          <div className="flex items-center justify-center p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                            <div className="text-center">
+                              <Package className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                              <p className="text-sm text-gray-500">
+                                +{order.product_details.length - 3}{" "}
+                                {t("common.moreItems")}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
 
                     {/* Customer Info */}
@@ -434,7 +461,9 @@ export default function OrdersPage() {
                           return (
                             <>
                               <div>
-                                <span className="font-medium">{userInfo.name || 'Unknown'}</span>
+                                <span className="font-medium">
+                                  {userInfo.name || "Unknown"}
+                                </span>
                               </div>
                               {userInfo.phone && (
                                 <div>
@@ -448,9 +477,11 @@ export default function OrdersPage() {
                               )}
                               {userInfo.address && (
                                 <div className="flex items-start">
-                                  <strong className="flex-shrink-0">Teslimat Adresi:</strong>
+                                  <strong className="flex-shrink-0">
+                                    Teslimat Adresi:
+                                  </strong>
                                   <span className="flex-1 ml-2">
-                                    {typeof userInfo.address === 'object'
+                                    {typeof userInfo.address === "object"
                                       ? `${userInfo.address.full_address}, ${userInfo.address.district}, ${userInfo.address.city}, ${userInfo.address.postal_code}, ${userInfo.address.country}`
                                       : userInfo.address}
                                   </span>
@@ -472,8 +503,11 @@ export default function OrdersPage() {
                               {t("orders.deliveryScheduled")}
                             </p>
                             <p className="text-sm text-blue-700">
-                              {new Date(order.delivery_date).toLocaleDateString("tr-TR")}
-                              {order.delivery_time && ` • ${order.delivery_time}`}
+                              {new Date(order.delivery_date).toLocaleDateString(
+                                "tr-TR"
+                              )}
+                              {order.delivery_time &&
+                                ` • ${order.delivery_time}`}
                             </p>
                           </div>
                         </div>
@@ -518,7 +552,9 @@ export default function OrdersPage() {
                   <div className="flex items-center space-x-3">
                     {getOrderStatusIcon(selectedOrder)}
                     <div>
-                      <p className="text-sm text-gray-600">{t("orders.status")}</p>
+                      <p className="text-sm text-gray-600">
+                        {t("orders.status")}
+                      </p>
                       <span
                         className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getOrderStatusColor(
                           selectedOrder
@@ -533,9 +569,13 @@ export default function OrdersPage() {
                   <div className="flex items-center space-x-3">
                     <Calendar className="w-5 h-5 text-gray-400" />
                     <div>
-                      <p className="text-sm text-gray-600">{t("orders.orderDate")}</p>
+                      <p className="text-sm text-gray-600">
+                        {t("orders.orderDate")}
+                      </p>
                       <p className="font-medium text-gray-900">
-                        {new Date(selectedOrder.created_at).toLocaleDateString("tr-TR")}
+                        {new Date(selectedOrder.created_at).toLocaleDateString(
+                          "tr-TR"
+                        )}
                       </p>
                     </div>
                   </div>
@@ -546,7 +586,9 @@ export default function OrdersPage() {
                       <span className="text-xs text-gray-600">₺</span>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">{t("orders.totalAmount")}</p>
+                      <p className="text-sm text-gray-600">
+                        {t("orders.totalAmount")}
+                      </p>
                       <p className="font-bold text-blue-600 text-lg">
                         {formatCurrency(selectedOrder.total)}
                       </p>
@@ -557,9 +599,12 @@ export default function OrdersPage() {
                   <div className="flex items-center space-x-3">
                     <Package className="w-5 h-5 text-gray-400" />
                     <div>
-                      <p className="text-sm text-gray-600">{t("common.items")}</p>
+                      <p className="text-sm text-gray-600">
+                        {t("common.items")}
+                      </p>
                       <p className="font-medium text-gray-900">
-                        {selectedOrder.product_details?.length || 0} {t("common.items")}
+                        {selectedOrder.product_details?.length || 0}{" "}
+                        {t("common.items")}
                       </p>
                     </div>
                   </div>
@@ -569,11 +614,13 @@ export default function OrdersPage() {
                     <div className="flex items-center space-x-3">
                       <CreditCard className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-600">{t('orders.paymentMethod')}</p>
+                        <p className="text-sm text-gray-600">
+                          {t("orders.paymentMethod")}
+                        </p>
                         <p className="font-medium text-gray-900">
                           {selectedOrder.payment_method === "bank_transfer"
-                            ? t('orders.paymentMethodBank')
-                            : t('orders.paymentMethodCard')}
+                            ? t("orders.paymentMethodBank")
+                            : t("orders.paymentMethodCard")}
                         </p>
                       </div>
                     </div>
@@ -584,7 +631,9 @@ export default function OrdersPage() {
                     <div className="flex items-center space-x-3">
                       <span className="font-mono text-gray-400 text-lg">#</span>
                       <div>
-                        <p className="text-sm text-gray-600">{t('orders.paymentReference')}</p>
+                        <p className="text-sm text-gray-600">
+                          {t("orders.paymentReference")}
+                        </p>
                         <p className="font-medium text-gray-900 font-mono">
                           {selectedOrder.payment_reference}
                         </p>
@@ -596,7 +645,8 @@ export default function OrdersPage() {
                 {/* Status Description */}
                 <div className="mt-6 p-4 bg-white rounded-lg border">
                   <p className="text-sm text-gray-600">
-                    {selectedOrder.status?.description || t('orders.statusDescription')}
+                    {selectedOrder.status?.description ||
+                      t("orders.statusDescription")}
                   </p>
                 </div>
 
@@ -612,7 +662,9 @@ export default function OrdersPage() {
                       return (
                         <>
                           <div>
-                            <p className="text-gray-900 font-medium">{userInfo.name || 'Unknown'}</p>
+                            <p className="text-gray-900 font-medium">
+                              {userInfo.name || "Unknown"}
+                            </p>
                           </div>
                           {userInfo.phone && (
                             <div>
@@ -626,10 +678,12 @@ export default function OrdersPage() {
                           )}
                           {userInfo.address && (
                             <div>
-                              <p className="text-sm font-medium text-gray-700 mb-1">Teslimat Adresi:</p>
+                              <p className="text-sm font-medium text-gray-700 mb-1">
+                                Teslimat Adresi:
+                              </p>
                               <div className="text-gray-900">
                                 <p className="whitespace-pre-line">
-                                  {typeof userInfo.address === 'object'
+                                  {typeof userInfo.address === "object"
                                     ? `${userInfo.address.full_address}\n${userInfo.address.district}, ${userInfo.address.city}\n${userInfo.address.postal_code}, ${userInfo.address.country}`
                                     : userInfo.address}
                                 </p>
@@ -644,7 +698,8 @@ export default function OrdersPage() {
 
                 {/* Delivery Appointment */}
                 {selectedOrder.status?.name === "appointment_scheduled" &&
-                  (selectedOrder.delivery_date || selectedOrder.delivery_time) && (
+                  (selectedOrder.delivery_date ||
+                    selectedOrder.delivery_time) && (
                     <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                       <h4 className="font-semibold text-blue-900 mb-2 flex items-center">
                         <MapPin className="w-4 h-4 mr-2" />
@@ -653,23 +708,35 @@ export default function OrdersPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         {selectedOrder.delivery_date && (
                           <div>
-                            <p className="font-medium text-blue-900">{t("orders.deliveryDate")}:</p>
+                            <p className="font-medium text-blue-900">
+                              {t("orders.deliveryDate")}:
+                            </p>
                             <p className="text-blue-700">
-                              {new Date(selectedOrder.delivery_date).toLocaleDateString("tr-TR")}
+                              {new Date(
+                                selectedOrder.delivery_date
+                              ).toLocaleDateString("tr-TR")}
                             </p>
                           </div>
                         )}
                         {selectedOrder.delivery_time && (
                           <div>
-                            <p className="font-medium text-blue-900">{t("orders.deliveryTime")}:</p>
-                            <p className="text-blue-700">{selectedOrder.delivery_time}</p>
+                            <p className="font-medium text-blue-900">
+                              {t("orders.deliveryTime")}:
+                            </p>
+                            <p className="text-blue-700">
+                              {selectedOrder.delivery_time}
+                            </p>
                           </div>
                         )}
                       </div>
                       {selectedOrder.delivery_notes && (
                         <div className="mt-3">
-                          <p className="font-medium text-blue-900">{t("orders.deliveryNotes")}:</p>
-                          <p className="text-blue-700">{selectedOrder.delivery_notes}</p>
+                          <p className="font-medium text-blue-900">
+                            {t("orders.deliveryNotes")}:
+                          </p>
+                          <p className="text-blue-700">
+                            {selectedOrder.delivery_notes}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -684,76 +751,54 @@ export default function OrdersPage() {
                 </h3>
                 <div className="space-y-4">
                   {selectedOrder.product_details &&
-                    selectedOrder.product_details.length > 0
+                  selectedOrder.product_details.length > 0
                     ? selectedOrder.product_details.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center p-6 bg-gray-50 rounded-xl border hover:bg-gray-100 transition-colors"
-                      >
-                        {/* Product Image */}
-                        <div className="w-20 h-20 flex-shrink-0 mr-6">
-                          {item.product_image ? (
-                            <img
-                              src={item.product_image}
-                              alt={item.product_name || t("products.unknown")}
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                              <Package className="w-8 h-8 text-gray-400" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Product Info */}
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 text-lg mb-2">
-                            {item.product_name || `${t('products.unknown')} ID: ${item.product_id}`}
-                          </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                            {item.product_brand && (
-                              <div>
-                                {item.product_brand}
-                              </div>
-                            )}
-                            {item.product_category && (
-                              <div>
-                                {item.product_category}
-                              </div>
-                            )}
-                            <div>
-                              <span className="font-medium">{t("checkout.quantity")}:</span> {item.quantity}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Price Info */}
-                        <div className="text-right ml-6">
-                          <p className="font-bold text-xl text-blue-600 mb-1">
-                            {formatCurrency(item.price * item.quantity)}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {formatCurrency(item.price)}/{t("common.unit")}
-                          </p>
-                        </div>
-                      </div>
-                    ))
-                    : parseOrderProducts(selectedOrder.products).map(
-                      (item, index) => (
                         <div
                           key={index}
-                          className="flex justify-between items-center p-6 bg-gray-50 rounded-xl border"
+                          className="flex items-center p-6 bg-gray-50 rounded-xl border hover:bg-gray-100 transition-colors"
                         >
-                          <div>
-                            <p className="font-semibold text-gray-900">
-                              {t('products.unknown')} ID: {item.product_id}
-                            </p>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {t("checkout.quantity")}: {item.quantity}
-                            </p>
+                          {/* Product Image */}
+                          <div className="w-20 h-20 flex-shrink-0 mr-6">
+                            {item.product_image ? (
+                              <img
+                                src={item.product_image}
+                                alt={item.product_name || t("products.unknown")}
+                                className="w-full h-full object-cover rounded-lg"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                                <Package className="w-8 h-8 text-gray-400" />
+                              </div>
+                            )}
                           </div>
-                          <div className="text-right">
-                            <p className="font-bold text-xl text-blue-600">
+
+                          {/* Product Info */}
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 text-lg mb-2">
+                              {item.product_name ||
+                                `${t("products.unknown")} ID: ${
+                                  item.product_id
+                                }`}
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                              {item.product_brand && (
+                                <div>{item.product_brand}</div>
+                              )}
+                              {item.product_category && (
+                                <div>{item.product_category}</div>
+                              )}
+                              <div>
+                                <span className="font-medium">
+                                  {t("checkout.quantity")}:
+                                </span>{" "}
+                                {item.quantity}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Price Info */}
+                          <div className="text-right ml-6">
+                            <p className="font-bold text-xl text-blue-600 mb-1">
                               {formatCurrency(item.price * item.quantity)}
                             </p>
                             <p className="text-sm text-gray-500">
@@ -761,8 +806,32 @@ export default function OrdersPage() {
                             </p>
                           </div>
                         </div>
-                      )
-                    )}
+                      ))
+                    : parseOrderProducts(selectedOrder.products).map(
+                        (item, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center p-6 bg-gray-50 rounded-xl border"
+                          >
+                            <div>
+                              <p className="font-semibold text-gray-900">
+                                {t("products.unknown")} ID: {item.product_id}
+                              </p>
+                              <p className="text-sm text-gray-600 mt-1">
+                                {t("checkout.quantity")}: {item.quantity}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold text-xl text-blue-600">
+                                {formatCurrency(item.price * item.quantity)}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {formatCurrency(item.price)}/{t("common.unit")}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      )}
                 </div>
               </div>
 
