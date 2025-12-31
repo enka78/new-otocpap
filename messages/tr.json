@@ -185,7 +185,10 @@
     "paymentMethod": "Ödeme Yöntemi",
     "paymentMethodBank": "Banka Transferi",
     "paymentMethodCard": "Kredi Kartı",
-    "paymentReference": "Sipariş No"
+    "paymentReference": "Sipariş No",
+    "istanbul-installation": "İstanbul İçi Yerinde Kurulum",
+    "domestic-cargo": "Türkiye İçi Kargo",
+    "international-cargo": "Yurt Dışı Kargo"
   },
   "checkout": {
     "orderLimitReached": "Bugün zaten bir sipariş verdiniz. Lütfen mevcut siparişi Siparişler sayfasından iptal edin.",

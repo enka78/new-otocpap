@@ -186,7 +186,10 @@
     "paymentMethod": "Payment Method",
     "paymentMethodBank": "Bank Transfer",
     "paymentMethodCard": "Credit Card",
-    "paymentReference":"Payment Reference"
+    "paymentReference":"Payment Reference",
+    "istanbul-installation": "Istanbul Installation",
+    "domestic-cargo": "Domestic Cargo",
+    "international-cargo": "International Cargo"
   },
   "checkout": {
     "orderLimitReached": "You have already placed an order today. Please cancel the existing order from the Orders page.",
