@@ -12,7 +12,7 @@ export default function DistanceSalesAgreementPage() {
                 <section>
                     <p className="text-sm text-gray-500 mb-6">
                         İşbu Mesafeli Satış Sözleşmesi, aşağıda bilgileri bulunan taraflar arasında, tüketicinin{" "}
-                        <strong>www.otocpap.com</strong> ("Site") üzerinden elektronik ortamda verdiği siparişe ilişkin olarak
+                        <strong>www.otocpap.com</strong> (&quot;Site&quot;) üzerinden elektronik ortamda verdiği siparişe ilişkin olarak
                         6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca akdedilmiştir.
                     </p>
                 </section>
@@ -42,7 +42,7 @@ export default function DistanceSalesAgreementPage() {
                 <section>
                     <h2 className="text-xl font-semibold text-gray-900 mb-3">2. SÖZLEŞMENİN KONUSU</h2>
                     <p>
-                        Bu sözleşmenin konusu, ALICI'nın SATICI'ya ait internet sitesi üzerinden elektronik ortamda sipariş verdiği
+                        Bu sözleşmenin konusu, ALICI&apos;nın SATICI&apos;ya ait internet sitesi üzerinden elektronik ortamda sipariş verdiği
                         ürün/ürünlerin satışı, teslimi ve ilgili tarafların hak ve yükümlülüklerinin belirlenmesidir.
                     </p>
                 </section>
@@ -58,7 +58,7 @@ export default function DistanceSalesAgreementPage() {
                 <section>
                     <h2 className="text-xl font-semibold text-gray-900 mb-3">4. TESLİMAT ŞARTLARI</h2>
                     <ul className="list-disc pl-5 space-y-2">
-                        <li>Ürünler, ALICI'nın sipariş formunda belirttiği adrese gönderilir.</li>
+                        <li>Ürünler, ALICI&apos;nın sipariş formunda belirttiği adrese gönderilir.</li>
                         <li>Teslim süresi genellikle 1-3 iş günü olup, kargo kaynaklı gecikmelerden SATICI sorumlu değildir.</li>
                         <li>ALICI, teslim sırasında paketi kontrol etmeli; hasarlı ürünlerde kargo görevlisine tutanak tutturmalıdır.</li>
                     </ul>
@@ -90,12 +90,17 @@ export default function DistanceSalesAgreementPage() {
                             <p className="text-sm text-amber-700 mt-2 italic">
                                 (Ambalajı açılmamış ürünlerde iade hakkı geçerlidir.)
                             </p>
+                            <div className="mt-4 pt-4 border-t border-amber-200">
+                                <p className="text-sm text-amber-900">
+                                    <strong>Güvenlik Bandı Uygulaması:</strong> Ürünler kargoya verilmeden önce &apos;Güvenlik Bandı&apos; ile kapatılmaktadır. Hijyen ve sağlık gereklilikleri nedeniyle, bu bandın açılması veya hasar görmesi durumunda ürünün &apos;kullanılmış&apos; statüsüne geçmesi sebebiyle iadesi kabul edilmemektedir.
+                                </p>
+                            </div>
                         </div>
                     </div>
 
                     <div>
                         <h3 className="text-lg font-medium text-gray-800 mb-2">5.3. Ücret İadesi</h3>
-                        <p>İade edilen ürün SATICI'ya ulaştıktan sonra 14 gün içinde ücret iadesi yapılır.</p>
+                        <p>İade edilen ürün SATICI&apos;ya ulaştıktan sonra 14 gün içinde ücret iadesi yapılır.</p>
                     </div>
                 </section>
 
@@ -119,7 +124,7 @@ export default function DistanceSalesAgreementPage() {
                 <section>
                     <h2 className="text-xl font-semibold text-gray-900 mb-3">8. KİŞİSEL VERİLERİN KORUNMASI</h2>
                     <p>
-                        ALICI'nın kişisel verileri KVKK'ya uygun şekilde işlenir ve yalnızca siparişi gerçekleştirmek amacıyla
+                        ALICI&apos;nın kişisel verileri KVKK&apos;ya uygun şekilde işlenir ve yalnızca siparişi gerçekleştirmek amacıyla
                         üçüncü kişilerle paylaşılabilir (kargo firması vb.).
                     </p>
                 </section>
@@ -135,7 +140,7 @@ export default function DistanceSalesAgreementPage() {
                 <section>
                     <h2 className="text-xl font-semibold text-gray-900 mb-3">10. YÜRÜRLÜK</h2>
                     <p>
-                        ALICI'nın elektronik ortamda onayladığı işbu sözleşme, onay anından itibaren yürürlüğe girer.
+                        ALICI&apos;nın elektronik ortamda onayladığı işbu sözleşme, onay anından itibaren yürürlüğe girer.
                     </p>
                 </section>
 

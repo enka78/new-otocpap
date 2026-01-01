@@ -60,11 +60,15 @@ export default function DeliveryReturnConditionsPage() {
                                         </li>
                                         <li className="flex items-start">
                                             <span className="mr-2">⚠️</span>
-                                            <span>Hasarlı, açılmış veya yırtılmış paket olması durumunda teslim almadan <strong>tutanak tutturmanız</strong> gerekir.</span>
+                                            <span>Paket üzerinde hasar, açılma veya yırtılma olması durumunda teslim almadan mutlaka <strong>tutanak tutturmanız</strong> gerekir.</span>
                                         </li>
                                         <li className="flex items-start">
                                             <span className="mr-2">⚠️</span>
-                                            <span>Tutanak tutulmayan hasarlı gönderilerde sorumluluk müşteriye aittir.</span>
+                                            <span>Tüm ürünlerimiz kargolanmadan önce özel <strong>&apos;Güvenlik Bandı&apos;</strong> ile mühürlenmektedir. Bandı açılmış veya hasar görmüş paketleri tutanak tutturarak iade ediniz.</span>
+                                        </li>
+                                        <li className="flex items-start">
+                                            <span className="mr-2">⚠️</span>
+                                            <span>Tutanak tutulmayan hasarlı veya açılmış gönderilerde sorumluluk müşteriye aittir.</span>
                                         </li>
                                     </ul>
                                 </div>
