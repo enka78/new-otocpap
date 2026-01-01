@@ -266,6 +266,24 @@ export default function FAQPage() {
                 </div>
             ),
         },
+        {
+            question: "11. Ürünlerdeki güvenlik bandı nedir ve paket hasarlıysa ne yapmalıyım?",
+            answer: (
+                <div className="space-y-3">
+                    <p>
+                        Tıbbi ve hijyenik ürünlerin orijinalliğini ve ilk kez sizin tarafınızdan açıldığını garanti eden bir mühürdür.
+                    </p>
+                    <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                        <p className="text-amber-900">
+                            <strong>Önemli:</strong> Eğer kargonuzu teslim alırken paketin hasarlı, açılmış veya yırtılmış olduğunu görürseniz, mutlaka kargo görevlisine <strong>tutanak tutturarak</strong> ürünü iade ediniz.
+                        </p>
+                    </div>
+                    <p className="text-gray-700">
+                        CPAP cihazları ve maskeleri gibi doğrudan sağlığı etkileyen ürünlerde, bu bandın açılması ürünün hijyenik özelliğini kaybetmesine neden olur. Bu nedenle <strong>güvenlik bandı açılmış ürünlerde cayma hakkı kullanılamaz.</strong>
+                    </p>
+                </div>
+            ),
+        },
     ];
 
     return (
