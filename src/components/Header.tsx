@@ -10,6 +10,7 @@ import AuthModal from "./AuthModal";
 import CartSidebar from "./CartSidebar";
 import AdminPanelLink from "./AdminPanelLink";
 import { useCart } from "@/contexts/CartContext";
+import Image from "next/image";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -55,15 +56,18 @@ export default function Header() {
     try {
       // Get all orders since user field is now JSON
       const { data, error } = await supabase
-        .from('orders')
-        .select('id, user')
+        .from("orders")
+        .select("id, user")
         .limit(100); // Get reasonable amount to check
 
       if (!error && data && data.length > 0) {
         // Filter orders by user_id from JSON data
-        const userOrders = data.filter(order => {
+        const userOrders = data.filter((order) => {
           try {
-            const userInfo = typeof order.user === 'string' ? JSON.parse(order.user) : order.user;
+            const userInfo =
+              typeof order.user === "string"
+                ? JSON.parse(order.user)
+                : order.user;
             return userInfo.user_id === userId;
           } catch (parseError) {
             // Fallback: check if user field directly matches userId (for old data)
@@ -76,7 +80,7 @@ export default function Header() {
         setHasOrders(false);
       }
     } catch (error) {
-      console.error('Error checking user orders:', error);
+      console.error("Error checking user orders:", error);
       setHasOrders(false);
     }
   };
@@ -84,7 +88,7 @@ export default function Header() {
   const toggleLanguage = () => {
     const newLocale = locale === "tr" ? "en" : "tr";
     // Mevcut path'i al ve dil kısmını değiştir
-    const currentPath = pathname.replace(`/${locale}`, '') || '/';
+    const currentPath = pathname.replace(`/${locale}`, "") || "/";
     const newPath = `/${newLocale}${currentPath}`;
     router.push(newPath);
   };
@@ -104,9 +108,18 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex flex-col items-center">
-            <div className="text-2xl font-bold">
-              <span className="text-blue-600">Oto</span>
-              <span className="text-gray-800">Cpap</span>
+            <div className="flex gap-2 text-2xl font-bold">
+              <Image
+                src="/logo.svg"
+                alt="PayTR"
+                width={26}
+                height={26}
+                className="object-contain"
+              />
+              <div>
+                <span className="text-blue-600">Oto</span>
+                <span className="text-gray-800">Cpap</span>
+              </div>
             </div>
           </Link>
 
