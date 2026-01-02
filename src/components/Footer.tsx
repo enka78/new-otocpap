@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { Phone, Clock } from "lucide-react";
 import BrandsSection from "@/components/BrandsSection";
+import Image from "next/image";
 
 export default function Footer() {
   const t = useTranslations();
@@ -15,9 +16,18 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
-            <div className="text-2xl font-bold mb-4">
-              <span className="text-blue-400">Oto</span>
-              <span className="text-white">Cpap</span>
+            <div className="flex gap-2 text-2xl font-bold">
+              <Image
+                src="/logo-white.svg"
+                alt="PayTR"
+                width={26}
+                height={26}
+                className="object-contain"
+              />
+              <div className="text-2xl font-bold">
+                <span className="text-blue-400">Oto</span>
+                <span className="text-white">Cpap</span>
+              </div>
             </div>
             <div className="text-lg text-gray-300 mb-2">
               {t("footer.company")}
@@ -137,21 +147,24 @@ export default function Footer() {
           </div>
         </div>
 
-
-
         {/* Payment Trust Badge - PayTR */}
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">
           <p>{t("footer.copyRight")}</p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-2 space-y-2 md:space-y-0 md:space-x-4 mt-4 md:mt-0">
             <span className="text-gray-400 text-xs text-center md:text-right">
-              Ödemeleriniz PayTR güvenli ödeme altyapısı ile 256-bit SSL üzerinden korunmaktadır.
+              Ödemeleriniz PayTR güvenli ödeme altyapısı ile 256-bit SSL
+              üzerinden korunmaktadır.
             </span>
             <div className="h-8 w-24 relative opacity-90 hover:opacity-100 transition-opacity">
-              <img src="/PayTR-Logo.svg" alt="PayTR" className="h-full w-full object-contain brightness-0 invert" />
+              <img
+                src="/PayTR-Logo.svg"
+                alt="PayTR"
+                className="h-full w-full object-contain brightness-0 invert"
+              />
             </div>
           </div>
         </div>
       </div>
-    </footer >
+    </footer>
   );
 }
