@@ -196,9 +196,20 @@ export default function Header() {
               <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
             ) : user ? (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700 hidden sm:block">
-                  {user.user_metadata?.full_name || user.email}
-                </span>
+                {(user.user_metadata?.picture || user.user_metadata?.avatar_url) ? (
+                  <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200">
+                    <Image
+                      src={user.user_metadata.picture || user.user_metadata.avatar_url}
+                      alt={user.user_metadata.full_name || "User Avatar"}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <span className="text-sm text-gray-700 hidden sm:block">
+                    {user.user_metadata?.full_name || user.email}
+                  </span>
+                )}
                 {/* Admin Panel Link */}
                 <AdminPanelLink user={user} />
                 <button
@@ -313,8 +324,18 @@ export default function Header() {
               {/* Mobile User Info */}
               {user && (
                 <div className="pt-4 border-t space-y-2">
-                  <div className="text-gray-700">
-                    {user.user_metadata?.full_name || user.email}
+                  <div className="flex items-center gap-3 text-gray-700">
+                    {(user.user_metadata?.picture || user.user_metadata?.avatar_url) && (
+                      <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200">
+                        <Image
+                          src={user.user_metadata.picture || user.user_metadata.avatar_url}
+                          alt={user.user_metadata.full_name || "User Avatar"}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <span>{user.user_metadata?.full_name || user.email}</span>
                   </div>
                   {/* Mobile Admin Panel Link */}
                   <AdminPanelLink user={user} isMobile={true} />

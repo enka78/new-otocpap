@@ -186,7 +186,7 @@
     "paymentMethod": "Payment Method",
     "paymentMethodBank": "Bank Transfer",
     "paymentMethodCard": "Credit Card",
-    "paymentReference":"Payment Reference",
+    "paymentReference": "Payment Reference",
     "istanbul-installation": "Istanbul Installation",
     "domestic-cargo": "Domestic Cargo",
     "international-cargo": "International Cargo"
@@ -279,7 +279,8 @@
     "invalidResetLink": "Invalid password reset link.",
     "resetPasswordDirectAccess": "You have directly accessed the password reset page.",
     "resetPasswordDirectAccessDesc": "You must use the link sent to your email address to reset your password.",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "continueWithGoogle": "Continue with Google"
   },
   "cart": {
     "title": "My Cart",
