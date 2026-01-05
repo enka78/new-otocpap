@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { X, MapPin, Truck, Globe, MessageCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/lib/supabase";
-import { createOrder } from "@/lib/orders";
+
 import { User } from "@/types/user";
 import { CartItem } from "@/types/cart";
 import DailyOrderCheckComponent from "./order/DailyOrderCheck";
@@ -236,7 +236,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         throw error;
       }
 
-      console.log("Sipariş başarıyla kaydedildi:", orderResult);
+
 
       // WhatsApp mesajını oluştur ve gönder
       const message = generateWhatsAppMessage();

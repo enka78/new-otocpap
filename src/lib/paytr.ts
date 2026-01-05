@@ -59,12 +59,10 @@ export class PaytrService {
     } = params;
 
     const user_basket_json = JSON.stringify(user_basket);
-    const merchant_ok_url = `${
-      process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-    }/payment/success`;
-    const merchant_fail_url = `${
-      process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-    }/payment/error`;
+    const merchant_ok_url = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+      }/payment/success`;
+    const merchant_fail_url = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+      }/payment/error`;
     const timeout_limit = "30"; // 30 minutes
     const debug_on = "1"; // 1 for debug mode logs
 
@@ -103,12 +101,10 @@ export class PaytrService {
 
     const user_basket_json = JSON.stringify(user_basket);
     // Replace hardcoded URLs with environment variables if needed
-    const merchant_ok_url = `${
-      process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-    }/payment/success?oid=${merchant_oid}`;
-    const merchant_fail_url = `${
-      process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-    }/payment/error?oid=${merchant_oid}`;
+    const merchant_ok_url = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+      }/payment/success?oid=${merchant_oid}`;
+    const merchant_fail_url = `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+      }/payment/error?oid=${merchant_oid}`;
     const timeout_limit = "30";
     const debug_on = "1";
 
@@ -217,11 +213,7 @@ export class PaytrService {
       .update(hashStr)
       .digest("base64");
 
-    console.log("🔐 PAYTR NOTIFY HASH DEBUG", {
-      hashStr,
-      calculatedHash,
-      incomingHash: hash,
-    });
+
 
     return calculatedHash === hash;
   }

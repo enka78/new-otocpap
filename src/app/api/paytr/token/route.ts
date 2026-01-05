@@ -7,9 +7,7 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { user, cartItems, totalAmount, sessionId: providedSessionId } = body;
 
-        /* ----------------------------------------------------
-           1. CLIENT IP
-        ---------------------------------------------------- */
+        // 1. CLIENT IP
         const forwarded = req.headers.get("x-forwarded-for");
         let ip =
             forwarded?.split(",")[0] ||
@@ -18,15 +16,10 @@ export async function POST(req: NextRequest) {
 
         if (ip === "::1" || ip === "::") ip = "127.0.0.1";
 
-        /* ----------------------------------------------------
-           2. merchant_oid (alphanumeric, no dash)
-        ---------------------------------------------------- */
+        // 2. merchant_oid (alphanumeric, no dash)
         const merchant_oid = providedSessionId || crypto.randomUUID().replace(/-/g, "");
 
-        /* ----------------------------------------------------
-           3. USER BASKET (PHP ÖRNEĞİYLE BİREBİR)
-           [["Ürün Adı","18.00",1], ...]
-        ---------------------------------------------------- */
+        // 3. USER BASKET
         const userBasketArray: any[][] = cartItems.map((item: any) => [
             String(item.product?.name || "Ürün"),
             Number(item.product?.price || 0).toFixed(2), // STRING
@@ -38,10 +31,8 @@ export async function POST(req: NextRequest) {
             "utf-8"
         ).toString("base64");
 
-        /* ----------------------------------------------------
-           4. SAVE/UPDATE CHECKOUT SESSION
-        ---------------------------------------------------- */
-        console.log("💾 Syncing Session in Token Route:", merchant_oid);
+        // 4. SAVE/UPDATE CHECKOUT SESSION
+
 
         // Get initial status ID
         const { data: statusData } = await supabaseAdmin
@@ -67,23 +58,17 @@ export async function POST(req: NextRequest) {
                 { status: 500 }
             );
         }
-        console.log("✅ Session Synced");
 
-        /* ----------------------------------------------------
-           5. PAYTR AMOUNT (TL → Kuruş)
-        ---------------------------------------------------- */
+
+        // 5. PAYTR AMOUNT (TL -> Kuruş)
         const totalAmountKurus = Math.round(Number(totalAmount) * 100);
 
-        /* ----------------------------------------------------
-           6. SAFE ADDRESS (undefined FIX)
-        ---------------------------------------------------- */
+        // 6. SAFE ADDRESS
         const user_address =
             user?.address ||
             "Adres bilgisi girilmedi";
 
-        /* ----------------------------------------------------
-           7. PAYTR TOKEN REQUEST
-        ---------------------------------------------------- */
+        // 7. PAYTR TOKEN REQUEST
         const { token, iframeUrl } =
             await paytrService.getIframeTokenWithIp(
                 {
@@ -103,10 +88,8 @@ export async function POST(req: NextRequest) {
                 ip
             );
 
-        /* ----------------------------------------------------
-           DEBUG (GEÇİCİ)
-        ---------------------------------------------------- */
-        console.log("USER_BASKET_DECODE:", Buffer.from(user_basket, "base64").toString("utf-8"));
+
+
 
         return NextResponse.json({ token, iframeUrl });
 

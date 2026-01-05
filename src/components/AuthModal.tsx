@@ -20,7 +20,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -59,19 +59,19 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     if (password.length < 8) {
       return { isValid: false, message: t('auth.passwordMinLength') };
     }
-    
+
     if (!/[A-Z]/.test(password)) {
       return { isValid: false, message: t('auth.passwordUppercase') };
     }
-    
+
     if (!/[0-9]/.test(password)) {
       return { isValid: false, message: t('auth.passwordNumber') };
     }
-    
+
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
       return { isValid: false, message: t('auth.passwordSpecial') };
     }
-    
+
     return { isValid: true, message: '' };
   };
 
@@ -169,12 +169,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
     try {
       // Always use production URL for password reset emails in production
-      const redirectUrl = process.env.NODE_ENV === 'production' 
+      const redirectUrl = process.env.NODE_ENV === 'production'
         ? 'https://www.otocpap.com/tr/auth/reset-password'
         : getPasswordResetUrl();
-      
-      console.log('Password reset redirect URL:', redirectUrl); // Debug log
-      
+
+
+
       const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
         redirectTo: redirectUrl
       });
@@ -239,11 +239,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}

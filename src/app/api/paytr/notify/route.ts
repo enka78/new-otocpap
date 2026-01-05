@@ -6,19 +6,19 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export async function POST(req: NextRequest) {
   try {
-    // PayTR sends x-www-form-urlencoded data
+
     const formData = await req.formData();
     const merchant_oid = (formData.get("merchant_oid") ?? "").toString().trim();
     const status = formData.get("status") as string;
     const total_amount = formData.get("total_amount") as string;
     const hash = formData.get("hash") as string;
 
-    console.log("🔥 PAYTR NOTIFY HIT", { merchant_oid, status, total_amount });
 
-    // Optional fields often sent by PayTR
+
+
     const fail_reason = formData.get("failed_reason_msg");
 
-    console.log("📝 Callback Data:", { merchant_oid, status, total_amount, hash });
+
 
     // 1. Verify Hash
     const isValid = paytrService.validateCallback({
@@ -33,12 +33,12 @@ export async function POST(req: NextRequest) {
       return new NextResponse("OK");
     }
 
-    console.log("✅ Hash Validated");
+
 
     // 2. Handle Payment Status
     if (status === "success") {
-      // Payment Successful
-      console.log(`💰 Payment Success for Session ${merchant_oid}`);
+
+
 
       // A. Retrieve Session Data
       const { data: sessionData, error: sessionFetchError } = await supabaseAdmin
@@ -59,10 +59,10 @@ export async function POST(req: NextRequest) {
         return new NextResponse("OK");
       }
 
-      console.log("📄 Session Data Found:", sessionData.id);
+
 
       if (sessionData.status === "processed") {
-        console.log("⏭️ Session already processed");
+
         return new NextResponse("OK");
       }
 
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       }
 
       // B. Create Real Order
-      // Get 'order_received' status ID dynamically
+
       const { data: statusData, error: statusError } = await supabaseAdmin
         .from('status')
         .select('id')
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
         payment_provider_reference: merchant_oid,
       };
 
-      console.log("📦 Preparing Order Data:", orderData);
+
 
       // Update Session Status - Use both for compatibility if needed
       const { error: sessionUpdateError } = await supabaseAdmin
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
         return new NextResponse("Order insertion failed", { status: 500 });
       }
 
-      console.log("🎊 Order Created Successfully:", newOrder.id);
+
     } else {
       // Payment Failed
       console.log(`❌ Payment Failed for Order ${merchant_oid}: ${fail_reason}`);

@@ -1,4 +1,4 @@
-import { log } from 'console';
+
 import { supabase } from './supabase';
 
 export interface DailyOrderCheck {
@@ -34,8 +34,7 @@ export const checkDailyOrderLimit = async (userId: string): Promise<DailyOrderCh
   try {
     const { start, end } = getTodayRange();
 
-    console.log('Checking daily order limit for user:', userId);
-    console.log('Date range:', { start: start.toISOString(), end: end.toISOString() });
+
 
     // Bugünkü kullanıcının TÜM siparişlerini çek (iptal edilenler dahil)
     const { data: todaysOrders, error } = await supabase
@@ -60,12 +59,11 @@ export const checkDailyOrderLimit = async (userId: string): Promise<DailyOrderCh
       };
     }
 
-    console.log('Today\'s orders found:', todaysOrders?.length || 0);
-    console.log('Orders:', todaysOrders);
+
 
     // Eğer bugün hiç sipariş yoksa, sipariş verilebilir
     if (!todaysOrders || todaysOrders.length === 0) {
-      console.log('No orders today, can order');
+
       return {
         canOrder: true,
         message: 'Bugün henüz sipariş vermediniz. Yeni sipariş verebilirsiniz.'
@@ -76,14 +74,13 @@ export const checkDailyOrderLimit = async (userId: string): Promise<DailyOrderCh
     const cancelledOrders = todaysOrders.filter(order => order.status_id === 10);
     const activeOrders = todaysOrders.filter(order => order.status_id !== 10);
 
-    console.log('Cancelled orders:', cancelledOrders.length);
-    console.log('Active orders:', activeOrders.length);
+
 
     // Eğer aktif (iptal edilmemiş) sipariş varsa, yeni sipariş verilemez
     if (activeOrders.length > 0) {
       const latestActiveOrder = activeOrders[0];
-      console.log('Found active order, cannot order:', latestActiveOrder);
-      
+
+
       return {
         canOrder: false,
         existingOrder: {
@@ -98,7 +95,7 @@ export const checkDailyOrderLimit = async (userId: string): Promise<DailyOrderCh
     }
 
     // Sadece iptal edilmiş siparişler varsa, yeni sipariş verilebilir
-    console.log('Only cancelled orders found, can order');
+
     return {
       canOrder: true,
       message: 'Önceki siparişiniz iptal edildi. Yeni sipariş verebilirsiniz.'

@@ -10,12 +10,7 @@ import { useRouter } from "next/navigation";
 import { DailyOrderCheck } from "@/lib/orderValidation";
 import { formatCurrency } from "@/lib/format";
 
-// interface CartItem {
-//   id: number;
-//   product: Product;
-//   quantity: number;
-//   category: string;
-// }
+
 
 interface CartSidebarProps {
   isOpen: boolean;
@@ -231,7 +226,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     });
                     return;
                   }
-                  console.log("orderCheck", orderCheck);
+
                   if (orderCheck !== null) {
                     setToast({
                       message: t("cart.dailyOrderLimit"),
