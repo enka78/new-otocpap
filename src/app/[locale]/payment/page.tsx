@@ -275,15 +275,16 @@ export default function PaymentPage() {
     <div className="min-h-[calc(100vh-200px)] bg-gray-50 py-4 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
       <div className="w-full max-w-7xl mx-auto">
         {/* Header - Compact */}
-        <div className="mb-4 relative">
+        <div className="mb-4 relative flex flex-col md:block">
           <button
             onClick={() => router.push(`/${locale}/products`)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 flex items-center text-sm font-medium"
+            className="mb-3 md:mb-0 md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 flex items-center justify-center text-sm font-medium
+            bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900 w-full md:w-auto md:border-0 md:shadow-none md:bg-transparent md:p-0"
           >
             ← {t("cart.continueShopping") || "Alışverişe Devam Et"}
           </button>
-          <div className="text-center">
-            <h1 className="text-2xl font-extrabold text-gray-900">
+          <div className="text-center md:mx-auto">
+            <h1 className="text-xl md:text-2xl font-extrabold text-gray-900">
               {step === "address"
                 ? t("checkout.deliveryInfo")
                 : t("checkout.paymentSelection")}
