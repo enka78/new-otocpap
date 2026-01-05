@@ -278,7 +278,8 @@
     "invalidResetLink": "Geçersiz şifre sıfırlama bağlantısı.",
     "resetPasswordDirectAccess": "Şifre sıfırlama sayfasına doğrudan eriştiniz.",
     "resetPasswordDirectAccessDesc": "Şifrenizi sıfırlamak için e-posta adresinize gönderilen bağlantıyı kullanmalısınız.",
-    "loading": "Yükleniyor..."
+    "loading": "Yükleniyor...",
+    "continueWithGoogle": "Google ile Devam Et"
   },
   "cart": {
     "title": "Sepetim",
