@@ -203,6 +203,7 @@ export default function Header() {
                       alt={user.user_metadata.full_name || "User Avatar"}
                       fill
                       className="object-cover"
+                      unoptimized
                     />
                   </div>
                 ) : (
@@ -332,6 +333,7 @@ export default function Header() {
                           alt={user.user_metadata.full_name || "User Avatar"}
                           fill
                           className="object-cover"
+                          unoptimized
                         />
                       </div>
                     )}
