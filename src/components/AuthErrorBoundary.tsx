@@ -21,22 +21,22 @@ export class AuthErrorBoundary extends Component<Props, State> {
 
   static getDerivedStateFromError(error: Error): State {
     // Check if this is an auth-related error
-    if (error.message?.includes('Invalid Refresh Token') || 
-        error.message?.includes('Refresh Token Not Found') ||
-        error.message?.includes('AuthApiError')) {
+    if (error.message?.includes('Invalid Refresh Token') ||
+      error.message?.includes('Refresh Token Not Found') ||
+      error.message?.includes('AuthApiError')) {
       return { hasError: true, error };
     }
-    
+
     // For non-auth errors, don't catch them
     throw error;
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
     console.error('Auth error caught by boundary:', error, errorInfo);
-    
+
     // Handle the auth error
     handleAuthError(error).then(() => {
-      console.log('Auth error handled successfully');
+
     }).catch((handleError) => {
       console.error('Error handling auth error:', handleError);
       // Force clear everything as a last resort

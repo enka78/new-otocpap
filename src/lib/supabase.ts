@@ -8,17 +8,17 @@ let supabaseInstance: ReturnType<typeof createClient> | null = null
 
 // Helper function to handle auth errors and clear invalid sessions
 const handleAuthErrorInternal = async (error: any) => {
-  if (error?.message?.includes('Invalid Refresh Token') || 
-      error?.message?.includes('Refresh Token Not Found') ||
-      error?.code === 'invalid_refresh_token') {
-    console.log('Invalid refresh token detected, clearing session...')
-    
+  if (error?.message?.includes('Invalid Refresh Token') ||
+    error?.message?.includes('Refresh Token Not Found') ||
+    error?.code === 'invalid_refresh_token') {
+
+
     try {
       // Force clear the session from storage
       if (typeof window !== 'undefined') {
         localStorage.removeItem('supabase.auth.token')
         sessionStorage.removeItem('supabase.auth.token')
-        
+
         // Clear all supabase keys from localStorage
         const keys = Object.keys(localStorage)
         keys.forEach(key => {
@@ -30,7 +30,7 @@ const handleAuthErrorInternal = async (error: any) => {
     } catch (clearError) {
       console.warn('Error clearing storage, but continuing...', clearError)
     }
-    
+
     // Optionally redirect to login page
     if (typeof window !== 'undefined') {
       window.location.href = '/'
@@ -82,15 +82,15 @@ export const supabase = (() => {
         }
       }
     })
-    
+
     // Add global error handling for auth errors
     const originalGetSession = supabaseInstance.auth.getSession
-    supabaseInstance.auth.getSession = async function() {
+    supabaseInstance.auth.getSession = async function () {
       try {
         return await originalGetSession.call(this)
       } catch (error: any) {
-        if (error?.message?.includes('Invalid Refresh Token') || 
-            error?.message?.includes('Refresh Token Not Found')) {
+        if (error?.message?.includes('Invalid Refresh Token') ||
+          error?.message?.includes('Refresh Token Not Found')) {
           await handleAuthErrorInternal(error)
           return { data: { session: null }, error: null }
         }
@@ -109,12 +109,12 @@ export const handleAuthError = async (error: any) => {
 // Function to completely clear auth state
 export const clearAuthState = () => {
   if (typeof window === 'undefined') return
-  
+
   try {
     // Clear specific auth tokens
     localStorage.removeItem('supabase.auth.token')
     sessionStorage.removeItem('supabase.auth.token')
-    
+
     // Clear all supabase keys from localStorage
     const keys = Object.keys(localStorage)
     keys.forEach(key => {
@@ -122,8 +122,8 @@ export const clearAuthState = () => {
         localStorage.removeItem(key)
       }
     })
-    
-    console.log('Auth state cleared successfully')
+
+
   } catch (error) {
     console.warn('Error clearing auth state:', error)
   }
@@ -133,17 +133,17 @@ export const clearAuthState = () => {
 export const hasValidSession = async (): Promise<boolean> => {
   try {
     const { data: { session }, error } = await supabase.auth.getSession()
-    
+
     if (error || !session) {
       return false
     }
-    
+
     // Check if token is expired
     const now = Math.floor(Date.now() / 1000)
     if (session.expires_at && session.expires_at < now) {
       return false
     }
-    
+
     return true
   } catch {
     return false
@@ -326,12 +326,12 @@ export interface Order {
   order_number: string
   user_id?: string
   status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
-  
+
   // Müşteri Bilgileri
   customer_name: string
   customer_email: string
   customer_phone?: string
-  
+
   // Teslimat Adresi
   shipping_address_line1: string
   shipping_address_line2?: string
@@ -339,7 +339,7 @@ export interface Order {
   shipping_state?: string
   shipping_postal_code: string
   shipping_country: string
-  
+
   // Fatura Adresi
   billing_address_line1?: string
   billing_address_line2?: string
@@ -347,29 +347,29 @@ export interface Order {
   billing_state?: string
   billing_postal_code?: string
   billing_country?: string
-  
+
   // Fiyat Bilgileri
   subtotal: number
   tax_amount: number
   shipping_cost: number
   discount_amount: number
   total_amount: number
-  
+
   // Ödeme Bilgileri
   payment_method?: string
   payment_status: 'pending' | 'paid' | 'failed' | 'refunded'
   payment_reference?: string
-  
+
   // Notlar
   customer_notes?: string
   admin_notes?: string
-  
+
   // Tarihler
   created_at: string
   updated_at: string
   shipped_at?: string
   delivered_at?: string
-  
+
   // İlişkili veriler
   order_items?: OrderItem[]
 }
@@ -378,19 +378,19 @@ export interface OrderItem {
   id: number
   order_id: number
   product_id: number
-  
+
   // Ürün bilgileri
   product_name: string
   product_sku?: string
   product_image?: string
-  
+
   // Fiyat ve miktar
   unit_price: number
   quantity: number
   total_price: number
-  
+
   created_at: string
-  
+
   // İlişkili ürün
   products?: Product
 }

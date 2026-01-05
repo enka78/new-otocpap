@@ -104,7 +104,7 @@ export default function OrdersPage() {
       // First check if we have any valid session
       const hasSession = await hasValidSession();
       if (!hasSession) {
-        console.log("No valid session found, redirecting to home");
+
         clearAuthState();
         router.push(`/${locale}`);
         return;
@@ -123,7 +123,7 @@ export default function OrdersPage() {
       }
 
       if (!user) {
-        console.log("No user found, redirecting to home");
+
         router.push(`/${locale}`);
         return;
       }
@@ -359,7 +359,7 @@ export default function OrdersPage() {
                           </span>
                         </div>
                         <div className="text-white font-extrabold px-6 py-2 bg-orange-600 rounded-full">
-                          {t(`orders.${JSON.parse(order.user).delivery_type}`)} 
+                          {t(`orders.${JSON.parse(order.user).delivery_type}`)}
                         </div>
                       </div>
 
@@ -751,54 +751,77 @@ export default function OrdersPage() {
                 </h3>
                 <div className="space-y-4">
                   {selectedOrder.product_details &&
-                  selectedOrder.product_details.length > 0
+                    selectedOrder.product_details.length > 0
                     ? selectedOrder.product_details.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center p-6 bg-gray-50 rounded-xl border hover:bg-gray-100 transition-colors"
-                        >
-                          {/* Product Image */}
-                          <div className="w-20 h-20 flex-shrink-0 mr-6">
-                            {item.product_image ? (
-                              <img
-                                src={item.product_image}
-                                alt={item.product_name || t("products.unknown")}
-                                className="w-full h-full object-cover rounded-lg"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                                <Package className="w-8 h-8 text-gray-400" />
-                              </div>
-                            )}
-                          </div>
+                      <div
+                        key={index}
+                        className="flex items-center p-6 bg-gray-50 rounded-xl border hover:bg-gray-100 transition-colors"
+                      >
+                        {/* Product Image */}
+                        <div className="w-20 h-20 flex-shrink-0 mr-6">
+                          {item.product_image ? (
+                            <img
+                              src={item.product_image}
+                              alt={item.product_name || t("products.unknown")}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                              <Package className="w-8 h-8 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
 
-                          {/* Product Info */}
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 text-lg mb-2">
-                              {item.product_name ||
-                                `${t("products.unknown")} ID: ${
-                                  item.product_id
-                                }`}
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                              {item.product_brand && (
-                                <div>{item.product_brand}</div>
-                              )}
-                              {item.product_category && (
-                                <div>{item.product_category}</div>
-                              )}
-                              <div>
-                                <span className="font-medium">
-                                  {t("checkout.quantity")}:
-                                </span>{" "}
-                                {item.quantity}
-                              </div>
+                        {/* Product Info */}
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 text-lg mb-2">
+                            {item.product_name ||
+                              `${t("products.unknown")} ID: ${item.product_id
+                              }`}
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                            {item.product_brand && (
+                              <div>{item.product_brand}</div>
+                            )}
+                            {item.product_category && (
+                              <div>{item.product_category}</div>
+                            )}
+                            <div>
+                              <span className="font-medium">
+                                {t("checkout.quantity")}:
+                              </span>{" "}
+                              {item.quantity}
                             </div>
                           </div>
+                        </div>
 
-                          {/* Price Info */}
-                          <div className="text-right ml-6">
-                            <p className="font-bold text-xl text-blue-600 mb-1">
+                        {/* Price Info */}
+                        <div className="text-right ml-6">
+                          <p className="font-bold text-xl text-blue-600 mb-1">
+                            {formatCurrency(item.price * item.quantity)}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {formatCurrency(item.price)}/{t("common.unit")}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                    : parseOrderProducts(selectedOrder.products).map(
+                      (item, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center p-6 bg-gray-50 rounded-xl border"
+                        >
+                          <div>
+                            <p className="font-semibold text-gray-900">
+                              {t("products.unknown")} ID: {item.product_id}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {t("checkout.quantity")}: {item.quantity}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-xl text-blue-600">
                               {formatCurrency(item.price * item.quantity)}
                             </p>
                             <p className="text-sm text-gray-500">
@@ -806,32 +829,8 @@ export default function OrdersPage() {
                             </p>
                           </div>
                         </div>
-                      ))
-                    : parseOrderProducts(selectedOrder.products).map(
-                        (item, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center p-6 bg-gray-50 rounded-xl border"
-                          >
-                            <div>
-                              <p className="font-semibold text-gray-900">
-                                {t("products.unknown")} ID: {item.product_id}
-                              </p>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {t("checkout.quantity")}: {item.quantity}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-bold text-xl text-blue-600">
-                                {formatCurrency(item.price * item.quantity)}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                {formatCurrency(item.price)}/{t("common.unit")}
-                              </p>
-                            </div>
-                          </div>
-                        )
-                      )}
+                      )
+                    )}
                 </div>
               </div>
 

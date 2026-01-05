@@ -9,13 +9,13 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
-      user_id, 
-      product_id, 
-      quantity, 
-      total_price, 
-      delivery_address, 
-      phone, 
+    const {
+      user_id,
+      product_id,
+      quantity,
+      total_price,
+      delivery_address,
+      phone,
       notes,
       user_name,
       user_email,
@@ -40,8 +40,7 @@ export async function POST(request: NextRequest) {
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
-    console.log('API: Checking daily order limit for user:', user_id);
-    console.log('API: Date range:', { start: start.toISOString(), end: end.toISOString() });
+
 
     const { data: todaysOrders, error: checkError } = await supabase
       .from('orders')
@@ -58,13 +57,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('API: Today\'s orders found:', todaysOrders?.length || 0);
+
 
     // Check if user has any non-cancelled orders today
     if (todaysOrders && todaysOrders.length > 0) {
       const activeOrders = todaysOrders.filter(order => order.status_id !== 10); // 10 = cancelled
-      console.log('API: Active orders:', activeOrders.length);
-      
+
+
       if (activeOrders.length > 0) {
         return NextResponse.json(
           { error: 'Bugün zaten bir siparişiniz var. Yeni sipariş verebilmek için mevcut siparişinizi iptal etmeniz gerekiyor.' },
@@ -195,7 +194,7 @@ export async function GET(request: NextRequest) {
         try {
           // Parse products JSON
           const products = JSON.parse(order.products || '[]');
-          
+
           // Get product details for each product in the order
           const productDetails = await Promise.all(
             products.map(async (item: any) => {
@@ -204,7 +203,7 @@ export async function GET(request: NextRequest) {
                 .select('id, name, brand, price, image_url, category')
                 .eq('id', item.product_id)
                 .single();
-              
+
               return {
                 ...item,
                 product: product || null

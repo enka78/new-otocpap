@@ -57,7 +57,7 @@ export default function DailyOrderCheckComponent({ userId, onOrderStatusChange }
     );
   }
 
-  console.log("orderCheck:", orderCheck);
+
   if (!orderCheck) return null;
 
   // Sipariş verilebilir durumda - hiçbir şey gösterme

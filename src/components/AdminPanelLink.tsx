@@ -23,12 +23,12 @@ export default function AdminPanelLink({
 
   useEffect(() => {
     if (!user) {
-      console.log("AdminPanelLink: No user");
+
       setLoading(false);
       return;
     }
 
-    console.log("AdminPanelLink: Checking admin status for user:", user.id);
+
 
     const checkAdminStatus = async () => {
       try {
@@ -42,16 +42,9 @@ export default function AdminPanelLink({
           console.warn("AdminPanelLink: No role found for user:", user.id);
         }
 
-        console.log("AdminPanelLink: User role query result:", {
-          userRole,
-          error,
-        });
 
-        console.log("AdminPanelLink: Full Supabase response:", {
-          userId: user.id,
-          userRole,
-          error,
-        });
+
+
 
         if (error) {
           console.error("AdminPanelLink: Error fetching user role:", error);
@@ -59,7 +52,7 @@ export default function AdminPanelLink({
         } else {
           const isUserAdmin = userRole?.role === "admin";
           setIsAdmin(isUserAdmin);
-          console.log("AdminPanelLink: Is admin:", isUserAdmin);
+
         }
       } catch (error) {
         console.error("AdminPanelLink: Exception:", error);

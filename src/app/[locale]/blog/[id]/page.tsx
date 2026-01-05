@@ -67,8 +67,7 @@ export default function BlogDetailPage() {
 
       if (error) throw error;
 
-      console.log("Blog data:", data); // Debug log
-      console.log("Created at:", data?.created_at); // Debug log
+
 
       if (data) {
         setPost(data as unknown as Blog);

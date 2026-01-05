@@ -21,7 +21,7 @@ export function useAuth() {
       try {
         // First check if we have a valid session in localStorage
         const { data: { session }, error } = await supabase.auth.getSession();
-        
+
         if (error) {
           console.warn('Session error:', error.message);
           await handleAuthError(error);
@@ -59,22 +59,22 @@ export function useAuth() {
     // Listen for auth changes with error handling
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
-        
+
+
         try {
           if (event === 'TOKEN_REFRESHED') {
-            console.log('Token refreshed successfully');
+
             setUser(session?.user ?? null);
           } else if (event === 'SIGNED_OUT') {
-            console.log('User signed out');
+
             setUser(null);
           } else if (event === 'SIGNED_IN') {
-            console.log('User signed in');
+
             setUser(session?.user ?? null);
           } else {
             setUser(session?.user ?? null);
           }
-          
+
           setLoading(false);
         } catch (error: any) {
           console.error('Error in auth state change:', error);
