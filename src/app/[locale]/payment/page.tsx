@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase, getProductImageUrl } from "@/lib/supabase";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { User } from "@/types/user";
 import {
   MapPin,
@@ -37,6 +37,7 @@ interface AddressData {
 
 export default function PaymentPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const {
     cartItems,
     getTotalPrice,
@@ -276,7 +277,7 @@ export default function PaymentPage() {
         {/* Header - Compact */}
         <div className="mb-4 relative">
           <button
-            onClick={() => router.push(`/${t("locale.code")}/products`)}
+            onClick={() => router.push(`/${locale}/products`)}
             className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 flex items-center text-sm font-medium"
           >
             ← {t("cart.continueShopping") || "Alışverişe Devam Et"}
