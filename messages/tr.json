@@ -342,7 +342,19 @@
     "brandLabel": "Marka",
     "categoryLabel": "Kategori",
     "name": "Adı",
-    "unknown": "Bilinmeyen"
+    "unknown": "Bilinmeyen",
+    "trust": {
+      "paytrSecure": "PayTR + 3D Secure",
+      "paytrDesc": "Güvenli Ödeme",
+      "sameDayShipping": "Aynı Gün Kargo",
+      "shippingDesc": "Saat 16:00'a kadar",
+      "originalProduct": "Orijinal Ürün",
+      "originalDesc": "Faturalı ve Garantili",
+      "easyReturn": "Kolay İade",
+      "returnDesc": "14 gün içinde iade hakkı",
+      "creditCards": "Tüm Kartlar Geçerli",
+      "creditCardsDesc": "Visa & Mastercard & Amex & Troy"
+    }
   },
   "dailyOrder": {
     "limitTitle": "Günlük Sipariş Sınırı",

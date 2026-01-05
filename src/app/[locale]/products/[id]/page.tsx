@@ -8,7 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase, Product, getProductImageUrl } from "@/lib/supabase";
-import { ArrowLeft, ShoppingCart, Heart, Share2 } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Heart, Share2, Tag, Box, CheckCircle, XCircle, Truck, FileCheck, RefreshCw } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { hasRealContent } from "@/helpers/hasRealContent";
 import { formatCurrency } from "@/lib/format";
@@ -187,8 +187,8 @@ export default function ProductDetailPage() {
                         key={index}
                         onClick={() => setSelectedImage(index)}
                         className={`w-20 h-20 rounded-lg border-2 relative bg-white ${selectedImage === index
-                            ? "border-blue-600"
-                            : "border-gray-200"
+                          ? "border-blue-600"
+                          : "border-gray-200"
                           }`}
                       >
                         {image ? (
@@ -252,41 +252,101 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* Product Details */}
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  {t("products.addToCart")}
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">
-                      {t("products.category")}
-                    </span>
-                    <span className="font-medium">
-                      {
-                        (product as Product & { categories: { name: string } })
-                          .categories?.name
-                      }
-                    </span>
+              {/* Product Specs */}
+              <div className="flex flex-wrap gap-3">
+                <div className="px-4 py-2 bg-gray-50 rounded-full text-sm font-medium text-gray-700 flex items-center gap-2 border border-gray-100">
+                  <Tag size={16} className="text-blue-600" />
+                  <span className="text-gray-500">{t("products.categoryLabel")}:</span>
+                  <span>
+                    {(product as Product & { categories: { name: string } }).categories?.name}
+                  </span>
+                </div>
+                <div className="px-4 py-2 bg-gray-50 rounded-full text-sm font-medium text-gray-700 flex items-center gap-2 border border-gray-100">
+                  <Box size={16} className="text-purple-600" />
+                  <span className="text-gray-500">{t("products.brandLabel")}:</span>
+                  <span>
+                    {(product as Product & { brands: { name: string } }).brands?.name}
+                  </span>
+                </div>
+                <div className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 border ${product.quantity > 0
+                  ? "bg-green-50 text-green-700 border-green-100"
+                  : "bg-red-50 text-red-700 border-red-100"
+                  }`}>
+                  {product.quantity > 0 ? (
+                    <CheckCircle size={16} />
+                  ) : (
+                    <XCircle size={16} />
+                  )}
+                  <span>
+                    {product.quantity > 0 ? t("products.inStock") : t("products.outOfStock")}
+                  </span>
+                </div>
+              </div>
+
+              {/* Trust Badges */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-gray-100">
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="w-10 h-10 p-1 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                    <div className="relative w-16 h-8">
+                      <Image
+                        src="/PayTR-Fav.svg"
+                        alt="PayTR"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Marka:</span>
-                    <span className="font-medium">
-                      {
-                        (product as Product & { brands: { name: string } })
-                          .brands?.name
-                      }
-                    </span>
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm">{t("products.trust.paytrSecure")}</div>
+                    <div className="text-xs text-gray-500">{t("products.trust.paytrDesc")}</div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Stok Durumu:</span>
-                    <span
-                      className={`font-medium ${product.quantity > 0 ? "text-green-600" : "text-red-600"
-                        }`}
-                    >
-                      {product.quantity > 0 ? "Stokta Var" : "Stokta Yok"}
-                    </span>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center shrink-0 text-orange-600">
+                    <Truck size={20} />
                   </div>
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm">{t("products.trust.sameDayShipping")}</div>
+                    <div className="text-xs text-gray-500">{t("products.trust.shippingDesc")}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center shrink-0 text-green-600">
+                    <FileCheck size={20} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm">{t("products.trust.originalProduct")}</div>
+                    <div className="text-xs text-gray-500">{t("products.trust.originalDesc")}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center shrink-0 text-purple-600">
+                    <RefreshCw size={20} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm">{t("products.trust.easyReturn")}</div>
+                    <div className="text-xs text-gray-500">{t("products.trust.returnDesc")}</div>
+                  </div>
+                </div>
+
+                <div className="h-24 w-full flex items-center justify-center gap-4 p-3 rounded-lg  transition-colors sm:col-span-2  bg-gray-100">
+                  <Image
+                    src="/visa-master.svg"
+                    alt="Visa Mastercard"
+                    width={100}
+                    height={100}
+                    className="object-contain"
+                  />
+                  <Image
+                    src="/troy-logo.svg"
+                    alt="Troy"
+                    width={60}
+                    height={60}
+                    className="object-contain relative mt-1"
+                  />
                 </div>
               </div>
             </div>

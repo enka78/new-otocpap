@@ -343,7 +343,19 @@
     "brandLabel": "Brand",
     "categoryLabel": "Category",
     "name": "Name",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "trust": {
+      "paytrSecure": "PayTR + 3D Secure",
+      "paytrDesc": "Secure Payment",
+      "sameDayShipping": "Same Day Shipping",
+      "shippingDesc": "Until 16:00",
+      "originalProduct": "Original Product",
+      "originalDesc": "Invoiced and Guaranteed",
+      "easyReturn": "Easy Return",
+      "returnDesc": "Return within 14 days",
+      "creditCards": "All Cards Accepted",
+      "creditCardsDesc": "Visa & Mastercard & Amex & Troy"
+    }
   },
   "dailyOrder": {
     "limitTitle": "Daily Order Limit",
