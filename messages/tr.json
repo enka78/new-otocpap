@@ -279,7 +279,8 @@
     "resetPasswordDirectAccess": "Şifre sıfırlama sayfasına doğrudan eriştiniz.",
     "resetPasswordDirectAccessDesc": "Şifrenizi sıfırlamak için e-posta adresinize gönderilen bağlantıyı kullanmalısınız.",
     "loading": "Yükleniyor...",
-    "continueWithGoogle": "Google ile Devam Et"
+    "continueWithGoogle": "Google ile Devam Et",
+    "gmailSuggestion": "Gmail adresinizle daha önce Google üzerinden giriş yapmış olabilirsiniz. Şifre sıfırlamak yerine Google ile hızlıca giriş yapmayı deneyebilirsiniz."
   },
   "cart": {
     "title": "Sepetim",

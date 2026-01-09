@@ -90,8 +90,37 @@ body {
   font-weight: 700;
 }
 
-.prose-content em {
-  font-style: italic;
+/* Horizontal prose styling for product cards */
+.prose-horizontal {
+  @apply max-w-none;
+}
+
+.prose-horizontal ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.prose-horizontal ul li {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  color: #4b5563;
+}
+
+.prose-horizontal ul li:not(:last-child)::after {
+  content: "•";
+  margin-left: 0.5rem;
+  color: #d1d5db;
+  /* gray-300 */
+}
+
+.prose-horizontal p {
+  margin: 0;
+  display: inline;
 }
 
 /* Custom scrollbar */

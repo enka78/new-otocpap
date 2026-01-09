@@ -252,7 +252,6 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* Product Specs */}
               <div className="flex flex-wrap gap-3">
                 <div className="px-4 py-2 bg-gray-50 rounded-full text-sm font-medium text-gray-700 flex items-center gap-2 border border-gray-100">
                   <Tag size={16} className="text-blue-600" />
@@ -282,6 +281,19 @@ export default function ProductDetailPage() {
                   </span>
                 </div>
               </div>
+
+              {/* Paket İçeriği */}
+              {product.usage_instructions && product.usage_instructions.replace(/<[^>]*>/g, '').trim().length > 0 && (
+                <div className="pt-6 border-t border-gray-100">
+                  <p className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">
+                    Paket İçeriği:
+                  </p>
+                  <div
+                    className="prose-horizontal"
+                    dangerouslySetInnerHTML={{ __html: product.usage_instructions }}
+                  />
+                </div>
+              )}
 
               {/* Trust Badges */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-gray-100">
@@ -366,20 +378,6 @@ export default function ProductDetailPage() {
                   />
                 </div>
               )}
-              {product.usage_instructions &&
-                hasRealContent(product.usage_instructions) && (
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                      Kullanım Talimatları
-                    </h3>
-                    <div
-                      className="prose-content"
-                      dangerouslySetInnerHTML={{
-                        __html: renderDescription(product.usage_instructions),
-                      }}
-                    />
-                  </div>
-                )}
             </div>
           </div>
         </div>
