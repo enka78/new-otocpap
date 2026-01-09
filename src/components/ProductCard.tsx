@@ -18,7 +18,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     const { addToCart } = useCart();
 
     return (
-        <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+        <div className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col h-full">
             {/* Product Image */}
             <div className="relative aspect-square bg-white border border-gray-200 rounded-t-lg">
                 <Image
@@ -38,43 +38,60 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
 
             {/* Product Info */}
-            <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                    {product.name}
-                </h3>
+            <div className="p-6 flex-1 flex flex-col">
+                <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                        {product.name}
+                    </h3>
+                    <div className="flex items-center gap-2 mb-2">
+                        {/* Brand */}
+                        <p className="text-sm font-medium text-blue-600">
+                            {(product as any).brands?.name || t('products.brandLabel')}
+                        </p>
 
-                {/* Brand */}
-                <p className="text-sm font-medium text-blue-600 mb-1">
-                    {(product as any).brands?.name || t('products.brandLabel')}
-                </p>
-
-                {/* Category */}
-                <p className="text-sm text-gray-500 mb-3">
-                    {(product as any).categories?.name || t('products.categoryLabel')}
-                </p>
-
-                {/* Price */}
-                <div className="mb-4">
-                    <div className="text-lg font-bold text-blue-600">
-                        {formatCurrency(product.price)}
+                        {/* Category */}
+                        <p className="text-sm text-gray-500">
+                            {(product as any).categories?.name || t('products.categoryLabel')}
+                        </p>
                     </div>
+
+                    {product.usage_instructions && product.usage_instructions.replace(/<[^>]*>/g, '').trim().length > 0 && (
+                        <div className="mb-4">
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                Paket İçeriği:
+                            </p>
+                            <div
+                                className="text-xs text-gray-600 prose-horizontal"
+                                dangerouslySetInnerHTML={{ __html: product.usage_instructions }}
+                            />
+                        </div>
+                    )}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex space-x-2">
-                    <Link
-                        href={`/${locale}/products/${product.id}`}
-                        className="flex-1 flex items-center justify-center bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
-                    >
-                        <Eye size={16} className="mr-2" />
-                        {t("products.viewDetails")}
-                    </Link>
-                    <button
-                        onClick={() => addToCart(product)}
-                        className="flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                        <ShoppingCart size={16} />
-                    </button>
+                <div className="mt-4">
+                    {/* Price */}
+                    <div className="mb-4">
+                        <div className="text-lg font-bold text-blue-600">
+                            {formatCurrency(product.price)}
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex space-x-2">
+                        <Link
+                            href={`/${locale}/products/${product.id}`}
+                            className="flex-1 flex items-center justify-center bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                        >
+                            <Eye size={16} className="mr-2" />
+                            {t("products.viewDetails")}
+                        </Link>
+                        <button
+                            onClick={() => addToCart(product)}
+                            className="flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            <ShoppingCart size={16} />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

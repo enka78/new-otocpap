@@ -280,7 +280,8 @@
     "resetPasswordDirectAccess": "You have directly accessed the password reset page.",
     "resetPasswordDirectAccessDesc": "You must use the link sent to your email address to reset your password.",
     "loading": "Loading...",
-    "continueWithGoogle": "Continue with Google"
+    "continueWithGoogle": "Continue with Google",
+    "gmailSuggestion": "You may have previously logged in with Google using your Gmail address. You can try logging in quickly with Google instead of resetting your password."
   },
   "cart": {
     "title": "My Cart",
