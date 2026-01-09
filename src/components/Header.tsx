@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, ShoppingCart, User, Globe, LogOut } from "lucide-react";
+import { Menu, X, ShoppingCart, User, Globe, LogOut, Home, ShoppingBag, BookOpen, Info, Phone, Package, ChevronRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import AuthModal from "./AuthModal";
 import CartSidebar from "./CartSidebar";
@@ -170,7 +170,7 @@ export default function Header() {
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+              className="hidden md:flex items-center space-x-1 text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
             >
               <Globe size={20} />
               <span className="text-sm font-medium">
@@ -261,97 +261,155 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t">
-            <nav className="flex flex-col space-y-4">
-              <Link
-                href={`/${locale}`}
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                {t("nav.home")}
-              </Link>
-              <Link
-                href={`/${locale}/products`}
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                {t("nav.products")}
-              </Link>
-              <Link
-                href={`/${locale}/blog`}
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                {t("nav.blog")}
-              </Link>
-              <Link
-                href={`/${locale}/about`}
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                {t("nav.about")}
-              </Link>
-              <Link
-                href={`/${locale}/contact`}
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                {t("nav.contact")}
-              </Link>
-              {user && hasOrders && (
-                <Link
-                  href={`/${locale}/orders`}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
+        {/* Mobile Navigation Overlay */}
+        <div
+          className={`fixed inset-0 z-[60] md:hidden transition-all duration-300 ease-in-out ${isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            }`}
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={() => setIsMenuOpen(false)}
+          />
+
+          {/* Menu Content */}
+          <div
+            className={`absolute right-0 top-0 bottom-0 w-4/5 max-w-sm bg-white shadow-2xl transition-transform duration-300 ease-in-out transform ${isMenuOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+          >
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="p-4 border-b flex items-center justify-between">
+                <span className="font-bold text-lg text-gray-900">Menü</span>
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
-                  {t("header.myOrders")}
-                </Link>
-              )}
+                  <X size={24} className="text-gray-600" />
+                </button>
+              </div>
 
-              {/* Mobile Auth Buttons */}
-              {!loading && !user && (
-                <div className="pt-4 border-t space-y-2">
-                  <button
-                    onClick={() => handleAuthClick("login")}
-                    className="w-full text-left text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    {t("header.login")}
-                  </button>
-                  <button
-                    onClick={() => handleAuthClick("register")}
-                    className="w-full text-left bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                  >
-                    {t("header.signUp")}
-                  </button>
-                </div>
-              )}
-
-              {/* Mobile User Info */}
-              {user && (
-                <div className="pt-4 border-t space-y-2">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    {(user.user_metadata?.picture || user.user_metadata?.avatar_url) && (
-                      <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200">
-                        <Image
-                          src={user.user_metadata.picture || user.user_metadata.avatar_url}
-                          alt={user.user_metadata.full_name || "User Avatar"}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto py-6 px-4">
+                <nav className="space-y-1">
+                  {[
+                    { href: `/${locale}`, label: t("nav.home"), icon: Home },
+                    { href: `/${locale}/products`, label: t("nav.products"), icon: ShoppingBag },
+                    { href: `/${locale}/blog`, label: t("nav.blog"), icon: BookOpen },
+                    { href: `/${locale}/about`, label: t("nav.about"), icon: Info },
+                    { href: `/${locale}/contact`, label: t("nav.contact"), icon: Phone },
+                  ].map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <item.icon size={20} className="text-gray-400 group-hover:text-blue-500" />
+                        <span className="font-medium">{item.label}</span>
                       </div>
-                    )}
-                    <span>{user.user_metadata?.full_name || user.email}</span>
+                      <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-400" />
+                    </Link>
+                  ))}
+
+                  {user && hasOrders && (
+                    <Link
+                      href={`/${locale}/orders`}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Package size={20} className="text-gray-400 group-hover:text-blue-500" />
+                        <span className="font-medium">{t("header.myOrders")}</span>
+                      </div>
+                      <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-400" />
+                    </Link>
+                  )}
+                </nav>
+
+                <div className="my-6 border-t border-gray-100" />
+
+                {/* User Section */}
+                {user ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 px-3">
+                      {(user.user_metadata?.picture || user.user_metadata?.avatar_url) ? (
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-blue-100">
+                          <Image
+                            src={user.user_metadata.picture || user.user_metadata.avatar_url}
+                            alt={user.user_metadata.full_name || "User Avatar"}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                          {(user.user_metadata?.full_name?.[0] || user.email?.[0]).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="font-bold text-gray-900 truncate">
+                          {user.user_metadata?.full_name || user.email}
+                        </span>
+                        <AdminPanelLink user={user} isMobile={true} />
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 p-3 text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                    >
+                      <LogOut size={20} />
+                      <span className="font-medium">{t("header.logout")}</span>
+                    </button>
                   </div>
-                  {/* Mobile Admin Panel Link */}
-                  <AdminPanelLink user={user} isMobile={true} />
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left text-red-600 hover:text-red-700 transition-colors cursor-pointer"
-                  >
-                    {t("header.logout")}
-                  </button>
-                </div>
-              )}
-            </nav>
+                ) : (
+                  <div className="space-y-3 px-2">
+                    <button
+                      onClick={() => {
+                        handleAuthClick("login");
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full py-3 px-4 rounded-xl border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-all"
+                    >
+                      {t("header.login")}
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleAuthClick("register");
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full py-3 px-4 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
+                    >
+                      {t("header.signUp")}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Language Switcher in Menu */}
+              <div className="p-6 bg-gray-50 mt-auto">
+                <button
+                  onClick={() => {
+                    toggleLanguage();
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+                >
+                  <Globe size={20} className="text-blue-500" />
+                  <span className="font-bold">
+                    {locale === "tr" ? "English'e Geç" : "Switch to Turkish"}
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Auth Modal */}
