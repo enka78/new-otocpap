@@ -66,6 +66,14 @@ function SuccessContent() {
         verifyPayTROrder();
     }, [oid, urlReference]);
 
+    useEffect(() => {
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+            (window as any).gtag('event', 'conversion', {
+                'send_to': 'AW-788786685/hE82CKyzt_AZEP3bj_gC'
+            });
+        }
+    }, []);
+
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
