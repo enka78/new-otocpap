@@ -93,7 +93,7 @@ export default function Hero() {
           />
         </div>
       )}
-      
+
       {currentBanner?.mobile_image && (
         <div className="absolute inset-0 sm:hidden">
           <Image
@@ -113,9 +113,8 @@ export default function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div
-            className={`relative bg-black/30 flex flex-col items-center md:items-start md:backdrop-blur-sm rounded-2xl p-4 md:px-10 md:py-16 ${
-              !currentBanner?.title ? "opacity-0" : "opacity-100"
-            }`}
+            className={`relative bg-black/30 flex flex-col items-center md:items-start md:backdrop-blur-sm rounded-2xl p-4 md:px-10 md:py-16 ${!currentBanner?.title ? "opacity-0" : "opacity-100"
+              }`}
           >
             {loading ? (
               <div className="animate-pulse">
@@ -159,14 +158,27 @@ export default function Hero() {
             )}
           </div>
         </div>
-        <div className="absolute -top-12 left-20 md:-top-8 md:left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg">
+        {/* Mobile Strip View */}
+        <div className="absolute -bottom-20 sm:-bottom-20 left-0 w-full flex md:hidden z-20 shadow-lg">
+          <div className="flex-1 bg-blue-600/80 backdrop-blur-sm text-white py-3-2 px-2 flex flex-col items-center justify-center text-center border-r border-blue-500/30">
+            <div className="text-sm font-semibold">{t("hero.freeInstallation")}</div>
+            <div className="text-[10px] sm:text-xs opacity-90">{t("hero.installation")}</div>
+          </div>
+          <div className="flex-1 bg-green-500/80 backdrop-blur-sm text-white py-2 px-2 flex flex-col items-center justify-center text-center">
+            <div className="text-sm font-semibold">{t("hero.support247")}</div>
+            <div className="text-[10px] sm:text-xs opacity-90">{t("hero.support")}</div>
+          </div>
+        </div>
+
+        {/* Desktop View */}
+        <div className="hidden md:block absolute -top-8 left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg animate-fade-in-up delay-100">
           <div className="text-sm font-semibold">
             {t("hero.freeInstallation")}
           </div>
           <div className="text-xs">{t("hero.installation")}</div>
         </div>
 
-        <div className="absolute -top-14 left-4 md:-top-10 md:left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg">
+        <div className="hidden md:block absolute -top-10 left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg animate-fade-in-up delay-200">
           <div className="text-sm font-semibold">{t("hero.support247")}</div>
           <div className="text-xs">{t("hero.support")}</div>
         </div>
