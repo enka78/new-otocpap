@@ -171,17 +171,21 @@ export default function Hero() {
         </div>
 
         {/* Desktop View */}
-        <div className="hidden md:block absolute -top-8 left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg animate-fade-in-up delay-100">
-          <div className="text-sm font-semibold">
-            {t("hero.freeInstallation")}
-          </div>
-          <div className="text-xs">{t("hero.installation")}</div>
-        </div>
+        {!currentBanner?.add_button && (
+          <>
+            <div className="hidden md:block absolute -top-8 left-30 bg-blue-600 text-white py-2 px-6 rounded-xl shadow-lg animate-fade-in-up delay-100">
+              <div className="text-sm font-semibold">
+                {t("hero.freeInstallation")}
+              </div>
+              <div className="text-xs">{t("hero.installation")}</div>
+            </div>
 
-        <div className="hidden md:block absolute -top-10 left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg animate-fade-in-up delay-200">
-          <div className="text-sm font-semibold">{t("hero.support247")}</div>
-          <div className="text-xs">{t("hero.support")}</div>
-        </div>
+            <div className="hidden md:block absolute -top-10 left-15 bg-green-500 text-white p-4 rounded-xl shadow-lg animate-fade-in-up delay-200">
+              <div className="text-sm font-semibold">{t("hero.support247")}</div>
+              <div className="text-xs">{t("hero.support")}</div>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
