@@ -57,12 +57,10 @@ export default function PaymentPage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const syncAttempted = useRef(false);
 
-  // Sepette en az bir cihaz var mı? (kategori 2,4,6,12,19 harici = cihaz)
-  const hasDeviceInCart = cartItems.some((item) =>
-    isDeviceCategory(item.product.category_id)
+
+  const hasDeviceInCart = cartItems.every(
+    (item) => !isDeviceCategory(item.product.category_id)
   );
-
-
 
   // Address State
   const [addressData, setAddressData] = useState<AddressData>({

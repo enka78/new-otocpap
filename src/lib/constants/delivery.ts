@@ -1,16 +1,7 @@
-/**
- * Cihaz OLMAYAN kategorilerin ID listesi.
- * Sarf malzeme, maske ve aksesuar kategorileri bu listededir.
- * Bu listedeki kategoriler dışındaki tüm ürünler "Cihaz" olarak kabul edilir
- * (CPAP, BiPAP, ventilatör vb.).
- *
- * Cihaz olmayan kategoriler: 2, 4, 6, 12, 19
- */
-export const NON_DEVICE_CATEGORY_IDS: readonly number[] = [2, 4, 6, 12, 19];
+export const DEVICE_CATEGORY_IDS = new Set<number>([
+  1, 3, 5, 7, 8, 9, 10, 11, 13, 14
+]);
 
-/**
- * Verilen categoryId'nin cihaz kategorisine ait olup olmadığını kontrol eder.
- */
 export function isDeviceCategory(categoryId: number): boolean {
-  return NON_DEVICE_CATEGORY_IDS.includes(categoryId);
+  return DEVICE_CATEGORY_IDS.has(categoryId);
 }
