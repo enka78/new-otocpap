@@ -10,6 +10,7 @@ import { CartItem } from "@/types/cart";
 import DailyOrderCheckComponent from "./order/DailyOrderCheck";
 import { useTranslations } from "next-intl";
 import { formatCurrency } from "@/lib/format";
+import { isDeviceCategory } from "@/lib/constants/delivery";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -90,12 +91,11 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
   };
 
   const generateWhatsAppMessage = () => {
-    const deviceCategoryIds = [1, 3, 5, 7, 8, 9, 10, 11, 13, 14];
     const deviceItems = cartItems.filter((item) =>
-      deviceCategoryIds.includes(item.categoryId)
+      isDeviceCategory(item.categoryId)
     );
     const maskAndAccessoryItems = cartItems.filter(
-      (item) => !deviceCategoryIds.includes(item.categoryId)
+      (item) => !isDeviceCategory(item.categoryId)
     );
 
     let message = `🏥 *OtoCPAP Sipariş Detayları*\n\n`;

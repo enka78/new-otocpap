@@ -140,12 +140,6 @@
     "faq": "FAQ",
     "copyRight": "© 2025 Dönüşüm Medikal. All rights reserved."
   },
-  "blog": {
-    "title": "Blog",
-    "description": "Expert opinions, usage tips, and updates about CPAP, BiPAP, and sleep apnea",
-    "noResults": "No blog posts found matching your criteria.",
-    "readMore": "Read More"
-  },
   "cart": {
     "title": "My Cart",
     "emptyTitle": "Your Cart is Empty",
@@ -225,8 +219,9 @@
     "quantity": "Quantity",
     "total": "Total",
     "goBack": "Go Back",
-    "sending": "Sending...",
-    "orderWithWhatsApp": "Order via WhatsApp"
+    "orderWithWhatsApp": "Order via WhatsApp",
+    "onlyCargoDelivery": "Your cart contains consumables and/or masks. These items will be delivered by cargo.",
+    "installationOnlyForDevices": "On-site installation is only available for device (CPAP, BiPAP, etc.) purchases."
   },
   "auth": {
     "loginTitle": "Login",
@@ -283,22 +278,6 @@
     "continueWithGoogle": "Continue with Google",
     "gmailSuggestion": "You may have previously logged in with Google using your Gmail address. You can try logging in quickly with Google instead of resetting your password."
   },
-  "cart": {
-    "title": "My Cart",
-    "emptyTitle": "Your Cart is Empty",
-    "emptyDescription": "You haven't added any products to your cart yet.",
-    "startShopping": "Start Shopping",
-    "total": "Total:",
-    "clearCart": "Clear Cart",
-    "placeOrder": "Place Order",
-    "loginToOrder": "You must log in to place an order.",
-    "dailyOrderLimit": "You already have an order for today. Cancel the previous order to place a new one.",
-    "loginToSeePrice": "Log in to see the price",
-    "unitPrice": "Unit:",
-    "deviceLimit": "Only 1 device allowed",
-    "items": "items",
-    "continueShopping": "Continue Shopping"
-  },
   "header": {
     "myOrders": "My Orders",
     "logout": "Logout",
@@ -311,52 +290,6 @@
   "admin": {
     "adminPanel": "Admin Panel",
     "adminPanelTitle": "Admin Panel"
-  },
-  "products": {
-    "title": "Our Products",
-    "subTitle": "Discover our featured CPAP, BiPAP and ventilators",
-    "description": "Discover our CPAP, BiPAP and respiratory devices with accessories",
-    "cpap": "CPAP Devices",
-    "bipap": "BiPAP Devices",
-    "masks": "Masks",
-    "accessories": "Accessories",
-    "viewDetails": "View Details",
-    "addToCart": "Add to Cart",
-    "priceVisible": "Register to see prices",
-    "filters": "Filters",
-    "searchProduct": "Search Product",
-    "productName": "Product name...",
-    "category": "Category",
-    "allCategories": "All Categories",
-    "brand": "Brand",
-    "allBrands": "All Brands",
-    "clearFilters": "Clear Filters",
-    "noProducts": "No products found matching your criteria.",
-    "viewAll": "View All",
-    "stockStatus": "Stock Status",
-    "inStock": "In Stock",
-    "outOfStock": "Out of Stock",
-    "notFoundTitle": "Product Not Found",
-    "notFoundDescription": "The product you are looking for does not exist.",
-    "returnToProducts": "Return to Products",
-    "productDescription": "Product Description",
-    "usageInstructions": "Usage Instructions",
-    "brandLabel": "Brand",
-    "categoryLabel": "Category",
-    "name": "Name",
-    "unknown": "Unknown",
-    "trust": {
-      "paytrSecure": "PayTR + 3D Secure",
-      "paytrDesc": "Secure Payment",
-      "sameDayShipping": "Same Day Shipping",
-      "shippingDesc": "Until 16:00",
-      "originalProduct": "Original Product",
-      "originalDesc": "Invoiced and Guaranteed",
-      "easyReturn": "Easy Return",
-      "returnDesc": "Return within 14 days",
-      "creditCards": "All Cards Accepted",
-      "creditCardsDesc": "Visa & Mastercard & Amex & Troy"
-    }
   },
   "dailyOrder": {
     "limitTitle": "Daily Order Limit",

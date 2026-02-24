@@ -12,10 +12,12 @@ import {
   CreditCard,
   Building2,
   ShieldCheck,
+  Info,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/format";
+import { isDeviceCategory } from "@/lib/constants/delivery";
 
 // Define Address Data Interface (reused/adapted)
 interface AddressData {
@@ -55,6 +57,13 @@ export default function PaymentPage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const syncAttempted = useRef(false);
 
+  // Sepette en az bir cihaz var mı? (kategori 2,4,6,12,19 harici = cihaz)
+  const hasDeviceInCart = cartItems.some((item) =>
+    isDeviceCategory(item.product.category_id)
+  );
+
+
+
   // Address State
   const [addressData, setAddressData] = useState<AddressData>({
     fullName: "",
@@ -65,12 +74,12 @@ export default function PaymentPage() {
     city: "",
     postalCode: "",
     country: "Türkiye",
-    deliveryType: "istanbul-installation",
+    deliveryType: "domestic-cargo",
     onlineSupport: false,
     notes: "",
   });
 
-  // Load User Data
+  // Kullanıcı verilerini yükle
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
@@ -82,13 +91,19 @@ export default function PaymentPage() {
         }));
       }
     });
+  }, [router]);
 
-    // Check cart
-    if (cartItems.length === 0) {
-      // If cart empty, redirect to home or products?
-      // router.push("/"); // Disabled for now to allow viewing page
+  // Sepette cihaz yoksa teslimat türünü otomatik kargoya ayarla
+  useEffect(() => {
+    if (!hasDeviceInCart) {
+      setAddressData((prev) => {
+        if (prev.deliveryType === "istanbul-installation") {
+          return { ...prev, deliveryType: "domestic-cargo" };
+        }
+        return prev;
+      });
     }
-  }, [cartItems.length, router]);
+  }, [hasDeviceInCart]);
 
   // Initialize or retrieve Session ID
   useEffect(() => {
@@ -389,44 +404,73 @@ export default function PaymentPage() {
                   </select>
                 </div>
 
-                {/* Delivery Type */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                    <input
-                      type="radio"
-                      name="deliveryType"
-                      value="istanbul-installation"
-                      checked={
-                        addressData.deliveryType === "istanbul-installation"
-                      }
-                      onChange={handleInputChange}
-                      className="mr-3 w-4 h-4"
-                    />
-                    <MapPin className="text-blue-600 mr-2 flex-shrink-0 w-5 h-5" />
-                    <div className="flex flex-col">
-                      <span className="text-sm">
-                        {t("checkout.istanbulInstallation")}
-                      </span>
-                      <span className="text-xs text-gray-600">
-                        {t("checkout.istanbulInstallationDescription")}
-                      </span>
+                {/* Teslimat Türü */}
+                <div className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* İstanbul İçi Yerinde Kurulum — cihaz yoksa pasif */}
+                    <div className="flex flex-col gap-1">
+                      <label
+                        className={`flex flex-col  p-3 border rounded-lg transition-colors ${hasDeviceInCart
+                          ? "cursor-not-allowed bg-gray-50 border-gray-200 opacity-60"
+                          : "cursor-pointer hover:bg-gray-50 border-gray-200"
+                          }`}
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="radio"
+                            name="deliveryType"
+                            value="istanbul-installation"
+                            checked={
+                              addressData.deliveryType === "istanbul-installation"
+                            }
+                            onChange={handleInputChange}
+                            disabled={hasDeviceInCart}
+                            className="mr-3 w-4 h-4 disabled:cursor-not-allowed"
+                          />
+                          <MapPin
+                            className={`mr-2 flex-shrink-0 w-5 h-5 ${hasDeviceInCart ? "text-blue-400" : "text-gray-600"
+                              }`}
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-sm">
+                              {t("checkout.istanbulInstallation")}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {t("checkout.istanbulInstallationDescription")}
+                            </span>
+                          </div>
+                        </div>
+                        {/* Uyarı: cihaz olmadan kurulum seçilemez */}
+                        {hasDeviceInCart && (
+                          <div className="flex items-start gap-1.5 px-1">
+                            <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-amber-500" />
+                            <p className="text-xs text-amber-700">
+                              {t("checkout.installationOnlyForDevices")}
+                            </p>
+                          </div>
+                        )}
+                      </label>
+
                     </div>
-                  </label>
-                  <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                    <input
-                      type="radio"
-                      name="deliveryType"
-                      value="domestic-cargo"
-                      checked={addressData.deliveryType === "domestic-cargo"}
-                      onChange={handleInputChange}
-                      className="mr-3 w-4 h-4"
-                    />
-                    <Truck className="text-orange-600 mr-2 flex-shrink-0 w-5 h-5" />
-                    <span className="text-sm">
-                      {t("checkout.domesticCargo")}
-                    </span>
-                  </label>
+
+                    {/* Türkiye İçi Kargo */}
+                    <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors border-gray-200">
+                      <input
+                        type="radio"
+                        name="deliveryType"
+                        value="domestic-cargo"
+                        checked={addressData.deliveryType === "domestic-cargo"}
+                        onChange={handleInputChange}
+                        className="mr-3 w-4 h-4"
+                      />
+                      <Truck className="text-orange-600 mr-2 flex-shrink-0 w-5 h-5" />
+                      <span className="text-sm">
+                        {t("checkout.domesticCargo")}
+                      </span>
+                    </label>
+                  </div>
                 </div>
+
 
                 <button
                   type="submit"

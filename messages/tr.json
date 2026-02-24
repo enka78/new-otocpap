@@ -28,36 +28,6 @@
     "authorizedBrands": "Yetkili Markalarımız",
     "brandsLoading": "Marka bilgileri yükleniyor..."
   },
-  "products": {
-    "title": "Ürünlerimiz",
-    "subTitle": "Öne çıkan CPAP, BiPAP ve solunum cihazlarımızı keşfedin",
-    "description": "CPAP, BiPAP ve solunum cihazları ile aksesuarlarımızı keşfedin",
-    "cpap": "CPAP Cihazları",
-    "bipap": "BiPAP Cihazları",
-    "masks": "Maskeler",
-    "accessories": "Aksesuarlar",
-    "viewDetails": "Detayları Gör",
-    "addToCart": "Sepete Ekle",
-    "priceVisible": "Fiyatları görmek için üye olun",
-    "filters": "Filtreler",
-    "searchProduct": "Ürün Ara",
-    "productName": "Ürün adı...",
-    "category": "Kategori",
-    "allCategories": "Tüm Kategoriler",
-    "brand": "Marka",
-    "allBrands": "Tüm Markalar",
-    "clearFilters": "Filtreleri Temizle",
-    "noProducts": "Aradığınız kriterlere uygun ürün bulunamadı.",
-    "viewAll": "Tüm Ürünleri Görüntüle",
-    "stockStatus": "Stok Durumu",
-    "inStock": "Stokta Var",
-    "outOfStock": "Stokta Yok",
-    "notFoundTitle": "Ürün Bulunamadı",
-    "notFoundDescription": "Aradığınız ürün mevcut değil.",
-    "returnToProducts": "Ürünlere Dön",
-    "productDescription": "Ürün Açıklaması",
-    "urlCopied": "Ürün URL'si panoya kopyalandı!"
-  },
   "about": {
     "title": "Hakkımızda",
     "description": "Dönüşüm Medikal olarak 20 yıldır uyku apnesi ve KOAH hastaları için profesyonel çözümler sunuyoruz. Sağlığınız bizim önceliğimizdir.",
@@ -139,24 +109,6 @@
     "faq": "SSS",
     "copyRight": "© 2025 Dönüşüm Medikal. Tüm hakları saklıdır."
   },
-  "blog": {
-    "title": "Blog",
-    "description": "CPAP, BiPAP ve uyku apnesi hakkında uzman görüşleri, kullanım ipuçları ve güncel bilgiler",
-    "noResults": "Aradığınız kriterlere uygun blog yazısı bulunamadı.",
-    "readMore": "Devamını Oku"
-  },
-  "cart": {
-    "title": "Sepetim",
-    "emptyTitle": "Sepetiniz Boş",
-    "emptyDescription": "Henüz sepetinize ürün eklemediniz.",
-    "startShopping": "Alışverişe Başla",
-    "total": "Toplam:",
-    "clearCart": "Sepeti Temizle",
-    "placeOrder": "Sipariş Ver",
-    "loginToOrder": "Sipariş vermek için giriş yapmalısınız.",
-    "dailyOrderLimit": "Bu gün için bir siparişiniz var, yeni sipariş için eski siparişinizi iptal etmelisiniz.",
-    "loginToSeePrice": "Fiyat için giriş yapın"
-  },
   "orders": {
     "title": "Siparişlerim",
     "description": "Verdiğiniz siparişleri buradan takip edebilirsiniz.",
@@ -224,8 +176,9 @@
     "quantity": "Adet",
     "total": "Toplam",
     "goBack": "Geri Dön",
-    "sending": "Gönderiliyor...",
-    "orderWithWhatsApp": "WhatsApp ile Sipariş Ver"
+    "orderWithWhatsApp": "WhatsApp ile Sipariş Ver",
+    "onlyCargoDelivery": "Sepetinizde sarf malzeme ve/veya maske bulunmaktadır. Bu ürünler kargo ile teslim edilir.",
+    "installationOnlyForDevices": "Yerinde kurulum yalnızca cihaz (CPAP, BiPAP vb.) alışverişlerinde geçerlidir."
   },
   "auth": {
     "loginTitle": "Giriş Yap",
