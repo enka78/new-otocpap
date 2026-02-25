@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
         notes: customerInfo.notes,
       };
 
-      void sendOrderEmails(emailParams);
+      await sendOrderEmails(emailParams);
 
 
     } else {
