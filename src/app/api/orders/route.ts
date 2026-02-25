@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
       notes: notes ?? undefined,
     };
 
-    void sendOrderEmails(emailParams);
+    await sendOrderEmails(emailParams);
 
     return NextResponse.json({
       success: true,
