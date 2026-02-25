@@ -90,9 +90,9 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // E-posta bildirimleri (fire-and-forget — hata siparişi engellemez)
+        // E-posta bildirimleri (sipariş oluşturulduktan sonra await ile gönderilir)
         const emailParams: OrderEmailParams = {
-            orderNumber: (newOrder.payment_reference ?? newOrder.id).toString(),
+            orderNumber: (newOrder.payment_provider_reference ?? newOrder.id).toString(),
             customerName: customerInfo.name,
             customerEmail: customerInfo.email,
             customerPhone: customerInfo.phone,
@@ -111,11 +111,11 @@ export async function POST(req: NextRequest) {
             notes: customerInfo.notes || undefined,
         };
 
-        void sendOrderEmails(emailParams);
+        await sendOrderEmails(emailParams);
 
         return NextResponse.json({
             success: true,
-            orderId: newOrder.payment_reference ?? newOrder.id,
+            orderId: newOrder.payment_provider_reference ?? newOrder.id,
             order: newOrder,
         });
     } catch (error) {
