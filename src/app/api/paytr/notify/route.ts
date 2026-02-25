@@ -3,6 +3,8 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import { paytrService } from "@/lib/paytr";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { sendOrderEmails } from "@/lib/email";
+import type { OrderEmailParams } from "@/lib/order-email-templates";
 
 export async function POST(req: NextRequest) {
   try {
@@ -155,6 +157,29 @@ export async function POST(req: NextRequest) {
         console.error("❌ Order Insertion Failed:", orderError);
         return new NextResponse("Order insertion failed", { status: 500 });
       }
+
+      // E-posta bildirimleri (fire-and-forget — hata siparişi engellemez)
+      const emailParams: OrderEmailParams = {
+        orderNumber: newOrder.id.toString(),
+        customerName: customerInfo.name,
+        customerEmail: customerInfo.email,
+        customerPhone: customerInfo.phone,
+        deliveryType: customerInfo.delivery_type,
+        address: customerInfo.address.full_address,
+        district: customerInfo.address.district,
+        city: customerInfo.address.city,
+        country: customerInfo.address.country,
+        totalAmount: (sessionData.total_amount as number).toFixed(2),
+        paymentMethod: "credit_card",
+        products: orderProducts.map((p: { product_name: string; quantity: number; price: number }) => ({
+          name: p.product_name ?? "Ürün",
+          quantity: p.quantity,
+          price: p.price.toFixed(2),
+        })),
+        notes: customerInfo.notes,
+      };
+
+      void sendOrderEmails(emailParams);
 
 
     } else {
