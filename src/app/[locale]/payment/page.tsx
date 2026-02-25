@@ -229,44 +229,28 @@ export default function PaymentPage() {
         notes: addressData.notes,
       };
 
-      // Generate a readable payment reference (e.g. 8 chars alphanumeric)
-      const paymentRef =
-        "BT" + Math.random().toString(36).substring(2, 10).toUpperCase();
-
-      // Get default status (order_received)
-      const { data: statusData } = await supabase
-        .from('status')
-        .select('id')
-        .eq('name', 'order_received')
-        .single();
-
       const finalTotal = getFinalTotal(addressData.deliveryType);
       const bankDiscount = paymentMethod === "bank" ? finalTotal * 0.05 : 0;
       const amountToPay = finalTotal - bankDiscount;
 
-      const orderData = {
-        products: JSON.stringify(orderProducts),
-        status_id: statusData?.id || 1,
-        total: amountToPay,
-        currency: "TL",
-        user: JSON.stringify(customerInfo),
-        payment_method: "bank_transfer",
-        payment_provider_reference: sessionId || paymentRef,
-      };
+      // Sipariş + e-posta bildirimlerini server-side oluştur
+      const res = await fetch("/api/orders/bank", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          customerInfo,
+          orderProducts,
+          amountToPay,
+        }),
+      });
 
-      const { data, error } = await supabase
-        .from("orders")
-        .insert([orderData])
-        .select()
-        .single();
-
-      if (error) throw error;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Sipariş oluşturulamadı");
 
       // Clear cart & Redirect
       clearCart();
-      // Use the database-generated payment_reference for the success page display
-      const displayOrderId = data.payment_reference || data.id;
-      router.push(`/payment/success?method=bank&orderId=${displayOrderId}`);
+      router.push(`/payment/success?method=bank&orderId=${data.orderId}`);
     } catch (err) {
       console.error(err);
       alert("Sipariş oluşturulurken hata oluştu.");
@@ -274,6 +258,7 @@ export default function PaymentPage() {
       setLoading(false);
     }
   };
+
 
   // Render Iframe
   useEffect(() => {

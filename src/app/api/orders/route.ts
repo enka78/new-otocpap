@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { sendOrderEmails } from '@/lib/email';
+import type { OrderEmailParams } from '@/lib/order-email-templates';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -128,6 +130,29 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // E-posta bildirimleri (fire-and-forget — hata siparişi engellemez)
+    const emailParams: OrderEmailParams = {
+      orderNumber: orderData.id.toString(),
+      customerName: user_name ?? '',
+      customerEmail: user_email ?? '',
+      customerPhone: phone,
+      deliveryType: delivery_type ?? 'domestic-cargo',
+      address: delivery_address,
+      district: user_district ?? '',
+      city: user_city ?? '',
+      country: user_country ?? 'Türkiye',
+      totalAmount: total_price.toFixed(2),
+      paymentMethod: 'bank_transfer',
+      products: [{
+        name: 'Sipariş Ürünü',
+        quantity: quantity,
+        price: (total_price / quantity).toFixed(2),
+      }],
+      notes: notes ?? undefined,
+    };
+
+    void sendOrderEmails(emailParams);
 
     return NextResponse.json({
       success: true,
