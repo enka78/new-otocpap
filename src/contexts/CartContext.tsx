@@ -9,6 +9,12 @@ import {
   useCallback,
 } from "react";
 import { Product, supabase } from "@/lib/supabase";
+import { getDeliverySettings } from "@/lib/services/settings";
+import { DeliverySettings } from "@/types/settings";
+import {
+  DEFAULT_DOMESTIC_CARGO_FEE,
+  DEFAULT_FREE_SHIPPING_THRESHOLD,
+} from "@/lib/constants/delivery";
 
 // ... other imports
 
@@ -43,7 +49,13 @@ interface CartContextType {
   checkout: () => Promise<boolean>;
   toast: ToastMessage | null;
   setToast: (toast: ToastMessage | null) => void;
+  deliverySettings: DeliverySettings;
 }
+
+const FALLBACK_DELIVERY_SETTINGS: DeliverySettings = {
+  domesticCargoFee: DEFAULT_DOMESTIC_CARGO_FEE,
+  freeShippingThreshold: DEFAULT_FREE_SHIPPING_THRESHOLD,
+};
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -51,8 +63,47 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toast, setToast] = useState<ToastMessage | null>(null);
-
   const [isInitialized, setIsInitialized] = useState(false);
+  const [deliverySettings, setDeliverySettings] = useState<DeliverySettings>(
+    FALLBACK_DELIVERY_SETTINGS
+  );
+
+  // Kargo ayarlarını Supabase settings tablosundan yükle.
+  // İki katmanlı yenileme stratejisi:
+  // 1. Supabase Realtime — settings satırı değiştiğinde anında tetiklenir.
+  // 2. visibilitychange — kullanıcı başka tab'dan geri döndüğünde yeniler.
+  useEffect(() => {
+    getDeliverySettings().then(setDeliverySettings);
+
+    // Strateji 1: Realtime
+    const channel = supabase
+      .channel("settings-delivery-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "settings",
+        },
+        () => {
+          getDeliverySettings().then(setDeliverySettings);
+        }
+      )
+      .subscribe();
+
+    // Strateji 2: Tab'a geri dönüldüğünde yenile
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        getDeliverySettings().then(setDeliverySettings);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      supabase.removeChannel(channel);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -139,7 +190,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       clearCart();
       setToast({ message: "Satın alma işlemi başarılı.", type: "success" });
       return true;
-    } catch (error) {
+    } catch {
       setToast({ message: "Satın alma işlemi başarısız.", type: "error" });
       return false;
     }
@@ -160,19 +211,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
             return 0;
           }
           const total = cartItems.reduce(
-            (total, item) => total + item.quantity * item.product.price,
+            (acc, item) => acc + item.quantity * item.product.price,
             0
           );
-          return total >= 3000 ? 0 : 200;
+          return total >= deliverySettings.freeShippingThreshold
+            ? 0
+            : deliverySettings.domesticCargoFee;
         },
         getFinalTotal: (deliveryType?: string) => {
           const total = cartItems.reduce(
-            (total, item) => total + item.quantity * item.product.price,
+            (acc, item) => acc + item.quantity * item.product.price,
             0
           );
           let shipping = 0;
           if (deliveryType === "domestic-cargo") {
-            shipping = total >= 3000 ? 0 : 200;
+            shipping =
+              total >= deliverySettings.freeShippingThreshold
+                ? 0
+                : deliverySettings.domesticCargoFee;
           }
           return total + shipping;
         },
@@ -181,6 +237,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         checkout,
         toast,
         setToast,
+        deliverySettings,
       }}
     >
       {children}
