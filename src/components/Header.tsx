@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import AuthModal from "./AuthModal";
 import CartSidebar from "./CartSidebar";
 import AdminPanelLink from "./AdminPanelLink";
+import MobileActionButtons from "./MobileActionButtons";
 import { useCart } from "@/contexts/CartContext";
 import Image from "next/image";
 
@@ -421,6 +422,8 @@ export default function Header() {
 
       {/* Cart Sidebar */}
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      {/* Mobil aksiyon butonları - menü açıkken gizlenir */}
+      {!isMenuOpen && <MobileActionButtons />}
     </header>
   );
 }
