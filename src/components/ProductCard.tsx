@@ -71,7 +71,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <div className="mt-4">
                     {/* Price */}
                     <div className="mb-4">
-                        <div className="text-lg font-bold text-blue-600 hidden">
+                        <div className="text-lg font-bold text-blue-600  hidden">
                             {formatCurrency(product.price)}
                         </div>
                     </div>
