@@ -220,7 +220,7 @@ export default function ProductDetailPage() {
 
               {/* Price */}
               <div className="bg-gray-50 rounded-lg p-6">
-                <div>
+                <div className="hidden">
                   <div className="text-sm text-gray-600 mb-2">Fiyat</div>
                   <div className="text-3xl font-bold text-blue-600">
                     {formatCurrency(product.price)}
