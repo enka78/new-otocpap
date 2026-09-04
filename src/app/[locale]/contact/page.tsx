@@ -124,7 +124,7 @@ Bu mesaj OtoCPAP web sitesi iletişim formu üzerinden gönderilmiştir.`;
                       <h3 className="font-semibold text-gray-900 mb-1">
                         {t("contact.email")}
                       </h3>
-                      <p className="text-gray-600">info@otocpap.com</p>
+                      <p className="text-gray-600">ibrahim@otocpap.com</p>
                     </div>
                   </div>
 
