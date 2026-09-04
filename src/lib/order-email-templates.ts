@@ -4,23 +4,23 @@
  */
 
 export interface OrderEmailParams {
-    orderNumber: string;
-    customerName: string;
-    customerEmail: string;
-    customerPhone: string;
-    deliveryType: string;
-    address: string;
-    city: string;
-    district: string;
-    country: string;
-    totalAmount: string;
-    paymentMethod: string;
-    products: Array<{
-        name: string;
-        quantity: number;
-        price: string;
-    }>;
-    notes?: string;
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  deliveryType: string;
+  address: string;
+  city: string;
+  district: string;
+  country: string;
+  totalAmount: string;
+  paymentMethod: string;
+  products: Array<{
+    name: string;
+    quantity: number;
+    price: string;
+  }>;
+  notes?: string;
 }
 
 const BRAND_COLOR = "#1a6fb8";
@@ -28,55 +28,55 @@ const BRAND_NAME = "OtoCPAP – Dönüşüm Medikal";
 const BRAND_SITE = "https://www.otocpap.com";
 
 const DELIVERY_TYPE_LABELS: Record<string, string> = {
-    "istanbul-installation": "İstanbul İçi Yerinde Kurulum",
-    "domestic-cargo": "Türkiye İçi Kargo",
-    "international-cargo": "Yurt Dışı Kargo",
+  "istanbul-installation": "İstanbul İçi Yerinde Kurulum",
+  "domestic-cargo": "Türkiye İçi Kargo",
+  "international-cargo": "Yurt Dışı Kargo",
 };
 
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
-    credit_card: "Kredi Kartı (PayTR)",
-    bank_transfer: "Havale / EFT",
+  credit_card: "Kredi Kartı (PayTR)",
+  bank_transfer: "Havale / EFT",
 };
 
 function getDeliveryLabel(deliveryType: string): string {
-    return DELIVERY_TYPE_LABELS[deliveryType] ?? deliveryType;
+  return DELIVERY_TYPE_LABELS[deliveryType] ?? deliveryType;
 }
 
 function getPaymentLabel(paymentMethod: string): string {
-    return PAYMENT_METHOD_LABELS[paymentMethod] ?? paymentMethod;
+  return PAYMENT_METHOD_LABELS[paymentMethod] ?? paymentMethod;
 }
 
 function buildProductRows(products: OrderEmailParams["products"]): string {
-    return products
-        .map(
-            (p) => `
+  return products
+    .map(
+      (p) => `
         <tr>
           <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;">${p.name}</td>
           <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">${p.quantity}</td>
           <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;text-align:right;">${p.price} ₺</td>
         </tr>
-      `
-        )
-        .join("");
+      `,
+    )
+    .join("");
 }
 
 /** Müşteriye gönderilecek "Siparişiniz alındı" e-postası */
 export function buildCustomerEmailHtml(params: OrderEmailParams): string {
-    const {
-        orderNumber,
-        customerName,
-        deliveryType,
-        address,
-        city,
-        district,
-        country,
-        totalAmount,
-        paymentMethod,
-        products,
-        notes,
-    } = params;
+  const {
+    orderNumber,
+    customerName,
+    deliveryType,
+    address,
+    city,
+    district,
+    country,
+    totalAmount,
+    paymentMethod,
+    products,
+    notes,
+  } = params;
 
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -149,16 +149,17 @@ export function buildCustomerEmailHtml(params: OrderEmailParams): string {
                 </tr>
               </table>
 
-              ${notes
-            ? `<div style="background:#fffbf0;border-left:4px solid #f0a500;padding:12px 16px;border-radius:4px;margin-bottom:24px;">
+              ${
+                notes
+                  ? `<div style="background:#fffbf0;border-left:4px solid #f0a500;padding:12px 16px;border-radius:4px;margin-bottom:24px;">
                 <p style="margin:0 0 4px;font-size:12px;color:#888;">Sipariş Notu</p>
                 <p style="margin:0;font-size:14px;color:#555;">${notes}</p>
               </div>`
-            : ""
-        }
+                  : ""
+              }
 
               <p style="color:#666;font-size:14px;line-height:1.6;">
-                Sorularınız için <a href="mailto:info@otocpap.com" style="color:${BRAND_COLOR};">info@otocpap.com</a> adresinden veya telefon ile ulaşabilirsiniz.
+                Sorularınız için <a href="mailto:ibrahim@otocpap.com" style="color:${BRAND_COLOR};">ibrahim@otocpap.com</a> adresinden veya telefon ile ulaşabilirsiniz.
               </p>
             </td>
           </tr>
@@ -181,25 +182,25 @@ export function buildCustomerEmailHtml(params: OrderEmailParams): string {
 </html>`;
 }
 
-/** info@otocpap.com'a gönderilecek "Yeni sipariş geldi" e-postası */
+/** ibrahim@otocpap.com'a gönderilecek "Yeni sipariş geldi" e-postası */
 export function buildAdminEmailHtml(params: OrderEmailParams): string {
-    const {
-        orderNumber,
-        customerName,
-        customerEmail,
-        customerPhone,
-        deliveryType,
-        address,
-        city,
-        district,
-        country,
-        totalAmount,
-        paymentMethod,
-        products,
-        notes,
-    } = params;
+  const {
+    orderNumber,
+    customerName,
+    customerEmail,
+    customerPhone,
+    deliveryType,
+    address,
+    city,
+    district,
+    country,
+    totalAmount,
+    paymentMethod,
+    products,
+    notes,
+  } = params;
 
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -279,13 +280,14 @@ export function buildAdminEmailHtml(params: OrderEmailParams): string {
                 </tbody>
               </table>
 
-              ${notes
-            ? `<div style="background:#fffbf0;border-left:4px solid #f0a500;padding:12px 16px;border-radius:4px;margin-bottom:16px;">
+              ${
+                notes
+                  ? `<div style="background:#fffbf0;border-left:4px solid #f0a500;padding:12px 16px;border-radius:4px;margin-bottom:16px;">
                 <p style="margin:0 0 4px;font-size:12px;color:#888;">Müşteri Notu</p>
                 <p style="margin:0;font-size:14px;color:#555;">${notes}</p>
               </div>`
-            : ""
-        }
+                  : ""
+              }
             </td>
           </tr>
 

@@ -23,7 +23,7 @@ export default function ContactPage() {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -54,7 +54,7 @@ Bu mesaj OtoCPAP web sitesi iletişim formu üzerinden gönderilmiştir.`;
 
       // WhatsApp'a yönlendir
       const whatsappUrl = `https://wa.me/905532808273?text=${encodeURIComponent(
-        message
+        message,
       )}`;
       window.open(whatsappUrl, "_blank");
 
@@ -124,7 +124,7 @@ Bu mesaj OtoCPAP web sitesi iletişim formu üzerinden gönderilmiştir.`;
                       <h3 className="font-semibold text-gray-900 mb-1">
                         {t("contact.email")}
                       </h3>
-                      <p className="text-gray-600">info@otocpap.com</p>
+                      <p className="text-gray-600">ibrahim@otocpap.com</p>
                     </div>
                   </div>
 

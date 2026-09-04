@@ -203,7 +203,7 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 
 - **Website**: [otocpap.com](https://otocpap.com)
 - **WhatsApp**: +90 553 280 82 73
-- **Email**: info@donusummedikal.com
+- **Email**: ibrahim@otocpap.com
 
 ## 🙏 Teşekkürler
 
